@@ -1,4 +1,4 @@
-package DoAn;
+
 public class SanPham {
     private String maSanPham;
     private String tenSanPham;
