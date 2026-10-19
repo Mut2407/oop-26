@@ -1,6 +1,6 @@
 package models;
 
-public class SanPham {
+public abstract class SanPham {
     private String maSanPham;
     private String tenSanPham;
     private double giaban;
