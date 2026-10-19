@@ -1,10 +1,11 @@
+package models;
 
 public class QuanAoTheThao extends SanPham {
     private double kichCoGiay;
     private String loaiDeGiay;
     public QuanAoTheThao(String maSanPham, String tenSanPham, double giaban, int soLuongTon, String maLoai, double kichCoGiay, String loaiDeGiay) {
         super(maSanPham, tenSanPham, giaban, soLuongTon, maLoai);
-        this.kichCoGiay = kichCoGiay;
+        this.kichCoGiay =kichCoGiay;
         this.loaiDeGiay = loaiDeGiay;
     }
     public double getKichCoGiay() {

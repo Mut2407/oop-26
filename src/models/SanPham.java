@@ -1,3 +1,4 @@
+package models;
 
 public class SanPham {
     private String maSanPham;
