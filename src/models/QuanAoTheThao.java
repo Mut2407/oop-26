@@ -13,7 +13,7 @@ public class QuanAoTheThao extends SanPham {
     }
 
     public void setKichCoGiay(double kichCoGiay) {
-        this.kichCoGiay = kichCoGiay;
+        this.kichCoGiay =kichCoGiay;
     }
 
     public String getLoaiDeGiay() {
@@ -23,4 +23,11 @@ public class QuanAoTheThao extends SanPham {
     public void setLoaiDeGiay(String loaiDeGiay) {
         this.loaiDeGiay = loaiDeGiay;
     }
+
+@Override
+public String hienThiThongTin() {
+    return "Quần áo: " + getTenSanPham()
+            + ", kích cỡ: " + kichCoGiay
+            + ", chất liệu: " + loaiDeGiay;
+}
 }

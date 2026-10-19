@@ -44,4 +44,7 @@ public abstract class SanPham {
     public void setMaLoai(String maLoai) {
         this.maLoai = maLoai;
     }
+
+    //method
+    public abstract String hienThiThongTin();
 }
