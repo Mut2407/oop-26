@@ -1,10 +1,8 @@
 # PHÂN TÍCH NGHIỆP VỤ VÀ CÁC LỚP
 
 **Đề tài:** Xây dựng ứng dụng quản lý cửa hàng dụng cụ thể thao  
-**Phiên bản:** 19/10/2026  
-**Cơ sở:** `class-diagram.drawio` do nhóm cung cấp (2 trang).
+**Phiên bản:** v1.1 19/10/2026  
 
-> Đây là bản Markdown có thể xem trực tiếp trên GitHub, đồng bộ nội dung với bản Word cập nhật. Phân biệt kiểu dữ liệu **trong sơ đồ** với **đề xuất khi code Java**.
 
 ## 1. Phạm vi
 
@@ -156,4 +154,3 @@ Các quy tắc trên **chưa được biểu diễn đầy đủ trên sơ đồ
 
 `LoaiSanPham` → `SanPham` → `GiayTheThao`/`DungCuTheThao` → `KhachHang`/`NhanVien`/`NhaCungCap` → `HoaDon`/`ChiTietHoaDon` → `PhieuNhap`/`ChiTietPhieuNhap` → `Main` để kiểm thử.
 
-**Nguồn:** `class-diagram.drawio` (hai trang: class diagram và inheritance-polymorphism); tài liệu Word cũ chỉ dùng để đối chiếu những nội dung không còn phù hợp.
