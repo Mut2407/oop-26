@@ -1,13 +1,7 @@
-//import models.*;
-
-import models.DungCuTheThao;
-import models.QuanAoTheThao;
-import models.SanPham;
+import models.*;
 
 public class Main {
     public static void main(String[] args) {
-        
-
         
     }
 }
