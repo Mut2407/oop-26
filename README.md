@@ -1,4 +1,4 @@
-# OOP-26 — Quản lý cửa hàng dụng cụ thể thao
+# Quản lý cửa hàng dụng cụ thể thao
 
 Đồ án **lập trình hướng đối tượng (OOP)** bằng **Java**, mô phỏng việc quản lý sản phẩm, khách hàng, nhân viên, nhà cung cấp, hóa đơn bán hàng và phiếu nhập.
 
@@ -6,28 +6,28 @@
 
 ## 1. Class diagram
 
-| Sơ đồ | Nội dung |
-|---|---|
-| [Class diagram tổng quan](diagrams/class-diagram.png) | Các thực thể và mối quan hệ quản lý cửa hàng |
-| [Kế thừa và đa hình](diagrams/inheritance-polymorphism.png) | Lớp cha `SanPham` và các lớp con |
+| Sơ đồ                                                       | Nội dung                                     |
+| ----------------------------------------------------------- | -------------------------------------------- |
+| [Class diagram tổng quan](diagrams/class-diagram.png)       | Các thực thể và mối quan hệ quản lý cửa hàng |
+| [Kế thừa và đa hình](diagrams/inheritance-polymorphism.png) | Lớp cha `SanPham` và các lớp con             |
 
 Có thể mở file nguồn `class-diagram.drawio` bằng [diagrams.net](https://app.diagrams.net/) khi file đó được thêm vào repository. Hiện repository lưu hai ảnh sơ đồ trong thư mục `diagrams/`.
 
 ### Các class trên sơ đồ
 
-| Nhóm | Class | Thuộc tính / vai trò chính |
-|---|---|---|
-| Sản phẩm | `SanPham` | `maSanPham`, `tenSanPham`, `thuongHieu`, `giaBan`, `soLuongTon`, `maLoai` |
-| Sản phẩm | `GiayTheThao` | `kichCoGiay`, `mauSac`, `loaiDeGiay` |
-| Sản phẩm | `DungCuTheThao` | `monTheThao`, `vatLieu`, `khoiLuong` |
-| Phân loại | `LoaiSanPham` | `maLoai`, `tenLoai`, `moTa` |
-| Đối tượng | `KhachHang` | `maKhachHang`, `hoTen`, `soDienThoai`, `diaChi` |
-| Đối tượng | `NhanVien` | `maNhanVien`, `hoTen`, `soDienThoai`, `diaChi` |
-| Đối tượng | `NhaCungCap` | `maNhaCungCap`, `tenNhaCungCap`, `soDienThoai`, `diaChi` |
-| Bán hàng | `HoaDon` | Mã hóa đơn, ngày lập, mã khách hàng, mã nhân viên, chi tiết hóa đơn |
-| Bán hàng | `ChiTietHoaDon` | `sanPham`, `soLuong`, `donGiaBan` |
-| Nhập hàng | `PhieuNhap` | Mã phiếu, ngày lập, mã nhà cung cấp, mã nhân viên, chi tiết phiếu nhập |
-| Nhập hàng | `ChiTietPhieuNhap` | `sanPham`, `soLuong`, `donGiaNhap` |
+| Nhóm      | Class              | Thuộc tính / vai trò chính                                                |
+| --------- | ------------------ | ------------------------------------------------------------------------- |
+| Sản phẩm  | `SanPham`          | `maSanPham`, `tenSanPham`, `thuongHieu`, `giaBan`, `soLuongTon`, `maLoai` |
+| Sản phẩm  | `GiayTheThao`      | `kichCoGiay`, `mauSac`, `loaiDeGiay`                                      |
+| Sản phẩm  | `DungCuTheThao`    | `monTheThao`, `vatLieu`, `khoiLuong`                                      |
+| Phân loại | `LoaiSanPham`      | `maLoai`, `tenLoai`, `moTa`                                               |
+| Đối tượng | `KhachHang`        | `maKhachHang`, `hoTen`, `soDienThoai`, `diaChi`                           |
+| Đối tượng | `NhanVien`         | `maNhanVien`, `hoTen`, `soDienThoai`, `diaChi`                            |
+| Đối tượng | `NhaCungCap`       | `maNhaCungCap`, `tenNhaCungCap`, `soDienThoai`, `diaChi`                  |
+| Bán hàng  | `HoaDon`           | Mã hóa đơn, ngày lập, mã khách hàng, mã nhân viên, chi tiết hóa đơn       |
+| Bán hàng  | `ChiTietHoaDon`    | `sanPham`, `soLuong`, `donGiaBan`                                         |
+| Nhập hàng | `PhieuNhap`        | Mã phiếu, ngày lập, mã nhà cung cấp, mã nhân viên, chi tiết phiếu nhập    |
+| Nhập hàng | `ChiTietPhieuNhap` | `sanPham`, `soLuong`, `donGiaNhap`                                        |
 
 **Tổng cộng 11 class được đặt tên trong hai trang sơ đồ hiện tại.** Sơ đồ không định nghĩa interface hay enum.
 
@@ -54,12 +54,12 @@ Có thể mở file nguồn `class-diagram.drawio` bằng [diagrams.net](https:/
 └── pictures/
 ```
 
-| File Java | Tình trạng triển khai |
-|---|---|
-| `SanPham.java` | Có thuộc tính `private`, constructor, getter/setter. Hiện **chưa phải abstract class** và chưa có phương thức đa hình. |
-| `DungCuTheThao.java` | Đã `extends SanPham`, sử dụng `super(...)`, có thuộc tính và getter/setter riêng. |
-| `QuanAoTheThao.java` | Đã `extends SanPham`, nhưng thuộc tính `kichCoGiay`, `loaiDeGiay` hiện giống lớp giày; **chưa đồng bộ với sơ đồ**. |
-| `GiayTheThao.java` | Có trên class diagram nhưng **chưa được tạo** trong repository. |
+| File Java            | Tình trạng triển khai                                                                                                  |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `SanPham.java`       | Có thuộc tính `private`, constructor, getter/setter. Hiện **chưa phải abstract class** và chưa có phương thức đa hình. |
+| `DungCuTheThao.java` | Đã `extends SanPham`, sử dụng `super(...)`, có thuộc tính và getter/setter riêng.                                      |
+| `QuanAoTheThao.java` | Đã `extends SanPham`, nhưng thuộc tính `kichCoGiay`, `loaiDeGiay` hiện giống lớp giày; **chưa đồng bộ với sơ đồ**.     |
+| `GiayTheThao.java`   | Có trên class diagram nhưng **chưa được tạo** trong repository.                                                        |
 
 Các class nghiệp vụ khác hiện vẫn là thiết kế, chưa có file Java tương ứng.
 
