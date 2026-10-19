@@ -2,8 +2,6 @@
 
 Đồ án **lập trình hướng đối tượng (OOP)** bằng **Java**, mô phỏng việc quản lý sản phẩm, khách hàng, nhân viên, nhà cung cấp, hóa đơn bán hàng và phiếu nhập.
 
-> **Trạng thái:** Đang phát triển. Class diagram thể hiện thiết kế; chưa phải tất cả class và nghiệp vụ đều đã được lập trình.
-
 ## 1. Class diagram
 
 | Sơ đồ                                                       | Nội dung                                     |
@@ -78,6 +76,3 @@ Các class nghiệp vụ khác hiện vẫn là thiết kế, chưa có file Jav
 4. Bổ sung các phương thức nghiệp vụ, kiểm thử kế thừa và đa hình.
 5. Tạo `Main.java` để chạy thử chương trình và bổ sung hướng dẫn chạy thực tế.
 
-## 5. Phạm vi tài liệu
-
-README phân biệt **những gì đã có trong sơ đồ** với **mã nguồn đã triển khai**. Những tính năng như `IQuanLyDanhSach<T>`, `DanhSachSanPham`, `DichVuKho`, `LuuTruFileText`, enum trạng thái, sinh mã tự động và lưu trữ dữ liệu **chưa được thể hiện trong sơ đồ hoặc code đang có**, nên không coi là chức năng đã hoàn thành.
