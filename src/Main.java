@@ -2,24 +2,18 @@ import java.util.Scanner;
 import models.*;
 
 public class Main {
-
     private static final Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
+        SanPham[] danhSachSanPham = DuLieu.taoDanhSachSanPham();
+        xuLyMenu(danhSachSanPham);
+        sc.close();
+    }
+
+    private static void xuLyMenu(SanPham[] danhSachSanPham) {
         int luaChon = 0;
-        SanPham[] danhSachSanPham = {
-            new DungCuTheThao(
-                "SP01", "Vot cau long", 350000, "Yonex",
-                10, "DC", "cau long", "Carbon", 0.085
-            ),
-            new DungCuTheThao(
-                "SP02", "Bong da", 250000, "Dong Luc",
-                20, "DC", "Bong da", "Da tong hop", 0.45
-            )
-        };
         do {
             hienThiMenu();
-
             System.out.print("Nhap lua chon: ");
 
             if (!sc.hasNextInt()) {
@@ -35,8 +29,8 @@ public class Main {
                 case 1:
                     System.out.println("===== DANH SACH SAN PHAM =====");
                     for (SanPham sp : danhSachSanPham) {
-                        System.out.println(sp); 
-                        System.out.println(sp.hienThiThongTin()); 
+                        System.out.println(sp);
+                        System.out.println(sp.hienThiThongTin());
                         System.out.println("------------------------------");
                     }
                     break;
@@ -74,8 +68,6 @@ public class Main {
             }
 
         } while (luaChon != 0);
-
-        sc.close();
     }
 
     public static void hienThiMenu() {
