@@ -4,13 +4,15 @@ public abstract class SanPham {
     private String maSanPham;
     private String tenSanPham;
     private double giaban;
+    private String thuongHieu;
     private int soLuongTon;
     private String maLoai;
 
-    public SanPham(String maSanPham, String tenSanPham, double giaban, int soLuongTon, String maLoai) {
+    public SanPham(String maSanPham, String tenSanPham, double giaban, String thuongHieu, int soLuongTon, String maLoai) {
         this.maSanPham = maSanPham;
         this.tenSanPham = tenSanPham;
         this.giaban = giaban;
+        this.thuongHieu = thuongHieu;
         this.soLuongTon = soLuongTon;
         this.maLoai = maLoai;
     }
@@ -31,6 +33,12 @@ public abstract class SanPham {
     }
     public void setGiaban(double giaban) {
         this.giaban = giaban;
+    }
+    public String getThuongHieu() {
+        return thuongHieu;
+    }
+    public void setThuongHieu(String thuongHieu) {
+        this.thuongHieu = thuongHieu;
     }
     public int getSoLuongTon() {
         return soLuongTon;
