@@ -77,5 +77,9 @@ Các class nghiệp vụ khác hiện vẫn là thiết kế, chưa có file Jav
 5. Tạo `Main.java` để chạy thử chương trình và bổ sung hướng dẫn chạy thực tế.
 
 ## 5. Class Diagram 
+- Đây là sơ đồ tổng quan về các class trong chương trình.
 ![Class Diagram v1](images/class-diagram.png)
+
+- Đây là sơ đồ thể hiện quan hệ kế thừa và đa hình giữa các class.
 ![Inheritance And Polymorphism](images/inheritance-polymorphism.png)
+
