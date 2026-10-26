@@ -3,8 +3,8 @@ package models;
 public class QuanAoTheThao extends SanPham {
     private double kichCoGiay;
     private String loaiDeGiay;
-    public QuanAoTheThao(String maSanPham, String tenSanPham, double giaban, int soLuongTon, String maLoai, double kichCoGiay, String loaiDeGiay) {
-        super(maSanPham, tenSanPham, giaban, soLuongTon, maLoai);
+    public QuanAoTheThao(String maSanPham, String tenSanPham, double giaban, String thuongHieu, int soLuongTon, String maLoai, double kichCoGiay, String loaiDeGiay) {
+        super(maSanPham, tenSanPham, giaban, thuongHieu, soLuongTon, maLoai);
         this.kichCoGiay =kichCoGiay;
         this.loaiDeGiay = loaiDeGiay;
     }

@@ -4,8 +4,8 @@ public class DungCuTheThao extends SanPham{
     private String monTheThao;
     private String vatLieu;
     private double khoiLuong;
-    public DungCuTheThao(String maSanPham, String tenSanPham, double giaban, int soLuongTon, String maLoai, String monTheThao, String vatLieu, double khoiLuong) {
-        super(maSanPham, tenSanPham, giaban, soLuongTon, maLoai);
+    public DungCuTheThao(String maSanPham, String tenSanPham, double giaban, String thuongHieu, int soLuongTon, String maLoai, String monTheThao, String vatLieu, double khoiLuong) {
+        super(maSanPham, tenSanPham, giaban, thuongHieu ,soLuongTon, maLoai);
         this.monTheThao = monTheThao;
         this.vatLieu = vatLieu;
         this.khoiLuong = khoiLuong;
