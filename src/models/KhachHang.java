@@ -4,13 +4,13 @@ public class KhachHang{
     private String maKhachHang;
     private String hoTen;
     private String diaChi;
-    private int soDienThoai;
+    private String soDienThoai;
 
-    public KhachHang(String maKhachHang, String hoTen, String diaChi, int soDienThoai) {
+    public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String diaChi) {
         this.maKhachHang = maKhachHang;
         this.hoTen = hoTen;
-        this.diaChi = diaChi;
         this.soDienThoai = soDienThoai;
+        this.diaChi = diaChi;
     }
 
     public String getMaKhachHang() {
@@ -25,7 +25,7 @@ public class KhachHang{
          return diaChi; 
     }
 
-    public int getSoDienThoai() {
+    public String getSoDienThoai() {
          return soDienThoai; 
     }
 
@@ -41,7 +41,14 @@ public class KhachHang{
         this.diaChi = diaChi;
     }
     
-    public void setSoDienThoai(int soDienThoai) {
+    public void setSoDienThoai(String soDienThoai) {
         this.soDienThoai = soDienThoai;
+    }
+    //method
+    public String hienThiThongTin() {
+        return "Ma khach hang: " + maKhachHang + 
+               "\nHo ten: " + hoTen + 
+               "\nSo dien thoai: " + soDienThoai + 
+               "\nDia chi: " + diaChi;
     }
 }
