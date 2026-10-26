@@ -76,3 +76,6 @@ Các class nghiệp vụ khác hiện vẫn là thiết kế, chưa có file Jav
 4. Bổ sung các phương thức nghiệp vụ, kiểm thử kế thừa và đa hình.
 5. Tạo `Main.java` để chạy thử chương trình và bổ sung hướng dẫn chạy thực tế.
 
+## 5. Class Diagram 
+![Class Diagram v1](images/class-diagram.png)
+![Inheritance And Polymorphism](images/inheritance-polymorphism.png)
