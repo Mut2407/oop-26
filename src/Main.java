@@ -6,11 +6,12 @@ public class Main {
 
     public static void main(String[] args) {
         SanPham[] danhSachSanPham = DuLieu.taoDanhSachSanPham();
-        xuLyMenu(danhSachSanPham);
+        KhachHang[] danhSachKhachHang = DuLieu.taoDanhSachKhachHang();
+        xuLyMenu(danhSachSanPham, danhSachKhachHang);
         sc.close();
     }
 
-    private static void xuLyMenu(SanPham[] danhSachSanPham) {
+    private static void xuLyMenu(SanPham[] danhSachSanPham, KhachHang[] danhSachKhachHang) {
         int luaChon = 0;
         do {
             hienThiMenu();
@@ -29,7 +30,6 @@ public class Main {
                 case 1:
                     System.out.println("===== DANH SACH SAN PHAM =====");
                     for (SanPham sp : danhSachSanPham) {
-                        System.out.println(sp);
                         System.out.println(sp.hienThiThongTin());
                         System.out.println("------------------------------");
                     }
@@ -40,7 +40,11 @@ public class Main {
                     break;
 
                 case 3:
-                    System.out.println("Quan ly khach hang");
+                    System.out.println("===== DANH SACH KHACH HANG =====");
+                    for (KhachHang kh : danhSachKhachHang) {
+                        System.out.println(kh.hienThiThongTin());
+                        System.out.println("------------------------------");
+                    }
                     break;
 
                 case 4:
