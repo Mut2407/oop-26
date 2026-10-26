@@ -30,9 +30,9 @@ public class DungCuTheThao extends SanPham{
     }
     @Override
     public String hienThiThongTin() {
-    return "Dụng cụ: " + getTenSanPham()
-            + ", môn thể thao: " + monTheThao
-            + ", vật liệu: " + vatLieu
-            + ", khối lượng: " + khoiLuong + " kg";
+    return "Dung cu: " + getTenSanPham()
+            + "\nmon the thao: " + monTheThao
+            + "\nvat lieu: " + vatLieu
+            + "\nkhoi luong: " + khoiLuong + " kg";
     }
 }

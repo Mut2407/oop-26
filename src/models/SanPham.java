@@ -56,11 +56,11 @@ public abstract class SanPham {
     //method
     public abstract String hienThiThongTin();
     public String toString() {
-        return "Mã sản phẩm:" + maSanPham 
-        +"\nTên sản phẩm:" + tenSanPham
-        +"\nGiá bán:" + giaban
-        +"\nThương hiệu:" + thuongHieu
-        +"\nSố lượng tồn:" + soLuongTon
-        +"\nMã loại:" + maLoai;
+        return "Ma san pham:" + maSanPham 
+        +"\nTen san pham:" + tenSanPham
+        +"\nGia ban:" + giaban
+        +"\nThuong hieu:" + thuongHieu
+        +"\nSo luong ton:" + soLuongTon
+        +"\nMa loai:" + maLoai;
     }
 }

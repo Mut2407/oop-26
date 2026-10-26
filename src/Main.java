@@ -7,14 +7,23 @@ public class Main {
 
     public static void main(String[] args) {
         int luaChon = 0;
-
+        SanPham[] danhSachSanPham = {
+            new DungCuTheThao(
+                "SP01", "Vot cau long", 350000, "Yonex",
+                10, "DC", "cau long", "Carbon", 0.085
+            ),
+            new DungCuTheThao(
+                "SP02", "Bong da", 250000, "Dong Luc",
+                20, "DC", "Bong da", "Da tong hop", 0.45
+            )
+        };
         do {
             hienThiMenu();
 
-            System.out.print("Nhập lựa chọn: ");
+            System.out.print("Nhap lua chon: ");
 
             if (!sc.hasNextInt()) {
-                System.out.println("Vui lòng nhập một số!");
+                System.out.println("Vui long nhap mot so!");
                 sc.nextLine();
                 continue;
             }
@@ -24,39 +33,44 @@ public class Main {
 
             switch (luaChon) {
                 case 1:
-                    System.out.println("Quản lý sản phẩm");
+                    System.out.println("===== DANH SACH SAN PHAM =====");
+                    for (SanPham sp : danhSachSanPham) {
+                        System.out.println(sp); 
+                        System.out.println(sp.hienThiThongTin()); 
+                        System.out.println("------------------------------");
+                    }
                     break;
 
                 case 2:
-                    System.out.println("Quản lý loại sản phẩm");
+                    System.out.println("Quan ly loai san pham");
                     break;
 
                 case 3:
-                    System.out.println("Quản lý khách hàng");
+                    System.out.println("Quan ly khach hang");
                     break;
 
                 case 4:
-                    System.out.println("Quản lý nhân viên");
+                    System.out.println("Quan ly nhan vien");
                     break;
 
                 case 5:
-                    System.out.println("Quản lý nhà cung cấp");
+                    System.out.println("Quan ly nha cung cap");
                     break;
 
                 case 6:
-                    System.out.println("Quản lý hóa đơn");
+                    System.out.println("Quan ly hoa don");
                     break;
 
                 case 7:
-                    System.out.println("Quản lý phiếu nhập");
+                    System.out.println("Quan ly phieu nhap");
                     break;
 
                 case 0:
-                    System.out.println("Thoát chương trình!");
+                    System.out.println("Thoat chuong trinh!");
                     break;
 
                 default:
-                    System.out.println("Lựa chọn không hợp lệ!");
+                    System.out.println("Lua chon khong hop le!");
             }
 
         } while (luaChon != 0);
