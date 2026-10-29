@@ -36,4 +36,53 @@ public class DuLieu {
             new KhachHang("KH10", "Nguyen Van J", "0123456780", "phoenix.wing.7502@gmail.com")
         };
     }
+    public static NhanVien[] taoDanhSachNhanVien() {
+    return new NhanVien[] {
+        new NhanVien(
+            "NV01", "Nguyen Van An", "Sang",
+            901000001, "Quan 1, TP.HCM"
+        ),
+        new NhanVien(
+            "NV02", "Tran Thi Binh", "Chieu",
+            901000002, "Quan 3, TP.HCM"
+        ),
+        new NhanVien(
+            "NV03", "Le Minh Chau", "Toi",
+            901000003, "Quan 5, TP.HCM"
+        ),
+        new NhanVien(
+            "NV04", "Pham Ngoc Dung", "Sang",
+            901000004, "Binh Thanh, TP.HCM"
+        ),
+        new NhanVien(
+            "NV05", "Vo Thanh Hai", "Chieu",
+            901000005, "Thu Duc, TP.HCM"
+        )
+    };
+}
+
+    public static NhaCungCap[] taoDanhSachNhaCungCap() {
+        return new NhaCungCap[] {
+            new NhaCungCap(
+                "NCC01", "The Thao An Phat",
+                "Quan 1, TP.HCM", 902000001
+            ),
+            new NhaCungCap(
+                "NCC02", "Dung Cu Binh Minh",
+                "Quan 3, TP.HCM", 902000002
+            ),
+            new NhaCungCap(
+                "NCC03", "Giay The Thao Minh Tam",
+                "Quan 10, TP.HCM", 902000003
+            ),
+            new NhaCungCap(
+                "NCC04", "The Thao Thanh Cong",
+                "Tan Binh, TP.HCM", 902000004
+            ),
+            new NhaCungCap(
+                "NCC05", "Dung Cu Viet Sport",
+                "Thu Duc, TP.HCM", 902000005
+            )
+        };
+    }
 }

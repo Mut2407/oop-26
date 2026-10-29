@@ -7,11 +7,13 @@ public class Main {
     public static void main(String[] args) {
         SanPham[] danhSachSanPham = DuLieu.taoDanhSachSanPham();
         KhachHang[] danhSachKhachHang = DuLieu.taoDanhSachKhachHang();
-        xuLyMenu(danhSachSanPham, danhSachKhachHang);
+        NhanVien[] danhSachNhanVien = DuLieu.taoDanhSachNhanVien();
+        NhaCungCap[] danhSachNhaCungCap = DuLieu.taoDanhSachNhaCungCap();
+        xuLyMenu(danhSachSanPham, danhSachKhachHang, danhSachNhanVien, danhSachNhaCungCap);
         sc.close();
     }
 
-    private static void xuLyMenu(SanPham[] danhSachSanPham, KhachHang[] danhSachKhachHang) {
+    private static void xuLyMenu(SanPham[] danhSachSanPham, KhachHang[] danhSachKhachHang, NhanVien[] danhSachNhanVien, NhaCungCap[] danhSachNhaCungCap) { {
         int luaChon = -1;
         do {
             hienThiMenu();
@@ -41,18 +43,26 @@ public class Main {
                 case 3:
                     System.out.println("===== DANH SACH KHACH HANG =====");
                     for (KhachHang kh : danhSachKhachHang) {
-                        System.out.println(kh.hienThiThongTin());
+                        System.out.println(kh.thongTinKhachHang());
                         System.out.println("------------------------------");
                     }
                     break;
 
                 case 4:
-                    System.out.println("Quan ly nhan vien");
-                    break;
+                    System.out.println("===== DANH SACH NHAN VIEN =====");
+                    for (NhanVien nv : danhSachNhanVien) {
+                        System.out.println(nv.thongTinNhanVien());
+                        System.out.println("------------------------------");
+                }
+                break;
 
                 case 5:
-                    System.out.println("Quan ly nha cung cap");
-                    break;
+                    System.out.println("===== DANH SACH NHA CUNG CAP =====");
+                    for (NhaCungCap ncc : danhSachNhaCungCap) {
+                        System.out.println(ncc.thongTinNhaCungCap());
+                        System.out.println("------------------------------");
+                }
+                break;
 
                 case 6:
                     System.out.println("Quan ly hoa don");
@@ -71,6 +81,7 @@ public class Main {
             }
 
         } while (luaChon != 0);
+    }
     }
 
     private static void quanLySanPham(SanPham[] danhSachSanPham) {
