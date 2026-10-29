@@ -40,7 +40,7 @@ public class GiayTheThao extends SanPham {
 
     @Override
     public String hienThiThongTin() {
-        return super.hienThiThongTin()
+        return super.toString()
                 + "\nKich co giay: " + kichCoGiay
                 + "\nMau sac: " + mauSac
                 + "\nLoai de giay: " + loaiDeGiay;

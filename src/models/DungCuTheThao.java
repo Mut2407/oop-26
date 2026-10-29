@@ -30,7 +30,7 @@ public class DungCuTheThao extends SanPham{
     }
     @Override
     public String hienThiThongTin() {
-    return super.hienThiThongTin()
+    return super.toString()
             + "\nmon the thao: " + monTheThao
             + "\nvat lieu: " + vatLieu
             + "\nkhoi luong: " + khoiLuong + " kg";
