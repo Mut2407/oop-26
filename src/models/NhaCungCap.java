@@ -40,5 +40,11 @@ public class NhaCungCap {
     public void setSoDienThoai(int soDienThoai) {
         this.soDienThoai = soDienThoai;
     }
-    
+    //method
+    public String thongTinNhaCungCap() {
+        return "Man Nha cung cap: " + maNhaCungCap + 
+               "Ten nha cung cap: " + tenNhaCungCap + 
+               "\nSo dien thoai: " + soDienThoai + 
+               "\nDia chi: " + diaChi;
+    }
 }

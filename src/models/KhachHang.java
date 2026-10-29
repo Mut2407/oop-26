@@ -45,7 +45,7 @@ public class KhachHang{
         this.soDienThoai = soDienThoai;
     }
     //method
-    public String hienThiThongTin() {
+    public String thongTinKhachHang() {
         return "Ma khach hang: " + maKhachHang + 
                "\nHo ten: " + hoTen + 
                "\nSo dien thoai: " + soDienThoai + 

@@ -46,4 +46,11 @@ public class NhanVien {
     public void setCaLamViec(String caLamViec) {
         this.caLamViec = caLamViec;
     }
+    //method
+    public String thongTinNhanVien() {
+        return "Ma Nhan Vien: " + maNhanVien + 
+               "\nHo ten Nhan Vien: " + hoTen + 
+               "\nSo dien thoai: " + soDienThoai + 
+               "\nDia chi: " + diaChi;
+    }
 }
