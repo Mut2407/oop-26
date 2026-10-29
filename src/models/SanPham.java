@@ -54,7 +54,9 @@ public abstract class SanPham {
     }
 
     //method
-    public abstract String hienThiThongTin();
+    public String hienThiThongTin() {
+        return toString();
+    }
     public String toString() {
         return "Ma san pham:" + maSanPham 
         +"\nTen san pham:" + tenSanPham

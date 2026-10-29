@@ -26,8 +26,8 @@ public class QuanAoTheThao extends SanPham {
 
 @Override
 public String hienThiThongTin() {
-    return "Quan ao: " + getTenSanPham()
-            + "\nkich co: " + kichCoGiay
-            + "\nchat lieu: " + loaiDeGiay;
+    return super.hienThiThongTin()
+            + "\nkich co giay: " + kichCoGiay
+            + "\nloai de giay: " + loaiDeGiay;
 }
 }

@@ -12,11 +12,14 @@ public class Main {
     }
 
     private static void xuLyMenu(SanPham[] danhSachSanPham, KhachHang[] danhSachKhachHang) {
-        int luaChon = 0;
+        int luaChon = -1;
         do {
             hienThiMenu();
             System.out.print("Nhap lua chon: ");
 
+            if (!sc.hasNextLine()) {
+                return;
+            }
             if (!sc.hasNextInt()) {
                 System.out.println("Vui long nhap mot so!");
                 sc.nextLine();
@@ -28,11 +31,7 @@ public class Main {
 
             switch (luaChon) {
                 case 1:
-                    System.out.println("===== DANH SACH SAN PHAM =====");
-                    for (SanPham sp : danhSachSanPham) {
-                        System.out.println(sp.hienThiThongTin());
-                        System.out.println("------------------------------");
-                    }
+                    quanLySanPham(danhSachSanPham);
                     break;
 
                 case 2:
@@ -72,6 +71,50 @@ public class Main {
             }
 
         } while (luaChon != 0);
+    }
+
+    private static void quanLySanPham(SanPham[] danhSachSanPham) {
+        while (true) {
+            System.out.println("\n===== QUAN LY SAN PHAM =====");
+            System.out.println("1. Giay the thao");
+            System.out.println("2. Dung cu the thao");
+            System.out.println("3. Tat ca san pham");
+            System.out.println("0. Quay lai");
+            System.out.print("Nhap lua chon: ");
+
+            if (!sc.hasNextLine()) {
+                return;
+            }
+            int luaChon;
+            try {
+                luaChon = Integer.parseInt(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Vui long nhap mot so!");
+                continue;
+            }
+            if (luaChon == 0) {
+                return;
+            }
+            if (luaChon < 1 || luaChon > 3) {
+                System.out.println("Lua chon khong hop le!");
+                continue;
+            }
+
+            System.out.println("===== DANH SACH SAN PHAM =====");
+            boolean coSanPham = false;
+            for (SanPham sp : danhSachSanPham) {
+                if (luaChon == 3
+                        || (luaChon == 1 && sp instanceof GiayTheThao)
+                        || (luaChon == 2 && sp instanceof DungCuTheThao)) {
+                    System.out.println(sp.hienThiThongTin());
+                    System.out.println("------------------------------");
+                    coSanPham = true;
+                }
+            }
+            if (!coSanPham) {
+                System.out.println("Chua co san pham trong nhom nay.");
+            }
+        }
     }
 
     public static void hienThiMenu() {

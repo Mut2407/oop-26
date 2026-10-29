@@ -3,6 +3,14 @@ package models;
 public class DuLieu {
     public static SanPham[] taoDanhSachSanPham() {
         return new SanPham[] {
+            new GiayTheThao(
+                "SP03", "Giay chay bo", 1200000, "Nike",
+                8, "GIAY", 42, "Den", "Cao su"
+            ),
+            new GiayTheThao(
+                "SP04", "Giay bong da", 950000, "Adidas",
+                12, "GIAY", 41, "Trang", "Dinh cao su"
+            ),
             new DungCuTheThao(
                 "SP01", "Vot cau long", 350000, "Yonex",
                 10, "DC", "cau long", "Carbon", 0.085
