@@ -1,0 +1,6 @@
+maNhanVien	hoTen	caLamViec	soDienThoai	diaChi
+NV01	Nguyen Van An	Sang	0901000001	Quan 1, TP.HCM
+NV02	Tran Thi Binh	Chieu	0901000002	Quan 3, TP.HCM
+NV03	Le Minh Chau	Toi	0901000003	Quan 5, TP.HCM
+NV04	Pham Ngoc Dung	Sang	0901000004	Binh Thanh, TP.HCM
+NV05	Vo Thanh Hai	Chieu	0901000005	Thu Duc, TP.HCM

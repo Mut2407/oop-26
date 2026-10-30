@@ -1,7 +1,6 @@
 # Compiled class files
 *.class
 out/
-data/*.txt
 
 # IDE
 .idea/

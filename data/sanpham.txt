@@ -1,0 +1,5 @@
+kieu	maSanPham	tenSanPham	giaBan	thuongHieu	soLuongTon	maLoai	kichCoGiay	mauSac	loaiDeGiay	monTheThao	vatLieu	khoiLuongKg	kichCoQuanAo
+GIAY	SP03	Giay chay bo	1200000.0	Nike	8	GIAY	42.0	Den	Cao su				
+GIAY	SP04	Giay bong da	950000.0	Adidas	12	GIAY	41.0	Trang	Dinh cao su				
+DUNG_CU	SP01	Vot cau long	350000.0	Yonex	10	DC				cau long	Carbon	0.085	
+DUNG_CU	SP02	Bong da	250000.0	Dong Luc	20	DC				Bong da	Da tong hop	0.45	
