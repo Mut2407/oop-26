@@ -1,20 +1,16 @@
 package services;
 
 import models.KhachHang;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public final class DanhSachKhachHang implements LuuTruFile {
     private static final int SUC_CHUA_BAN_DAU = 10;
-    private static final String TIEU_DE_FILE = "KHACH_HANG_V1";
+    private static final String TIEU_DE_CU = "KHACH_HANG_V1";
+    private static final String TIEU_DE_FILE = "maKhachHang\thoTen\tsoDienThoai\tdiaChi";
 
     private KhachHang[] danhSach;
     private int soLuong;
@@ -227,92 +223,28 @@ public final class DanhSachKhachHang implements LuuTruFile {
 
     @Override
     public void ghiFile(String duongDan) throws IOException {
-        Path dich = Path.of(duongDan).toAbsolutePath();
-
-        Files.createDirectories(dich.getParent());
-
-        Path tam = Files.createTempFile(
-                dich.getParent(), "khachhang-", ".tmp");
-
-        try {
-            try (BufferedWriter writer = Files.newBufferedWriter(
-                    tam, StandardCharsets.UTF_8)) {
-
-                writer.write(TIEU_DE_FILE);
-                writer.newLine();
-
-                for (int i = 0; i < soLuong; i++) {
-                    KhachHang kh = danhSach[i];
-
-                    writer.write(
-                            maHoa(kh.getMaKhachHang()) + "\t"
-                            + maHoa(kh.getHoTen()) + "\t"
-                            + maHoa(kh.getSoDienThoai()) + "\t"
-                            + maHoa(kh.getDiaChi())
-                    );
-
-                    writer.newLine();
-                }
-            }
-
-            try {
-                Files.move(
-                        tam,
-                        dich,
-                        StandardCopyOption.REPLACE_EXISTING,
-                        StandardCopyOption.ATOMIC_MOVE
-                );
-            } catch (AtomicMoveNotSupportedException e) {
-                Files.move(
-                        tam,
-                        dich,
-                        StandardCopyOption.REPLACE_EXISTING
-                );
-            }
-        } finally {
-            Files.deleteIfExists(tam);
+        List<String> dong = new ArrayList<>();
+        dong.add(TIEU_DE_FILE);
+        for (int i = 0; i < soLuong; i++) {
+            KhachHang kh = danhSach[i];
+            dong.add(FileText.dong(kh.getMaKhachHang(), kh.getHoTen(),
+                    kh.getSoDienThoai(), kh.getDiaChi()));
         }
+        FileText.ghi(duongDan, dong);
     }
 
     @Override
     public void docFile(String duongDan) throws IOException {
         DanhSachKhachHang moi = new DanhSachKhachHang();
 
-        try (BufferedReader reader = Files.newBufferedReader(
-                Path.of(duongDan), StandardCharsets.UTF_8)) {
-
-            if (!TIEU_DE_FILE.equals(reader.readLine())) {
-                throw new IOException(
-                        "File khong dung dinh dang KHACH_HANG_V1.");
-            }
-
-            String dong;
-            int soDong = 1;
-
-            while ((dong = reader.readLine()) != null) {
-                soDong++;
-
-                String[] cot = dong.split("\t", -1);
-
-                if (cot.length != 4) {
-                    throw new IOException(
-                            "Dong " + soDong
-                            + " phai co 4 cot cach nhau bang tab.");
-                }
-
-                try {
-                    moi.them(new KhachHang(
-                            giaiMa(cot[0]),
-                            giaiMa(cot[1]),
-                            giaiMa(cot[2]),
-                            giaiMa(cot[3])
-                    ));
-                } catch (IllegalArgumentException e) {
-                    throw new IOException(
-                            "Dong " + soDong + ": " + e.getMessage(),
-                            e
-                    );
-                }
+        List<String[]> dong = FileText.doc(duongDan, TIEU_DE_FILE, TIEU_DE_CU);
+        for (int i = 0; i < dong.size(); i++) {
+            String[] cot = dong.get(i);
+            try {
+                if (cot.length != 4) throw new IllegalArgumentException("Phai co 4 cot.");
+                moi.them(new KhachHang(cot[0], cot[1], cot[2], cot[3]));
+            } catch (IllegalArgumentException e) {
+                throw new IOException("Dong " + (i + 2) + ": " + e.getMessage(), e);
             }
         }
 
@@ -395,52 +327,4 @@ public final class DanhSachKhachHang implements LuuTruFile {
         return chinhXac ? a.equals(b) : a.contains(b);
     }
 
-    private static String maHoa(String giaTri) {
-        return giaTri.replace("\\", "\\\\")
-                .replace("\t", "\\t")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r");
-    }
-
-    private static String giaiMa(String giaTri) {
-        StringBuilder ketQua = new StringBuilder();
-
-        for (int i = 0; i < giaTri.length(); i++) {
-            char c = giaTri.charAt(i);
-
-            if (c != '\\') {
-                ketQua.append(c);
-                continue;
-            }
-
-            if (++i == giaTri.length()) {
-                throw new IllegalArgumentException(
-                        "Ky tu escape khong hop le.");
-            }
-
-            switch (giaTri.charAt(i)) {
-                case '\\':
-                    ketQua.append('\\');
-                    break;
-
-                case 't':
-                    ketQua.append('\t');
-                    break;
-
-                case 'n':
-                    ketQua.append('\n');
-                    break;
-
-                case 'r':
-                    ketQua.append('\r');
-                    break;
-
-                default:
-                    throw new IllegalArgumentException(
-                            "Ky tu escape khong hop le.");
-            }
-        }
-
-        return ketQua.toString();
-    }
 }

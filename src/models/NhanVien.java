@@ -4,10 +4,10 @@ public class NhanVien {
     private String maNhanVien;
     private String hoTen;
     private String caLamViec;
-    private int soDienThoai;
+    private String soDienThoai;
     private String diaChi;
 
-    public NhanVien(String maNhanVien, String hoTen, String caLamViec, int soDienThoai, String diaChi) {
+    public NhanVien(String maNhanVien, String hoTen, String caLamViec, String soDienThoai, String diaChi) {
         this.maNhanVien = maNhanVien;
         this.hoTen = hoTen;
         this.caLamViec = caLamViec;
@@ -27,7 +27,7 @@ public class NhanVien {
         return caLamViec;
     }
 
-    public int getSoDienThoai() {
+    public String getSoDienThoai() {
         return soDienThoai;
     }
 
@@ -45,6 +45,9 @@ public class NhanVien {
 
     public void setCaLamViec(String caLamViec) {
         this.caLamViec = caLamViec;
+    }
+    public void setSoDienThoai(String soDienThoai) {
+        this.soDienThoai = soDienThoai;
     }
     //method
     public String thongTinNhanVien() {

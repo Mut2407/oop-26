@@ -1,5 +1,26 @@
 # Quản lý cửa hàng dụng cụ thể thao
 
+## Chạy chương trình
+
+Trong PowerShell tại thư mục project, chạy `powershell -ExecutionPolicy Bypass -File .\run.ps1`.
+Script chỉ biên dịch lại khi mã Java thay đổi, sau đó mở menu.
+
+Dữ liệu khách hàng, sản phẩm, nhà cung cấp và nhân viên nằm trong
+`data/khachhang.txt`, `data/sanpham.txt`, `data/nhacungcap.txt` và
+`data/nhanvien.txt`. Lần chạy đầu chương trình tạo các file từ dữ liệu mẫu.
+Mỗi file là bảng văn bản UTF-8: dòng đầu ghi tên các cột, các cột cách nhau
+bằng phím Tab; mỗi dòng tiếp theo là một bản ghi. Có thể chỉnh sửa file bằng
+trình soạn thảo văn bản như VS Code khi chương trình đã tắt. Giữ nguyên dòng
+tên cột, số cột và các mã không trùng nhau. Với `sanpham.txt`, chỉ điền các cột
+phù hợp với `kieu` (`GIAY`, `DUNG_CU`, `QUAN_AO`), để trống cột của kiểu khác.
+Số điện thoại là chuỗi nên giữ số 0 đầu; khi mở bằng Excel, cần đặt cột này
+thành Text để Excel không bỏ số 0.
+Các file cũ có dòng đầu `*_V1` vẫn được đọc; lần lưu tiếp theo chuyển sang
+dạng bảng. Các thao tác thêm, sửa, xóa được tự lưu; có thể chọn mục
+"Lưu lại" để thử ghi lần nữa nếu trước đó có lỗi. File hiện có mà đọc lỗi sẽ
+làm chương trình dừng để tránh ghi đè dữ liệu. Các file trong `data/` chỉ lưu
+trên máy và không được đưa lên Git.
+
 Đồ án **lập trình hướng đối tượng (OOP)** bằng **Java**, mô phỏng việc quản lý sản phẩm, khách hàng, nhân viên, nhà cung cấp, hóa đơn bán hàng và phiếu nhập.
 
 ## 1. Class diagram

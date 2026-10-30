@@ -4,9 +4,9 @@ public class NhaCungCap {
     private String maNhaCungCap;
     private String tenNhaCungCap;
     private String diaChi;
-    private int soDienThoai;
+    private String soDienThoai;
 
-    public NhaCungCap(String maNhaCungCap, String tenNhaCungCap, String diaChi, int soDienThoai){
+    public NhaCungCap(String maNhaCungCap, String tenNhaCungCap, String diaChi, String soDienThoai){
         this.maNhaCungCap = maNhaCungCap;
         this.tenNhaCungCap = tenNhaCungCap;
         this.diaChi = diaChi;
@@ -23,7 +23,7 @@ public class NhaCungCap {
         return diaChi;
     }
 
-    public int getsoDienThoai() {
+    public String getSoDienThoai() {
         return soDienThoai;
     } 
     public void setMaNhaCungCap(String maNhaCungCap) {
@@ -37,14 +37,14 @@ public class NhaCungCap {
         this.diaChi = diaChi;
     }
 
-    public void setSoDienThoai(int soDienThoai) {
+    public void setSoDienThoai(String soDienThoai) {
         this.soDienThoai = soDienThoai;
     }
     //method
     public String thongTinNhaCungCap() {
-        return "Man Nha cung cap: " + maNhaCungCap + 
-               "Ten nha cung cap: " + tenNhaCungCap + 
-               "\nSo dien thoai: " + soDienThoai + 
-               "\nDia chi: " + diaChi;
+        return "Ma nha cung cap: " + maNhaCungCap
+               + "\nTen nha cung cap: " + tenNhaCungCap
+               + "\nSo dien thoai: " + soDienThoai
+               + "\nDia chi: " + diaChi;
     }
 }

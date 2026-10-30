@@ -1,33 +1,21 @@
 package models;
 
 public class QuanAoTheThao extends SanPham {
-    private double kichCoGiay;
-    private String loaiDeGiay;
-    public QuanAoTheThao(String maSanPham, String tenSanPham, double giaban, String thuongHieu, int soLuongTon, String maLoai, double kichCoGiay, String loaiDeGiay) {
+    private String kichCoQuanAo;
+    public QuanAoTheThao(String maSanPham, String tenSanPham, double giaban, String thuongHieu, int soLuongTon, String maLoai, String kichCoQuanAo) {
         super(maSanPham, tenSanPham, giaban, thuongHieu, soLuongTon, maLoai);
-        this.kichCoGiay =kichCoGiay;
-        this.loaiDeGiay = loaiDeGiay;
+        this.kichCoQuanAo = kichCoQuanAo;
     }
-    public double getKichCoGiay() {
-        return kichCoGiay;
-    }
-
-    public void setKichCoGiay(double kichCoGiay) {
-        this.kichCoGiay =kichCoGiay;
+    public String getKichCoQuanAo() {
+        return kichCoQuanAo;
     }
 
-    public String getLoaiDeGiay() {
-        return loaiDeGiay;
-    }
-
-    public void setLoaiDeGiay(String loaiDeGiay) {
-        this.loaiDeGiay = loaiDeGiay;
+    public void setKichCoQuanAo(String kichCoQuanAo) {
+        this.kichCoQuanAo = kichCoQuanAo;
     }
 
 @Override
 public String hienThiThongTin() {
-    return super.toString()
-            + "\nkich co giay: " + kichCoGiay
-            + "\nloai de giay: " + loaiDeGiay;
+    return super.toString() + "\nKich co quan ao: " + kichCoQuanAo;
 }
 }
