@@ -12,8 +12,7 @@ import services.LuuTruFile;
 
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
-    private static final String TEP_KHACH_HANG =
-            "data/khachhang.txt";
+    private static final String TEP_KHACH_HANG ="data/khachhang.txt";
     private static final String TEP_SAN_PHAM = "data/sanpham.txt";
     private static final String TEP_NHA_CUNG_CAP = "data/nhacungcap.txt";
     private static final String TEP_NHAN_VIEN = "data/nhanvien.txt";
@@ -712,9 +711,17 @@ public class Main {
                     }
                     case "4": {
                         String ma = nhapBatBuoc("Ma can xoa: ");
-                        if (ma == null) return;
-                        if (ds.xoaTheoMa(ma)) { tuLuu(ds, TEP_NHA_CUNG_CAP); System.out.println("Da xoa."); }
-                        else System.out.println("Khong tim thay.");
+
+                        if (ma == null) {
+                            return;
+                        }
+
+                        if (ds.xoaTheoMa(ma)) {
+                            tuLuu(ds, TEP_NHA_CUNG_CAP);
+                            System.out.println("Da xoa.");
+                        } else {
+                            System.out.println("Khong tim thay.");
+                        }
                         break;
                     }
                     case "5": {
