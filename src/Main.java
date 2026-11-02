@@ -107,14 +107,7 @@ public class Main {
                     break;
 
                 case 4:
-                    System.out.println(
-                            "===== DANH SACH NHAN VIEN =====");
-
-                    for (NhanVien nv : danhSachNhanVien.getDanhSach()) {
-                        System.out.println(nv.thongTinNhanVien());
-                        System.out.println(
-                                "------------------------------");
-                    }
+                    danhSachNhanVien.quanLy(sc, TEP_NHAN_VIEN);
                     break;
 
                 case 5:

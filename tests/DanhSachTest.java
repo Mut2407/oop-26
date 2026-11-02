@@ -91,7 +91,7 @@ public class DanhSachTest {
             });
             nv.ghiFile(tepNhanVien.toString());
             nv.docFile(tepNhanVien.toString());
-            check(nv.getDanhSach().get(0).getSoDienThoai().equals("0901000001"));
+            check(nv.getDanhSach()[0].getSoDienThoai().equals("0901000001"));
         } finally {
             Files.deleteIfExists(tepSanPham);
             Files.deleteIfExists(tepNhaCungCap);
