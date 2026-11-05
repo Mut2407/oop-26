@@ -174,6 +174,9 @@ public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>, LuuT
 
     @Override
     public void ghiFile(String path) throws IOException {
+        if (java.nio.file.Files.exists(java.nio.file.Path.of(path))) {
+            new DanhSachKhachHang().docFile(path);
+        }
         List<String> lines = new ArrayList<>();
         lines.add(TIEU_DE_FILE);
         for (KhachHang kh : ds) {

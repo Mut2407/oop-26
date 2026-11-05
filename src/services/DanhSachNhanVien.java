@@ -22,7 +22,9 @@ import services.VanBanConsole;
 public final class DanhSachNhanVien
 implements LuuTruFile {
     private static final int SUC_CHUA_BAN_DAU = 10;
-    private static final String TIEU_DE = "maNhanVien\thoTen\tcaLamViec\tsoDienThoai\tdiaChi";
+    static final String TIEU_DE = "maNhanVien\thoTen\tcaLamViec\tsoDienThoai\tdiaChi";
+    static final String TIEU_DE_MOI = "maNhanVien\thoTen\tsoDienThoai\tcaLamViec\tdiaChiCu";
+    static final String TIEU_DE_UML = "maNhanVien\thoTen\tsoDienThoai\tcaLamViec";
     private NhanVien[] danhSach = new NhanVien[SUC_CHUA_BAN_DAU];
     private int soLuong;
     // Compatibility data belongs to this list, never to NhanVien or a global registry.
@@ -87,6 +89,20 @@ implements LuuTruFile {
 
     public int getSoLuong() {
         return this.soLuong;
+    }
+
+    /** Use this List adapter for UML storage APIs; it includes legacy metadata. */
+    public List<NhanVien> getTatCa() {
+        return new BanSaoNhanVien(getDanhSach(), diaChiCuTheoMa);
+    }
+
+    public static DanhSachNhanVien tuDanhSach(List<NhanVien> list) {
+        if (list == null) {
+            throw new IllegalArgumentException("Danh sach khong duoc null.");
+        }
+        Map<String, String> metadata = list instanceof BanSaoNhanVien snapshot
+                ? snapshot.diaChiCu() : Map.of();
+        return new DanhSachNhanVien(list.toArray(new NhanVien[0]), metadata);
     }
 
     /** Defensive model copies; use getDiaChiCuTheoMa() to transfer legacy addresses too. */
@@ -268,15 +284,19 @@ implements LuuTruFile {
     @Override
     public void docFile(String string) throws IOException {
         DanhSachNhanVien danhSachNhanVien = new DanhSachNhanVien();
-        List<String[]> list = FileText.doc(string, TIEU_DE);
+        FileText.Bang bang = FileText.docBang(string, TIEU_DE, TIEU_DE_MOI, TIEU_DE_UML);
+        List<String[]> list = bang.dong();
+        boolean cu = bang.tieuDe().equals(TIEU_DE);
+        int soCot = bang.tieuDe().equals(TIEU_DE_UML) ? 4 : 5;
         for (int i = 0; i < list.size(); ++i) {
             String[] stringArray = list.get(i);
             try {
-                if (stringArray.length != 5) {
-                    throw new IllegalArgumentException("Phai co 5 cot.");
+                if (stringArray.length != soCot) {
+                    throw new IllegalArgumentException("Phai co " + soCot + " cot.");
                 }
-                NhanVien nhanVien = new NhanVien(stringArray[0], stringArray[1], stringArray[3], stringArray[2]);
-                if (stringArray[4].isEmpty()) {
+                NhanVien nhanVien = new NhanVien(stringArray[0], stringArray[1],
+                        stringArray[cu ? 3 : 2], stringArray[cu ? 2 : 3]);
+                if (soCot == 4 || stringArray[4].isEmpty()) {
                     danhSachNhanVien.them(nhanVien);
                 } else {
                     danhSachNhanVien.them(nhanVien, stringArray[4]);
@@ -328,6 +348,10 @@ implements LuuTruFile {
     }
 
     public void quanLy(Scanner scanner, String string) {
+        quanLy(scanner, new LuuTruFileText("."), string);
+    }
+
+    public void quanLy(Scanner scanner, LuuTruFileText luuTru, String string) {
         block26: while (true) {
             System.out.println("\n1. Xem danh sach nhan vien");
             System.out.println("2. Them 1 nhan vien");
@@ -339,6 +363,8 @@ implements LuuTruFile {
             System.out.println("8. Thong ke");
             System.out.println("9. Doc lai tu file (thay danh sach hien tai)");
             System.out.println("10. Luu vao file");
+            System.out.println("11. Tim chinh xac theo ma");
+            System.out.println("12. Tim gan dung theo ma/ten");
             System.out.println("0. Quay lai");
             System.out.println("===== QUAN LY NHAN VIEN =====");
             String string2 = DanhSachNhanVien.docDong(scanner, "Nhap lua chon: ");
@@ -353,12 +379,12 @@ implements LuuTruFile {
                     }
                     case "2": {
                         if (!this.nhapTuBanPhim(scanner, false, 1)) continue block26;
-                        this.luu(string);
+                        this.luu(luuTru, string);
                         break;
                     }
                     case "3": {
                         if (!this.suaTuBanPhim(scanner)) continue block26;
-                        this.luu(string);
+                        this.luu(luuTru, string);
                         break;
                     }
                     case "4": {
@@ -368,7 +394,7 @@ implements LuuTruFile {
                         }
                         if (this.xoa(string3)) {
                             System.out.println("Da xoa nhan vien.");
-                            this.luu(string);
+                            this.luu(luuTru, string);
                             break;
                         }
                         System.out.println("Khong tim thay nhan vien!");
@@ -376,12 +402,12 @@ implements LuuTruFile {
                     }
                     case "5": {
                         if (!this.nhapTuBanPhim(scanner, true)) continue block26;
-                        this.luu(string);
+                        this.luu(luuTru, string);
                         break;
                     }
                     case "6": {
                         if (!this.nhapTuBanPhim(scanner, false)) continue block26;
-                        this.luu(string);
+                        this.luu(luuTru, string);
                         break;
                     }
                     case "7": {
@@ -393,12 +419,29 @@ implements LuuTruFile {
                         break;
                     }
                     case "9": {
-                        this.docFile(string);
+                        thayBang(tuDanhSach(luuTru.docNhanVien(string)));
                         System.out.println("Da doc file nhan vien.");
                         break;
                     }
                     case "10": {
-                        this.luu(string);
+                        this.luu(luuTru, string);
+                        break;
+                    }
+                    case "11": {
+                        String ma = batBuoc(scanner, "Ma nhan vien can tim: ");
+                        if (ma == null) {
+                            return;
+                        }
+                        NhanVien nv = timTheoMa(ma);
+                        hienThi(nv == null ? new NhanVien[0] : new NhanVien[]{nv});
+                        break;
+                    }
+                    case "12": {
+                        String key = batBuoc(scanner, "Tu khoa ma/ten: ");
+                        if (key == null) {
+                            return;
+                        }
+                        hienThi(timGanDung(key));
                         break;
                     }
                     default: {
@@ -454,12 +497,8 @@ implements LuuTruFile {
             if (string4 == null) {
                 return false;
             }
-            String string5 = DanhSachNhanVien.docDong(scanner, "Dia chi chuyen tiep (Enter neu khong co): ");
-            if (string5 == null) {
-                return false;
-            }
             NhanVien nhanVien = new NhanVien(string, string2, string4, string3);
-            String diaChiCu = string5.isEmpty() ? getDiaChiCu(string) : string5;
+            String diaChiCu = getDiaChiCu(string);
             if (diaChiCu == null) {
                 danhSachNhanVien.them(nhanVien);
             } else {
@@ -495,18 +534,10 @@ implements LuuTruFile {
         if (string4 == null) {
             return false;
         }
-        String string5 = DanhSachNhanVien.docDong(scanner, "Dia chi chuyen tiep moi (Enter de giu nguyen): ");
-        if (string5 == null) {
-            return false;
-        }
         String ten = string2.isEmpty() ? nhanVien.getHoTen() : string2;
         String ca = string3.isEmpty() ? nhanVien.getCaLamViec() : string3;
         String sdt = string4.isEmpty() ? nhanVien.getSoDienThoai() : string4;
-        if (string5.isEmpty()) {
-            this.sua(string, ten, ca, sdt);
-        } else {
-            this.sua(string, ten, ca, sdt, string5);
-        }
+        this.sua(string, ten, ca, sdt);
         System.out.println("Da cap nhat nhan vien.");
         return true;
     }
@@ -547,9 +578,9 @@ implements LuuTruFile {
         System.out.println("Tong so nhan vien: " + nhanVienArray.length);
     }
 
-    private void luu(String string) {
+    private void luu(LuuTruFileText luuTru, String string) {
         try {
-            this.ghiFile(string);
+            luuTru.ghiNhanVien(string, getTatCa());
             System.out.println("Da luu file nhan vien.");
         }
         catch (IOException iOException) {

@@ -40,7 +40,17 @@ final class FileText {
     }
 
     static List<String[]> doc(String string, String ... stringArray) throws IOException {
+        return docBang(string, stringArray).dong();
+    }
+
+    record Bang(String tieuDe, List<String[]> dong) {
+    }
+
+    static Bang docBang(String string, String ... stringArray) throws IOException {
         List<String> list = Files.readAllLines(Path.of(string, new String[0]), StandardCharsets.UTF_8);
+        if (!list.isEmpty() && list.get(0).startsWith("\uFEFF")) {
+            list.set(0, list.get(0).substring(1));
+        }
         boolean bl = false;
         if (!list.isEmpty()) {
             for (String string2 : stringArray) {
@@ -51,7 +61,7 @@ final class FileText {
         if (!bl) {
             throw new IOException("File khong dung dinh dang: " + string);
         }
-        ArrayList arrayList = new ArrayList();
+        List<String[]> arrayList = new ArrayList<>();
         for (int i = 1; i < list.size(); ++i) {
             try {
                 String[] stringArray2 = list.get(i).split("\t", -1);
@@ -65,7 +75,7 @@ final class FileText {
                 throw new IOException("Dong " + (i + 1) + ": " + illegalArgumentException.getMessage(), illegalArgumentException);
             }
         }
-        return arrayList;
+        return new Bang(list.get(0), arrayList);
     }
 
     static String dong(String ... stringArray) {

@@ -12,10 +12,13 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import models.DanhMuc;
 import models.DuLieu;
+import models.NhanVien;
 import models.SanPham;
 import services.DanhSachNhaCungCap;
 import services.DanhSachSanPham;
@@ -124,6 +127,63 @@ public class LuuTruFileText {
         return danhSachNhaCungCap;
     }
 
+    public void ghiKhachHang(String path, DanhSachKhachHang ds) throws IOException {
+        if (ds == null) {
+            throw new IllegalArgumentException("Danh sach khach hang khong duoc null.");
+        }
+        Path file = duongDan(path);
+        if (Files.exists(file)) {
+            new DanhSachKhachHang().docFile(file.toString());
+            if (laFileCu(file, "KHACH_HANG_V1", null)) {
+                saoLuuFileCu(file);
+            }
+        }
+        ds.ghiFile(file.toString());
+    }
+
+    public DanhSachKhachHang docKhachHang(String path) throws IOException {
+        DanhSachKhachHang ds = new DanhSachKhachHang();
+        ds.docFile(duongDan(path).toString());
+        return ds;
+    }
+
+    public void ghiNhanVien(String path, List<NhanVien> ds) throws IOException {
+        DanhSachNhanVien incoming = DanhSachNhanVien.tuDanhSach(ds);
+        Path file = duongDan(path);
+        if (Files.exists(file)) {
+            DanhSachNhanVien old = new DanhSachNhanVien();
+            old.docFile(file.toString());
+            Map<String, String> metadata = new LinkedHashMap<>(incoming.getDiaChiCuTheoMa());
+            for (NhanVien nv : incoming.getDanhSach()) {
+                String ma = nv.getMaNhanVien();
+                if (old.getDiaChiCu(ma) != null && incoming.getDiaChiCu(ma) == null) {
+                    // The destination is an authoritative fallback for ordinary Lists.
+                    // Scope by file and stable ID; never infer from another file/global cache.
+                    metadata.put(ma.toUpperCase(Locale.ROOT), old.getDiaChiCu(ma));
+                }
+            }
+            incoming = new DanhSachNhanVien(incoming.getDanhSach(), metadata);
+            if (laFileCu(file, DanhSachNhanVien.TIEU_DE, null)
+                    || laFileCu(file, DanhSachNhanVien.TIEU_DE_UML, null)) {
+                saoLuuFileCu(file);
+            }
+        }
+        List<String> lines = new ArrayList<>();
+        lines.add(DanhSachNhanVien.TIEU_DE_MOI);
+        for (NhanVien nv : incoming.getDanhSach()) {
+            String address = incoming.getDiaChiCu(nv.getMaNhanVien());
+            lines.add(FileText.dong(nv.getMaNhanVien(), nv.getHoTen(), nv.getSoDienThoai(),
+                    nv.getCaLamViec(), address == null ? "" : address));
+        }
+        FileText.ghi(file.toString(), lines);
+    }
+
+    public List<NhanVien> docNhanVien(String path) throws IOException {
+        DanhSachNhanVien ds = new DanhSachNhanVien();
+        ds.docFile(duongDan(path).toString());
+        return ds.getTatCa();
+    }
+
     private Path duongDan(String string) {
         if (string == null || string.isBlank()) {
             throw new IllegalArgumentException("Duong dan khong hop le.");
@@ -140,6 +200,9 @@ public class LuuTruFileText {
             String string3 = bufferedReader.readLine();
             if (string3 == null) {
                 throw new IOException("File rong: " + String.valueOf(path));
+            }
+            if (string3.startsWith("\uFEFF")) {
+                string3 = string3.substring(1);
             }
             boolean bl = string3.equals(string) || string2 != null && string3.startsWith(string2) && !string3.contains("mauSacChung");
             return bl;

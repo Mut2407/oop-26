@@ -17,8 +17,8 @@ public class Task061ConsoleTest {
             Files.writeString(file, "maNhanVien\thoTen\tcaLamViec\tsoDienThoai\tdiaChi\n"
                     + "NVOLD\tNguyễn Văn An\tSáng\t0901000001\tHà Nội\\tNgõ 1\n");
 
-            // The empty final answer retains the legacy address during a normal model edit.
-            String first = chay(dir, "first", "sai\n4\n1\n3\nNVOLD\nNguyễn Văn An mới\nTối\n0912345678\n\n1\n0\n0\n", 0);
+            // Model edits retain the legacy address without prompting for it.
+            String first = chay(dir, "first", "sai\n4\n1\n3\nNVOLD\nNguyễn Văn An mới\nTối\n0912345678\n1\n0\n0\n", 0);
             check(first.contains("Vui long nhap mot so!"));
             check(first.contains("Da cap nhat nhan vien."));
             check(first.contains("Da luu file nhan vien."));
@@ -32,7 +32,8 @@ public class Task061ConsoleTest {
             check(ds.timTheoMa("NVOLD").getSoDienThoai().equals("0912345678"));
             check(ds.getDiaChiCu("NVOLD").equals("Hà Nội\tNgõ 1"));
 
-            String second = chay(dir, "second", "4\n1\n2\nNVNEW\nNhân viên mới\nSáng\n0923456789\n\n0\n3\n1\n0\n1\n0\n2\n0\n5\n0\n0\n", 0);
+            String second = chay(dir, "second", "4\n1\n2\nNVNEW\nNhân viên mới\nSáng\n0923456789\n0\n3\n1\n0\n1\n0\n2\n0\n5\n0\n0\n", 0);
+            check(!second.contains("Dia chi chuyen tiep (Enter"));
             check(second.contains("Nguyen Van An moi") && second.contains("0912345678"));
             check(second.contains("Dia chi (du lieu chuyen tiep): Ha Noi\tNgo 1"));
             check(second.contains("Da them 1 nhan vien."));

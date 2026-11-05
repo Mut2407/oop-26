@@ -20,17 +20,16 @@ import services.DanhSachKhachHang;
 import services.DanhSachNhaCungCap;
 import services.DanhSachNhanVien;
 import services.DanhSachSanPham;
-import services.LuuTruFile;
 import services.LuuTruFileText;
 import services.VanBanConsole;
 
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
-    private static final String TEP_KHACH_HANG = "data/khachhang.txt";
+    private static final String TEP_KHACH_HANG = "khachhang.txt";
     private static final String TEP_DANH_MUC = "danhmuc.txt";
     private static final String TEP_SAN_PHAM = "sanpham.txt";
     private static final String TEP_NHA_CUNG_CAP = "nhacungcap.txt";
-    private static final String TEP_NHAN_VIEN = "data/nhanvien.txt";
+    private static final String TEP_NHAN_VIEN = "nhanvien.txt";
     private static final LuuTruFileText LUU_TRU = new LuuTruFileText("data");
 
     public static void main(String[] args) {
@@ -49,8 +48,19 @@ public class Main {
             }
             danhSachSanPham = Main.tonTaiDuLieu(TEP_SAN_PHAM) ? LUU_TRU.docSanPham(TEP_SAN_PHAM, DuLieu.getDanhMuc()) : new DanhSachSanPham(DuLieu.taoDanhSachSanPham());
             danhSachNhaCungCap = Main.tonTaiDuLieu(TEP_NHA_CUNG_CAP) ? LUU_TRU.docNhaCungCap(TEP_NHA_CUNG_CAP) : new DanhSachNhaCungCap(DuLieu.taoDanhSachNhaCungCap());
-            Main.taiHoacTao(danhSachKhachHang, TEP_KHACH_HANG);
-            Main.taiHoacTao(danhSachNhanVien, TEP_NHAN_VIEN);
+            if (tonTaiDuLieu(TEP_KHACH_HANG)) {
+                danhSachKhachHang = LUU_TRU.docKhachHang(TEP_KHACH_HANG);
+            }
+            if (tonTaiDuLieu(TEP_NHAN_VIEN)) {
+                danhSachNhanVien = DanhSachNhanVien.tuDanhSach(LUU_TRU.docNhanVien(TEP_NHAN_VIEN));
+            }
+            // Validate all existing data before creating any missing files.
+            if (!tonTaiDuLieu(TEP_KHACH_HANG)) {
+                LUU_TRU.ghiKhachHang(TEP_KHACH_HANG, danhSachKhachHang);
+            }
+            if (!tonTaiDuLieu(TEP_NHAN_VIEN)) {
+                LUU_TRU.ghiNhanVien(TEP_NHAN_VIEN, danhSachNhanVien.getTatCa());
+            }
             if (!Main.tonTaiDuLieu(TEP_DANH_MUC)) {
                 LUU_TRU.ghiDanhMuc(TEP_DANH_MUC, DuLieu.getDanhMuc());
             }
@@ -87,17 +97,9 @@ public class Main {
         }
     }
 
-    private static void taiHoacTao(LuuTruFile luuTruFile, String string) throws IOException {
-        if (Files.exists(Path.of(string, new String[0]), new LinkOption[0])) {
-            luuTruFile.docFile(string);
-        } else {
-            luuTruFile.ghiFile(string);
-        }
-    }
-
-    private static void tuLuu(LuuTruFile luuTruFile, String string) {
+    private static void tuLuu(DanhSachKhachHang ds, String string) {
         try {
-            luuTruFile.ghiFile(string);
+            LUU_TRU.ghiKhachHang(string, ds);
         }
         catch (IOException iOException) {
             System.err.println("CHUA LUU DUOC " + string + ": " + iOException.getMessage());
@@ -134,7 +136,7 @@ public class Main {
                     break;
                 }
                 case 4: {
-                    danhSachNhanVien.quanLy(sc, TEP_NHAN_VIEN);
+                    danhSachNhanVien.quanLy(sc, LUU_TRU, TEP_NHAN_VIEN);
                     break;
                 }
                 case 5: {
@@ -287,6 +289,9 @@ public class Main {
             System.out.println("8. Thong ke");
             System.out.println("9. Doc lai tu file (thay danh sach hien tai)");
             System.out.println("10. Luu vao file");
+            System.out.println("11. Tim chinh xac theo ma");
+            System.out.println("12. Tim gan dung theo ma/ten");
+            System.out.println("13. Tim theo so dien thoai");
             System.out.println("0. Quay lai");
             System.out.println("===== QUAN LY KHACH HANG =====");
             String string = Main.docDong("Nhap lua chon: ");
@@ -308,23 +313,27 @@ public class Main {
                         break;
                     }
                     case "3": {
-                        Main.suaKhachHang(danhSachKhachHang);
-                        Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
+                        if (Main.suaKhachHang(danhSachKhachHang)) {
+                            Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
+                        }
                         break;
                     }
                     case "4": {
-                        Main.xoaKhachHang(danhSachKhachHang);
-                        Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
+                        if (Main.xoaKhachHang(danhSachKhachHang)) {
+                            Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
+                        }
                         break;
                     }
                     case "5": {
-                        Main.nhapNhieuKhachHang(danhSachKhachHang, true);
-                        Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
+                        if (Main.nhapNhieuKhachHang(danhSachKhachHang, true)) {
+                            Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
+                        }
                         break;
                     }
                     case "6": {
-                        Main.nhapNhieuKhachHang(danhSachKhachHang, false);
-                        Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
+                        if (Main.nhapNhieuKhachHang(danhSachKhachHang, false)) {
+                            Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
+                        }
                         break;
                     }
                     case "7": {
@@ -341,6 +350,31 @@ public class Main {
                     }
                     case "10": {
                         Main.xuLyFile(danhSachKhachHang, false);
+                        break;
+                    }
+                    case "11": {
+                        String ma = nhapBatBuoc("Ma khach hang can tim: ");
+                        if (ma == null) {
+                            return;
+                        }
+                        KhachHang kh = danhSachKhachHang.timTheoMa(ma);
+                        hienThiDanhSachKhachHang(kh == null ? new KhachHang[0] : new KhachHang[]{kh});
+                        break;
+                    }
+                    case "12": {
+                        String key = nhapBatBuoc("Tu khoa ma/ten: ");
+                        if (key == null) {
+                            return;
+                        }
+                        hienThiDanhSachKhachHang(danhSachKhachHang.timGanDung(key).toArray(new KhachHang[0]));
+                        break;
+                    }
+                    case "13": {
+                        String sdt = nhapSoDienThoai("So dien thoai can tim: ", false);
+                        if (sdt == null) {
+                            return;
+                        }
+                        hienThiDanhSachKhachHang(danhSachKhachHang.timTheoSoDienThoai(sdt).toArray(new KhachHang[0]));
                         break;
                     }
                     case "0": {
@@ -401,13 +435,13 @@ public class Main {
         return new KhachHang(string, string2, string3, string4);
     }
 
-    private static void nhapNhieuKhachHang(DanhSachKhachHang danhSachKhachHang, boolean bl) {
+    private static boolean nhapNhieuKhachHang(DanhSachKhachHang danhSachKhachHang, boolean bl) {
         Integer n;
         if (bl) {
             System.out.println("Danh sach nhap moi se thay the danh sach hien tai sau khi nhap xong.");
         }
         if ((n = Main.nhapSoNguyen(bl ? "Nhap n: " : "Nhap k: ", bl ? 0 : 1)) == null) {
-            return;
+            return false;
         }
         DanhSachKhachHang danhSachKhachHang2 = bl ? new DanhSachKhachHang() : new DanhSachKhachHang(danhSachKhachHang.getDanhSach());
         KhachHang[] khachHangArray = new KhachHang[n.intValue()];
@@ -415,7 +449,7 @@ public class Main {
             System.out.println("--- Khach hang " + (i + 1) + "/" + n + " ---");
             khachHangArray[i] = Main.nhapKhachHang(danhSachKhachHang2);
             if (khachHangArray[i] == null) {
-                return;
+                return false;
             }
             danhSachKhachHang2.them(khachHangArray[i]);
         }
@@ -425,41 +459,46 @@ public class Main {
             danhSachKhachHang.themNhieu(khachHangArray);
         }
         System.out.println("Da " + (bl ? "nhap moi " : "them ") + n + " khach hang.");
+        return true;
     }
 
-    private static void suaKhachHang(DanhSachKhachHang danhSachKhachHang) {
+    private static boolean suaKhachHang(DanhSachKhachHang danhSachKhachHang) {
         String string = Main.nhapBatBuoc("Nhap ma khach hang can sua: ");
         if (string == null) {
-            return;
+            return false;
         }
         KhachHang khachHang = danhSachKhachHang.timTheoMa(string);
         if (khachHang == null) {
             System.out.println("Khong tim thay khach hang!");
-            return;
+            return false;
         }
         System.out.println(VanBanConsole.khongDau(khachHang.hienThiThongTin()));
         System.out.println("Giu nguyen ma khach hang. Nhan Enter de giu thong tin cu.");
         String string2 = Main.docDong("Ho ten moi: ");
         if (string2 == null) {
-            return;
+            return false;
         }
         String string3 = Main.nhapSoDienThoai("So dien thoai moi: ", true);
         if (string3 == null) {
-            return;
+            return false;
         }
         String string4 = Main.docDong("Dia chi moi: ");
         if (string4 == null) {
-            return;
+            return false;
         }
         danhSachKhachHang.sua(string, string2.isEmpty() ? khachHang.getHoTen() : string2, string3.isEmpty() ? khachHang.getSoDienThoai() : string3, string4.isEmpty() ? khachHang.getDiaChi() : string4);
         System.out.println("Cap nhat khach hang thanh cong!");
+        return true;
     }
 
-    private static void xoaKhachHang(DanhSachKhachHang danhSachKhachHang) {
+    private static boolean xoaKhachHang(DanhSachKhachHang danhSachKhachHang) {
         String string = Main.nhapBatBuoc("Nhap ma khach hang can xoa: ");
-        if (string != null) {
-            System.out.println(danhSachKhachHang.xoa(string) ? "Xoa khach hang thanh cong!" : "Khong tim thay khach hang!");
+        if (string == null) {
+            return false;
         }
+        boolean xoa = danhSachKhachHang.xoaTheoMa(string);
+        System.out.println(xoa ? "Xoa khach hang thanh cong!" : "Khong tim thay khach hang!");
+        return xoa;
     }
 
     private static void timKiemKhachHang(DanhSachKhachHang danhSachKhachHang) {
@@ -494,12 +533,12 @@ public class Main {
         Main.hienThiDanhSachKhachHang(khachHangArray);
     }
 
-    private static void xuLyFile(LuuTruFile luuTruFile, boolean bl) {
+    private static void xuLyFile(DanhSachKhachHang ds, boolean bl) {
         try {
             if (bl) {
-                luuTruFile.docFile(TEP_KHACH_HANG);
+                ds.nhapDanhSach(LUU_TRU.docKhachHang(TEP_KHACH_HANG).getDanhSach());
             } else {
-                luuTruFile.ghiFile(TEP_KHACH_HANG);
+                LUU_TRU.ghiKhachHang(TEP_KHACH_HANG, ds);
             }
             System.out.println((bl ? "Doc" : "Luu") + " file thanh cong: data/khachhang.txt");
         }
