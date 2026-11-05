@@ -217,8 +217,7 @@ implements LuuTruFile {
 
     public void quanLy(Scanner scanner, String string) {
         block26: while (true) {
-            System.out.println("\n===== QUAN LY NHAN VIEN =====");
-            System.out.println("1. Xem danh sach nhan vien");
+            System.out.println("\n1. Xem danh sach nhan vien");
             System.out.println("2. Them 1 nhan vien");
             System.out.println("3. Sua theo ma");
             System.out.println("4. Xoa theo ma");
@@ -229,6 +228,7 @@ implements LuuTruFile {
             System.out.println("9. Doc lai tu file (thay danh sach hien tai)");
             System.out.println("10. Luu vao file");
             System.out.println("0. Quay lai");
+            System.out.println("===== QUAN LY NHAN VIEN =====");
             String string2 = DanhSachNhanVien.docDong(scanner, "Nhap lua chon: ");
             if (string2 == null || string2.equals("0")) {
                 return;

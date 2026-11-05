@@ -192,8 +192,12 @@ public class Main {
 
     private static void quanLyDanhMuc() {
         while (true) {
-            System.out.println("\n===== QUAN LY DANH MUC =====");
-            System.out.println("1. Xem tat ca  2. Them  3. Sua  4. Tim theo ma  0. Quay lai");
+            System.out.println("\n1. Xem tat ca");
+            System.out.println("2. Them danh muc");
+            System.out.println("3. Sua danh muc");
+            System.out.println("4. Tim theo ma");
+            System.out.println("0. Quay lai");
+            System.out.println("===== QUAN LY DANH MUC =====");
             String string = Main.docDong("Nhap lua chon: ");
             if (string == null || string.equals("0")) {
                 return;
@@ -273,8 +277,7 @@ public class Main {
 
     private static void quanLyKhachHang(DanhSachKhachHang danhSachKhachHang) {
         block28: while (true) {
-            System.out.println("\n===== QUAN LY KHACH HANG =====");
-            System.out.println("1. Xem danh sach khach hang");
+            System.out.println("\n1. Xem danh sach khach hang");
             System.out.println("2. Them 1 khach hang");
             System.out.println("3. Sua theo ma");
             System.out.println("4. Xoa theo ma");
@@ -285,6 +288,7 @@ public class Main {
             System.out.println("9. Doc lai tu file (thay danh sach hien tai)");
             System.out.println("10. Luu vao file");
             System.out.println("0. Quay lai");
+            System.out.println("===== QUAN LY KHACH HANG =====");
             String string = Main.docDong("Nhap lua chon: ");
             if (string == null) {
                 return;
@@ -547,10 +551,20 @@ public class Main {
 
     private static void quanLySanPham(DanhSachSanPham danhSachSanPham) {
         block30: while (true) {
-            System.out.println("\n===== QUAN LY SAN PHAM =====");
-            System.out.println("1. Xem tat ca  2. Nhap n ban dau  3. Them 1  4. Them k");
-            System.out.println("5. Sua  6. Xoa  7. Tim theo ma  8. Tim gan dung");
-            System.out.println("9. Loc danh muc  10. Loc gia  11. Thong ke danh muc  12. Sap het hang  0. Quay lai");
+            System.out.println("\n1. Xem tat ca san pham");
+            System.out.println("2. Khoi tao danh sach san pham");
+            System.out.println("3. Them mot san pham");
+            System.out.println("4. Them nhieu san pham");
+            System.out.println("5. Sua san pham");
+            System.out.println("6. Xoa san pham");
+            System.out.println("7. Tim theo ma");
+            System.out.println("8. Tim gan dung");
+            System.out.println("9. Loc theo danh muc");
+            System.out.println("10. Loc theo gia");
+            System.out.println("11. Thong ke theo danh muc");
+            System.out.println("12. San pham sap het hang");
+            System.out.println("0. Quay lai");
+            System.out.println("===== QUAN LY SAN PHAM =====");
             String string2 = Main.docDong("Nhap lua chon: ");
             if (string2 == null || string2.equals("0")) {
                 return;
@@ -822,8 +836,15 @@ public class Main {
 
     private static void quanLyNhaCungCap(DanhSachNhaCungCap danhSachNhaCungCap) {
         block20: while (true) {
-            System.out.println("\n===== QUAN LY NHA CUNG CAP =====");
-            System.out.println("1. Xem tat ca  2. Them  3. Sua  4. Xoa  5. Tim gan dung  6. Tim theo ma  7. Luu lai  0. Quay lai");
+            System.out.println("\n1. Xem tat ca nha cung cap");
+            System.out.println("2. Them nha cung cap");
+            System.out.println("3. Sua nha cung cap");
+            System.out.println("4. Xoa nha cung cap");
+            System.out.println("5. Tim gan dung");
+            System.out.println("6. Tim theo ma");
+            System.out.println("7. Luu lai");
+            System.out.println("0. Quay lai");
+            System.out.println("===== QUAN LY NHA CUNG CAP =====");
             String string = Main.docDong("Nhap lua chon: ");
             if (string == null || string.equals("0")) {
                 return;
@@ -947,8 +968,7 @@ public class Main {
     }
 
     public static void hienThiMenu() {
-        System.out.println("\n===== QUAN LY CUA HANG DUNG CU THE THAO =====");
-        System.out.println("1. Quan ly san pham");
+        System.out.println("\n1. Quan ly san pham");
         System.out.println("2. Quan ly danh muc");
         System.out.println("3. Quan ly khach hang");
         System.out.println("4. Quan ly nhan vien");
@@ -958,7 +978,7 @@ public class Main {
         System.out.println("8. Thong ke/bao cao");
         System.out.println("9. Luu/doc du lieu");
         System.out.println("0. Thoat");
-        System.out.println("============================================");
+        System.out.println("===== QUAN LY CUA HANG DUNG CU THE THAO =====");
     }
 }
 
