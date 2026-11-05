@@ -1,106 +1,127 @@
 # Quản lý cửa hàng dụng cụ thể thao
 
-## Chạy chương trình
+Ứng dụng Java thuần, chạy trên CMD/Console. Nguồn thiết kế chuẩn là
+[Sport_Store.drawio.xml](artifacts/Sport_Store.drawio.xml), trang **01 - Tổng quan (20 class)**.
 
-Trong PowerShell tại thư mục project, chạy `powershell -ExecutionPolicy Bypass -File .\run.ps1`.
-Script chỉ biên dịch lại khi mã Java thay đổi, sau đó mở menu.
+Task 06.1–06.5 đã hoàn thành cho khách hàng và nhân viên. Xem
+[báo cáo Task 06](docs/BAO_CAO_TASK_06.md) để biết đối chiếu UML, tiến độ từng task,
+kết quả kiểm thử và các việc cần làm ở Task 07.
 
-Dữ liệu khách hàng, sản phẩm, nhà cung cấp và nhân viên nằm trong
-`data/khachhang.txt`, `data/sanpham.txt`, `data/nhacungcap.txt` và
-`data/nhanvien.txt`. Lần chạy đầu chương trình tạo các file từ dữ liệu mẫu.
-Mỗi file là bảng văn bản UTF-8: dòng đầu ghi tên các cột, các cột cách nhau
-bằng phím Tab; mỗi dòng tiếp theo là một bản ghi. Có thể chỉnh sửa file bằng
-trình soạn thảo văn bản như VS Code khi chương trình đã tắt. Giữ nguyên dòng
-tên cột, số cột và các mã không trùng nhau. Với `sanpham.txt`, chỉ điền các cột
-phù hợp với `kieu` (`GIAY`, `DUNG_CU`, `QUAN_AO`), để trống cột của kiểu khác.
-Số điện thoại là chuỗi nên giữ số 0 đầu; khi mở bằng Excel, cần đặt cột này
-thành Text để Excel không bỏ số 0.
-Các file cũ có dòng đầu `*_V1` vẫn được đọc; lần lưu tiếp theo chuyển sang
-dạng bảng. Các thao tác thêm, sửa, xóa được tự lưu; có thể chọn mục
-"Lưu lại" để thử ghi lần nữa nếu trước đó có lỗi. File hiện có mà đọc lỗi sẽ
-làm chương trình dừng để tránh ghi đè dữ liệu. Các file trong `data/` chỉ lưu
-trên máy và không được đưa lên Git.
+## Chạy ứng dụng
 
-Đồ án **lập trình hướng đối tượng (OOP)** bằng **Java**, mô phỏng việc quản lý sản phẩm, khách hàng, nhân viên, nhà cung cấp, hóa đơn bán hàng và phiếu nhập.
+Dùng JDK 21. Chạy từ thư mục repository để ứng dụng tìm đúng thư mục dữ liệu.
 
-## 1. Class diagram
+Windows CMD/PowerShell:
 
-| Sơ đồ                                                       | Nội dung                                     |
-| ----------------------------------------------------------- | -------------------------------------------- |
-| [Class diagram tổng quan](diagrams/class-diagram.png)       | Các thực thể và mối quan hệ quản lý cửa hàng |
-| [Kế thừa và đa hình](diagrams/inheritance-polymorphism.png) | Lớp cha `SanPham` và các lớp con             |
+~~~powershell
+powershell -ExecutionPolicy Bypass -File .\run.ps1
+~~~
 
-Có thể mở file nguồn `class-diagram.drawio` bằng [diagrams.net](https://app.diagrams.net/) khi file đó được thêm vào repository. Hiện repository lưu hai ảnh sơ đồ trong thư mục `diagrams/`.
+Linux/cloud:
 
-### Các class trên sơ đồ
+~~~bash
+bash run.sh
+~~~
 
-| Nhóm      | Class              | Thuộc tính / vai trò chính                                                |
-| --------- | ------------------ | ------------------------------------------------------------------------- |
-| Sản phẩm  | `SanPham`          | `maSanPham`, `tenSanPham`, `thuongHieu`, `giaBan`, `soLuongTon`, `maLoai` |
-| Sản phẩm  | `GiayTheThao`      | `kichCoGiay`, `mauSac`, `loaiDeGiay`                                      |
-| Sản phẩm  | `DungCuTheThao`    | `monTheThao`, `vatLieu`, `khoiLuong`                                      |
-| Phân loại | `LoaiSanPham`      | `maLoai`, `tenLoai`, `moTa`                                               |
-| Đối tượng | `KhachHang`        | `maKhachHang`, `hoTen`, `soDienThoai`, `diaChi`                           |
-| Đối tượng | `NhanVien`         | `maNhanVien`, `hoTen`, `soDienThoai`, `diaChi`                            |
-| Đối tượng | `NhaCungCap`       | `maNhaCungCap`, `tenNhaCungCap`, `soDienThoai`, `diaChi`                  |
-| Bán hàng  | `HoaDon`           | Mã hóa đơn, ngày lập, mã khách hàng, mã nhân viên, chi tiết hóa đơn       |
-| Bán hàng  | `ChiTietHoaDon`    | `sanPham`, `soLuong`, `donGiaBan`                                         |
-| Nhập hàng | `PhieuNhap`        | Mã phiếu, ngày lập, mã nhà cung cấp, mã nhân viên, chi tiết phiếu nhập    |
-| Nhập hàng | `ChiTietPhieuNhap` | `sanPham`, `soLuong`, `donGiaNhap`                                        |
+Script Linux gọi module trình biên dịch của JDK, dùng được cả trong môi trường chỉ
+có lệnh java nhưng vẫn có module jdk.compiler. Không cần database, server hoặc thư viện ngoài.
 
-**Tổng cộng 11 class được đặt tên trong hai trang sơ đồ hiện tại.** Sơ đồ không định nghĩa interface hay enum.
+## Menu
 
-### Các quan hệ chính
+Menu chính: **1** sản phẩm, **2** danh mục, **3** khách hàng, **4** nhân viên,
+**5** nhà cung cấp; **0** thoát. Số mục cũ được giữ để tiếp tục dùng các thao tác quen thuộc.
 
-- `GiayTheThao` và `DungCuTheThao` **kế thừa** `SanPham`.
-- `SanPham` được phân loại bởi `LoaiSanPham`.
-- `KhachHang` mua hàng; `NhanVien` lập `HoaDon`; `HoaDon` có các `ChiTietHoaDon` liên kết với sản phẩm.
-- `NhaCungCap` cung cấp hàng; `NhanVien` lập `PhieuNhap`; `PhieuNhap` có các `ChiTietPhieuNhap` liên kết với sản phẩm.
+| Mục | Khách hàng | Nhân viên |
+| --- | --- | --- |
+| 1 | Xem danh sách | Xem danh sách |
+| 2 | Thêm một | Thêm một |
+| 3 | Sửa theo mã | Sửa tên/điện thoại/ca, giữ mã |
+| 4 | Xóa theo mã | Xóa theo mã |
+| 5 | Nhập n, có thông báo thay danh sách cũ | Nhập n, có thông báo thay danh sách cũ |
+| 6 | Thêm k | Thêm k |
+| 7 | Tìm nhiều tiêu chí, chính xác hoặc chứa từ khóa | Tìm nhiều tiêu chí, có bộ lọc địa chỉ chuyển tiếp |
+| 8 | Thống kê địa chỉ/đầu số điện thoại | Thống kê ca; địa chỉ cũ nếu đầy đủ |
+| 9 | Đọc lại file | Đọc lại file |
+| 10 | Lưu file | Lưu file |
+| 11 | Tìm chính xác theo mã | Tìm chính xác theo mã |
+| 12 | Tìm gần đúng theo mã/tên | Tìm gần đúng theo mã/tên |
+| 13 | Tìm chính xác số điện thoại | — |
+| 0 | Quay lại | Quay lại |
 
-## 2. Cấu trúc repository hiện tại
+Tìm tên tiếng Việt hỗ trợ hoa/thường và tìm không dấu. Mã trùng không phân biệt
+hoa/thường. Nhập lô được kiểm tra toàn bộ trước khi áp dụng. Nhập sai được báo lỗi;
+sửa/xóa không thành công, xem hoặc tìm kiếm không tự ghi file.
 
-```text
-.
-├── README.md
-├── SanPham.java
-├── DungCuTheThao.java
-├── QuanAoTheThao.java
-├── diagrams/
-│   ├── class-diagram.png
-│   └── inheritance-polymorphism.png
-├── docs/
-├── artifacts/
-└── pictures/
-```
+Các mục hóa đơn, phiếu nhập, báo cáo doanh thu vẫn thông báo chưa triển khai,
+thuộc giai đoạn sau. Mục lưu/đọc chung ở menu chính đang phục vụ danh mục/sản phẩm/NCC;
+khách hàng và nhân viên có mục đọc/lưu trong menu riêng.
 
-| File Java            | Tình trạng triển khai                                                                                                  |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `SanPham.java`       | Có thuộc tính `private`, constructor, getter/setter. Hiện **chưa phải abstract class** và chưa có phương thức đa hình. |
-| `DungCuTheThao.java` | Đã `extends SanPham`, sử dụng `super(...)`, có thuộc tính và getter/setter riêng.                                      |
-| `QuanAoTheThao.java` | Đã `extends SanPham`, nhưng thuộc tính `kichCoGiay`, `loaiDeGiay` hiện giống lớp giày; **chưa đồng bộ với sơ đồ**.     |
-| `GiayTheThao.java`   | Có trên class diagram nhưng **chưa được tạo** trong repository.                                                        |
+## Dữ liệu và địa chỉ nhân viên cũ
 
-Các class nghiệp vụ khác hiện vẫn là thiết kế, chưa có file Java tương ứng.
+Dữ liệu gồm năm file UTF-8 trong data/: danhmuc.txt, sanpham.txt, khachhang.txt,
+nhanvien.txt, nhacungcap.txt. Repository có dữ liệu mẫu; khi sửa/chạy thử hãy dùng bản sao.
+Khi file không tồn tại, ứng dụng tạo mẫu. File rỗng danh sách nhưng có header hợp lệ
+được giữ rỗng, không tự thay bằng dữ liệu mẫu.
 
-## 3. Nguyên lý OOP
+Các cột phân cách bằng Tab. Điện thoại là chuỗi, giữ số 0 đầu. Ký tự Tab, xuống dòng
+và dấu gạch chéo ngược trong nội dung được escape bởi FileText.
+Chỉ chỉnh file khi đã tắt chương trình; giữ đúng header và số cột.
 
-- **Đóng gói (Encapsulation):** Khai báo thuộc tính `private`; dùng constructor/getter/setter để truy cập khi cần.
-- **Kế thừa (Inheritance):** Các lớp chuyên biệt `extends SanPham` và sử dụng `super(...)`.
-- **Đa hình (Polymorphism) — cần triển khai:** Bổ sung một phương thức chung ở `SanPham` (chẳng hạn `moTaChiTiet()`) và ghi đè bằng `@Override` ở các lớp con; gọi qua tham chiếu kiểu `SanPham`.
-- **Trừu tượng (Abstraction) — có thể bổ sung:** Chuyển `SanPham` thành `abstract class` nếu thiết kế yêu cầu không khởi tạo sản phẩm chung trực tiếp. Đây **chưa phải trạng thái code hiện tại**.
+Khách hàng vẫn đọc được KHACH_HANG_V1 và bảng 4 cột.
+Nhân viên đọc được bảng cũ theo thứ tự maNhanVien, hoTen, caLamViec, soDienThoai, diaChi,
+bảng 4 cột UML và bảng mới theo thứ tự:
 
-## 4. Kế hoạch hoàn thiện
+~~~text
+maNhanVien    hoTen    soDienThoai    caLamViec    diaChiCu
+~~~
 
-1. Thống nhất sơ đồ và mã nguồn: tạo `GiayTheThao.java`; điều chỉnh `QuanAoTheThao.java` cho đúng thuộc tính và bổ sung vào sơ đồ nếu giữ lớp này.
-2. Rà soát kiểu dữ liệu: sơ đồ ghi `String soLuongTon` trong khi Java dùng `int`; thông tin số điện thoại nên lưu bằng `String` để giữ số 0 đầu.
-3. Lập trình `LoaiSanPham`, `KhachHang`, `NhanVien`, `NhaCungCap`, `HoaDon`, `ChiTietHoaDon`, `PhieuNhap`, `ChiTietPhieuNhap` (mỗi `public class` một file).
-4. Bổ sung các phương thức nghiệp vụ, kiểm thử kế thừa và đa hình.
-5. Tạo `Main.java` để chạy thử chương trình và bổ sung hướng dẫn chạy thực tế.
+Dấu phân cách trong ví dụ trên được trình bày bằng khoảng trắng; file thật dùng Tab.
+Cột diaChiCu là metadata lưu trữ, không phải thuộc tính của model NhanVien.
+Nhân viên mới không được hỏi địa chỉ. Địa chỉ cũ vẫn được giữ theo mã, hiển thị riêng,
+không lấy địa chỉ mẫu/địa chỉ từ file khác để điền vào phần còn thiếu.
 
-## 5. Class Diagram 
-- Đây là sơ đồ tổng quan về các class trong chương trình.
-![Class Diagram v1](images/class-diagram.png)
+LuuTruFileText tạo và kiểm tra bản .bak trước khi chuyển định dạng khách hàng/nhân viên.
+Không ghi đè file lỗi hoặc bản sao lưu xung đột. File được ghi qua file tạm và thay thế
+nguyên khối khi hệ thống tệp hỗ trợ. Nếu lỗi lưu, chương trình thông báo dữ liệu còn
+trong bộ nhớ; dùng mục 10 để thử lại sau khi xử lý nguyên nhân.
 
-- Đây là sơ đồ thể hiện quan hệ kế thừa và đa hình giữa các class.
-![Inheritance And Polymorphism](images/inheritance-polymorphism.png)
+Với API Java, dùng DanhSachNhanVien.getTatCa() và DanhSachNhanVien.tuDanhSach(...)
+để chuyển giữa mảng và List có kèm metadata. List do docNhanVien() trả về cũng mang
+metadata; có thể lưu sang đường dẫn mới qua ghiNhanVien() mà vẫn giữ địa chỉ.
+Nếu caller dùng List thường để ghi vào file nhân viên hiện có, địa chỉ thiếu được lấy
+từ chính file đích hợp lệ theo mã. Khi xuất sang file mới, hãy giữ List có metadata,
+không tách chỉ các model rồi bỏ phần dữ liệu chuyển tiếp.
+
+## Kiểm thử
+
+Linux/cloud:
+
+~~~bash
+bash test.sh
+~~~
+
+Script biên dịch mới toàn bộ source/test vào thư mục tạm và chạy tất cả các chương trình
+*Test.java với assertions bật. Các kiểm thử ghi file vào thư mục tạm; kiểm thử Console
+khởi động tiến trình Main riêng, bao gồm lưu, thoát, mở lại và file lỗi.
+
+Đã xác minh trên OpenJDK 21/Linux: **16/16 chương trình kiểm thử đạt**.
+Chưa chạy trực tiếp trên Windows CMD/PowerShell.
+
+## Cấu trúc
+
+~~~text
+src/Main.java          Menu Console
+src/models/            Các model nghiệp vụ
+src/services/          Danh sách, interface, file text và adapter metadata
+tests/                 Kiểm thử model, CRUD, lưu trữ, UML và Console
+data/                  Dữ liệu mẫu UTF-8
+artifacts/             Class Diagram nguồn
+images/                Ảnh sơ đồ
+docs/                  Tài liệu và báo cáo theo task
+~~~
+
+DanhSachKhachHang dùng List<KhachHang> và IQuanLyDanhSach<KhachHang>.
+DanhSachNhanVien giữ mảng NhanVien[]; NhanVien chỉ có mã, tên, điện thoại và ca.
+Mã khách hàng/nhân viên ổn định. Ràng buộc hóa đơn tham chiếu và xóa đối tượng đã có
+chứng từ sẽ được thiết kế ở Task 07.
 
