@@ -23,7 +23,7 @@ public final class DanhSachNhanVien
 implements LuuTruFile {
     private static final int SUC_CHUA_BAN_DAU = 10;
     private static final String TIEU_DE = "maNhanVien\thoTen\tcaLamViec\tsoDienThoai\tdiaChi";
-    private NhanVien[] danhSach = new NhanVien[10];
+    private NhanVien[] danhSach = new NhanVien[SUC_CHUA_BAN_DAU];
     private int soLuong;
     // Compatibility data belongs to this list, never to NhanVien or a global registry.
     private Map<String, String> diaChiCuTheoMa = new LinkedHashMap<>();
@@ -180,6 +180,20 @@ implements LuuTruFile {
         return n < 0 ? null : DanhSachNhanVien.saoChep(this.danhSach[n]);
     }
 
+    public NhanVien[] timGanDung(String tuKhoa) {
+        if (tuKhoa == null || tuKhoa.isBlank()) {
+            throw new IllegalArgumentException("Tu khoa khong duoc rong.");
+        }
+        List<NhanVien> result = new ArrayList<>();
+        for (int i = 0; i < soLuong; i++) {
+            NhanVien nv = danhSach[i];
+            if (khop(nv.getMaNhanVien(), tuKhoa, false) || khop(nv.getHoTen(), tuKhoa, false)) {
+                result.add(saoChep(nv));
+            }
+        }
+        return result.toArray(new NhanVien[0]);
+    }
+
     public NhanVien[] timKiem(String string, String string2, String string3, String string4, String string5, boolean bl) {
         NhanVien[] nhanVienArray = new NhanVien[this.soLuong];
         int n = 0;
@@ -192,7 +206,11 @@ implements LuuTruFile {
     }
 
     public String thongKe() {
-        return "Tong so nhan vien: " + this.soLuong + "\nTheo ca lam viec:\n" + this.thongKeTheoNhom(true) + "Theo dia chi (du lieu chuyen tiep):\n" + this.thongKeTheoNhom(false);
+        return thongKeTheoCa() + "Theo dia chi (du lieu chuyen tiep):\n" + this.thongKeTheoNhom(false);
+    }
+
+    public String thongKeTheoCa() {
+        return "Tong so nhan vien: " + this.soLuong + "\nTheo ca lam viec:\n" + this.thongKeTheoNhom(true);
     }
 
     private String thongKeTheoNhom(boolean bl) {
@@ -304,8 +322,8 @@ implements LuuTruFile {
         if (string == null) {
             return false;
         }
-        String string3 = string.toLowerCase(Locale.ROOT);
-        String string4 = string2.trim().toLowerCase(Locale.ROOT);
+        String string3 = VanBanConsole.khongDau(string).toLowerCase(Locale.ROOT);
+        String string4 = VanBanConsole.khongDau(string2.trim()).toLowerCase(Locale.ROOT);
         return bl ? string3.equals(string4) : string3.contains(string4);
     }
 
