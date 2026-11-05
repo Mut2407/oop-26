@@ -1,330 +1,223 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
 package services;
 
-import models.KhachHang;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import models.KhachHang;
+import services.FileText;
+import services.LuuTruFile;
 
-public final class DanhSachKhachHang implements LuuTruFile {
+public final class DanhSachKhachHang
+implements LuuTruFile {
     private static final int SUC_CHUA_BAN_DAU = 10;
     private static final String TIEU_DE_CU = "KHACH_HANG_V1";
     private static final String TIEU_DE_FILE = "maKhachHang\thoTen\tsoDienThoai\tdiaChi";
-
-    private KhachHang[] danhSach;
-    private int soLuong;
+    private KhachHang[] danhSach = new KhachHang[10];
+    private int soLuong = 0;
 
     public DanhSachKhachHang() {
-        danhSach = new KhachHang[SUC_CHUA_BAN_DAU];
-        soLuong = 0;
     }
 
-    public DanhSachKhachHang(KhachHang[] banDau) {
+    public DanhSachKhachHang(KhachHang[] khachHangArray) {
         this();
-        nhapDanhSach(banDau);
+        this.nhapDanhSach(khachHangArray);
     }
 
     public int getSoLuong() {
-        return soLuong;
+        return this.soLuong;
     }
 
     public KhachHang[] getDanhSach() {
-        KhachHang[] ketQua = new KhachHang[soLuong];
-
-        for (int i = 0; i < soLuong; i++) {
-            ketQua[i] = saoChep(danhSach[i]);
+        KhachHang[] khachHangArray = new KhachHang[this.soLuong];
+        for (int i = 0; i < this.soLuong; ++i) {
+            khachHangArray[i] = DanhSachKhachHang.saoChep(this.danhSach[i]);
         }
-
-        return ketQua;
+        return khachHangArray;
     }
 
-    // Chi thay danh sach khi tat ca phan tu moi deu hop le.
-    public void nhapDanhSach(KhachHang[] duLieu) {
-        if (duLieu == null) {
-            throw new IllegalArgumentException(
-                    "Danh sach khong duoc null.");
+    public void nhapDanhSach(KhachHang[] khachHangArray) {
+        if (khachHangArray == null) {
+            throw new IllegalArgumentException("Danh sach khong duoc null.");
         }
-
-        DanhSachKhachHang moi = new DanhSachKhachHang();
-
-        for (KhachHang kh : duLieu) {
-            moi.them(kh);
+        DanhSachKhachHang danhSachKhachHang = new DanhSachKhachHang();
+        for (KhachHang khachHang : khachHangArray) {
+            danhSachKhachHang.them(khachHang);
         }
-
-        danhSach = moi.danhSach;
-        soLuong = moi.soLuong;
+        this.danhSach = danhSachKhachHang.danhSach;
+        this.soLuong = danhSachKhachHang.soLuong;
     }
 
-    public void them(KhachHang kh) {
-        KhachHang hopLe = kiemTraVaSaoChep(kh);
-
-        if (chiSoTheoMa(hopLe.getMaKhachHang()) >= 0) {
-            throw new IllegalArgumentException(
-                    "Ma khach hang da ton tai!");
+    public void them(KhachHang khachHang) {
+        KhachHang khachHang2 = DanhSachKhachHang.kiemTraVaSaoChep(khachHang);
+        if (this.chiSoTheoMa(khachHang2.getMaKhachHang()) >= 0) {
+            throw new IllegalArgumentException("Ma khach hang da ton tai!");
         }
-
-        if (soLuong == danhSach.length) {
-            danhSach = Arrays.copyOf(
-                    danhSach,
-                    Math.max(1, danhSach.length * 2)
-            );
+        if (this.soLuong == this.danhSach.length) {
+            this.danhSach = Arrays.copyOf(this.danhSach, Math.max(1, this.danhSach.length * 2));
         }
-
-        danhSach[soLuong++] = hopLe;
+        this.danhSach[this.soLuong++] = khachHang2;
     }
 
-    // Khong them do dang neu co ma trung hoac du lieu sai.
-    public void themNhieu(KhachHang[] boSung) {
-        if (boSung == null) {
-            throw new IllegalArgumentException(
-                    "Danh sach khong duoc null.");
+    public void themNhieu(KhachHang[] khachHangArray) {
+        if (khachHangArray == null) {
+            throw new IllegalArgumentException("Danh sach khong duoc null.");
         }
-
-        DanhSachKhachHang moi =
-                new DanhSachKhachHang(getDanhSach());
-
-        for (KhachHang kh : boSung) {
-            moi.them(kh);
+        DanhSachKhachHang danhSachKhachHang = new DanhSachKhachHang(this.getDanhSach());
+        for (KhachHang khachHang : khachHangArray) {
+            danhSachKhachHang.them(khachHang);
         }
-
-        danhSach = moi.danhSach;
-        soLuong = moi.soLuong;
+        this.danhSach = danhSachKhachHang.danhSach;
+        this.soLuong = danhSachKhachHang.soLuong;
     }
 
-    // Giu nguyen ma dinh danh khi sua thong tin.
-    public boolean sua(
-            String ma,
-            String hoTen,
-            String soDienThoai,
-            String diaChi) {
-
-        int viTri = chiSoTheoMa(ma);
-
-        if (viTri < 0) {
+    public boolean sua(String string, String string2, String string3, String string4) {
+        int n = this.chiSoTheoMa(string);
+        if (n < 0) {
             return false;
         }
-
-        danhSach[viTri] = kiemTraVaSaoChep(
-                new KhachHang(
-                        danhSach[viTri].getMaKhachHang(),
-                        hoTen,
-                        soDienThoai,
-                        diaChi
-                )
-        );
-
+        this.danhSach[n] = DanhSachKhachHang.kiemTraVaSaoChep(new KhachHang(this.danhSach[n].getMaKhachHang(), string2, string3, string4));
         return true;
     }
 
-    public boolean xoa(String ma) {
-        int viTri = chiSoTheoMa(ma);
-
-        if (viTri < 0) {
+    public boolean xoa(String string) {
+        int n = this.chiSoTheoMa(string);
+        if (n < 0) {
             return false;
         }
-
-        for (int i = viTri; i < soLuong - 1; i++) {
-            danhSach[i] = danhSach[i + 1];
+        for (int i = n; i < this.soLuong - 1; ++i) {
+            this.danhSach[i] = this.danhSach[i + 1];
         }
-
-        danhSach[--soLuong] = null;
+        this.danhSach[--this.soLuong] = null;
         return true;
     }
 
-    public KhachHang timTheoMa(String ma) {
-        int viTri = chiSoTheoMa(ma);
-
-        return viTri < 0
-                ? null
-                : saoChep(danhSach[viTri]);
+    public KhachHang timTheoMa(String string) {
+        int n = this.chiSoTheoMa(string);
+        return n < 0 ? null : DanhSachKhachHang.saoChep(this.danhSach[n]);
     }
 
-    // Cac khoa duoc ket hop bang AND.
-    // Bo trong khoa nao thi khong loc theo khoa do.
-    public KhachHang[] timKiem(
-            String ma,
-            String hoTen,
-            String soDienThoai,
-            String diaChi,
-            boolean chinhXac) {
-
-        KhachHang[] ketQua = new KhachHang[soLuong];
-        int dem = 0;
-
-        for (int i = 0; i < soLuong; i++) {
-            KhachHang kh = danhSach[i];
-
-            if (khop(kh.getMaKhachHang(), ma, chinhXac)
-                    && khop(kh.getHoTen(), hoTen, chinhXac)
-                    && khop(kh.getSoDienThoai(), soDienThoai, chinhXac)
-                    && khop(kh.getDiaChi(), diaChi, chinhXac)) {
-
-                ketQua[dem++] = saoChep(kh);
-            }
+    public KhachHang[] timKiem(String string, String string2, String string3, String string4, boolean bl) {
+        KhachHang[] khachHangArray = new KhachHang[this.soLuong];
+        int n = 0;
+        for (int i = 0; i < this.soLuong; ++i) {
+            KhachHang khachHang = this.danhSach[i];
+            if (!DanhSachKhachHang.khop(khachHang.getMaKhachHang(), string, bl) || !DanhSachKhachHang.khop(khachHang.getHoTen(), string2, bl) || !DanhSachKhachHang.khop(khachHang.getSoDienThoai(), string3, bl) || !DanhSachKhachHang.khop(khachHang.getDiaChi(), string4, bl)) continue;
+            khachHangArray[n++] = DanhSachKhachHang.saoChep(khachHang);
         }
-
-        return Arrays.copyOf(ketQua, dem);
+        return Arrays.copyOf(khachHangArray, n);
     }
 
     public String thongKe() {
-        return "Tong so khach hang: " + soLuong
-                + "\nTheo dia chi:\n"
-                + thongKeTheoNhom(true)
-                + "Theo dau so dien thoai "
-                + "(3 chu so dau, bo dau +):\n"
-                + thongKeTheoNhom(false);
+        return "Tong so khach hang: " + this.soLuong + "\nTheo dia chi:\n" + this.thongKeTheoNhom(true) + "Theo dau so dien thoai (3 chu so dau, bo dau +):\n" + this.thongKeTheoNhom(false);
     }
 
-    private String thongKeTheoNhom(boolean theoDiaChi) {
-        String[] nhom = new String[soLuong];
-        int[] soKhach = new int[soLuong];
-        int soNhom = 0;
-
-        for (int i = 0; i < soLuong; i++) {
-            String khoa = danhSach[i].getDiaChi();
-
-            if (!theoDiaChi) {
-                khoa = danhSach[i].getSoDienThoai()
-                        .replace("+", "")
-                        .substring(0, 3);
+    private String thongKeTheoNhom(boolean bl) {
+        String[] stringArray = new String[this.soLuong];
+        int[] nArray = new int[this.soLuong];
+        int n = 0;
+        for (int i = 0; i < this.soLuong; ++i) {
+            int n2;
+            String string = this.danhSach[i].getDiaChi();
+            if (!bl) {
+                string = this.danhSach[i].getSoDienThoai().replace("+", "").substring(0, 3);
             }
-
-            int viTri = 0;
-
-            while (viTri < soNhom
-                    && !nhom[viTri].equalsIgnoreCase(khoa)) {
-                viTri++;
+            for (n2 = 0; n2 < n && !stringArray[n2].equalsIgnoreCase(string); ++n2) {
             }
-
-            if (viTri == soNhom) {
-                nhom[soNhom++] = khoa;
+            if (n2 == n) {
+                stringArray[n++] = string;
             }
-
-            soKhach[viTri]++;
+            int n3 = n2;
+            nArray[n3] = nArray[n3] + 1;
         }
-
-        if (soNhom == 0) {
+        if (n == 0) {
             return "  Chua co du lieu.\n";
         }
-
-        StringBuilder ketQua = new StringBuilder();
-
-        for (int i = 0; i < soNhom; i++) {
-            ketQua.append("  ")
-                    .append(nhom[i])
-                    .append(": ")
-                    .append(soKhach[i])
-                    .append(" khach hang\n");
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < n; ++i) {
+            stringBuilder.append("  ").append(stringArray[i]).append(": ").append(nArray[i]).append(" khach hang\n");
         }
-
-        return ketQua.toString();
+        return stringBuilder.toString();
     }
 
     @Override
-    public void ghiFile(String duongDan) throws IOException {
-        List<String> dong = new ArrayList<>();
-        dong.add(TIEU_DE_FILE);
-        for (int i = 0; i < soLuong; i++) {
-            KhachHang kh = danhSach[i];
-            dong.add(FileText.dong(kh.getMaKhachHang(), kh.getHoTen(),
-                    kh.getSoDienThoai(), kh.getDiaChi()));
+    public void ghiFile(String string) throws IOException {
+        ArrayList<String> arrayList = new ArrayList<String>();
+        arrayList.add(TIEU_DE_FILE);
+        for (int i = 0; i < this.soLuong; ++i) {
+            KhachHang khachHang = this.danhSach[i];
+            arrayList.add(FileText.dong(khachHang.getMaKhachHang(), khachHang.getHoTen(), khachHang.getSoDienThoai(), khachHang.getDiaChi()));
         }
-        FileText.ghi(duongDan, dong);
+        FileText.ghi(string, arrayList);
     }
 
     @Override
-    public void docFile(String duongDan) throws IOException {
-        DanhSachKhachHang moi = new DanhSachKhachHang();
-
-        List<String[]> dong = FileText.doc(duongDan, TIEU_DE_FILE, TIEU_DE_CU);
-        for (int i = 0; i < dong.size(); i++) {
-            String[] cot = dong.get(i);
+    public void docFile(String string) throws IOException {
+        DanhSachKhachHang danhSachKhachHang = new DanhSachKhachHang();
+        List<String[]> list = FileText.doc(string, TIEU_DE_FILE, TIEU_DE_CU);
+        for (int i = 0; i < list.size(); ++i) {
+            String[] stringArray = list.get(i);
             try {
-                if (cot.length != 4) throw new IllegalArgumentException("Phai co 4 cot.");
-                moi.them(new KhachHang(cot[0], cot[1], cot[2], cot[3]));
-            } catch (IllegalArgumentException e) {
-                throw new IOException("Dong " + (i + 2) + ": " + e.getMessage(), e);
-            }
-        }
-
-        // Chi thay du lieu sau khi doc thanh cong toan bo file.
-        danhSach = moi.danhSach;
-        soLuong = moi.soLuong;
-    }
-
-    public static boolean maHopLe(String ma) {
-        return ma != null
-                && ma.trim().matches("[A-Za-z0-9_-]+");
-    }
-
-    public static boolean soDienThoaiHopLe(String soDienThoai) {
-        return soDienThoai != null
-                && soDienThoai.trim().matches("\\+?[0-9]{9,15}");
-    }
-
-    private int chiSoTheoMa(String ma) {
-        if (ma != null) {
-            for (int i = 0; i < soLuong; i++) {
-                if (danhSach[i].getMaKhachHang()
-                        .equalsIgnoreCase(ma.trim())) {
-                    return i;
+                if (stringArray.length != 4) {
+                    throw new IllegalArgumentException("Phai co 4 cot.");
                 }
+                danhSachKhachHang.them(new KhachHang(stringArray[0], stringArray[1], stringArray[2], stringArray[3]));
+                continue;
+            }
+            catch (IllegalArgumentException illegalArgumentException) {
+                throw new IOException("Dong " + (i + 2) + ": " + illegalArgumentException.getMessage(), illegalArgumentException);
             }
         }
+        this.danhSach = danhSachKhachHang.danhSach;
+        this.soLuong = danhSachKhachHang.soLuong;
+    }
 
+    public static boolean maHopLe(String string) {
+        return string != null && string.trim().matches("[A-Za-z0-9_-]+");
+    }
+
+    public static boolean soDienThoaiHopLe(String string) {
+        return string != null && string.trim().matches("\\+?[0-9]{9,15}");
+    }
+
+    private int chiSoTheoMa(String string) {
+        if (string != null) {
+            for (int i = 0; i < this.soLuong; ++i) {
+                if (!this.danhSach[i].getMaKhachHang().equalsIgnoreCase(string.trim())) continue;
+                return i;
+            }
+        }
         return -1;
     }
 
-    private static KhachHang kiemTraVaSaoChep(KhachHang kh) {
-        if (kh == null || !maHopLe(kh.getMaKhachHang())) {
-            throw new IllegalArgumentException(
-                    "Ma chi gom chu, so, dau _ hoac -.");
+    private static KhachHang kiemTraVaSaoChep(KhachHang khachHang) {
+        if (khachHang == null || !DanhSachKhachHang.maHopLe(khachHang.getMaKhachHang())) {
+            throw new IllegalArgumentException("Ma chi gom chu, so, dau _ hoac -.");
         }
-
-        if (kh.getHoTen() == null
-                || kh.getHoTen().trim().isEmpty()
-                || kh.getDiaChi() == null
-                || kh.getDiaChi().trim().isEmpty()) {
-
-            throw new IllegalArgumentException(
-                    "Ho ten va dia chi khong duoc de trong.");
+        if (khachHang.getHoTen() == null || khachHang.getHoTen().trim().isEmpty() || khachHang.getDiaChi() == null || khachHang.getDiaChi().trim().isEmpty()) {
+            throw new IllegalArgumentException("Ho ten va dia chi khong duoc de trong.");
         }
-
-        if (!soDienThoaiHopLe(kh.getSoDienThoai())) {
-            throw new IllegalArgumentException(
-                    "So dien thoai phai co 9-15 chu so, "
-                    + "co the bat dau bang +.");
+        if (!DanhSachKhachHang.soDienThoaiHopLe(khachHang.getSoDienThoai())) {
+            throw new IllegalArgumentException("So dien thoai phai co 9-15 chu so, co the bat dau bang +.");
         }
-
-        return new KhachHang(
-                kh.getMaKhachHang().trim(),
-                kh.getHoTen().trim(),
-                kh.getSoDienThoai().trim(),
-                kh.getDiaChi().trim()
-        );
+        return new KhachHang(khachHang.getMaKhachHang().trim(), khachHang.getHoTen().trim(), khachHang.getSoDienThoai().trim(), khachHang.getDiaChi().trim());
     }
 
-    private static KhachHang saoChep(KhachHang kh) {
-        return new KhachHang(
-                kh.getMaKhachHang(),
-                kh.getHoTen(),
-                kh.getSoDienThoai(),
-                kh.getDiaChi()
-        );
+    private static KhachHang saoChep(KhachHang khachHang) {
+        return new KhachHang(khachHang.getMaKhachHang(), khachHang.getHoTen(), khachHang.getSoDienThoai(), khachHang.getDiaChi());
     }
 
-    private static boolean khop(
-            String giaTri, String tuKhoa, boolean chinhXac) {
-
-        if (tuKhoa == null || tuKhoa.trim().isEmpty()) {
+    private static boolean khop(String string, String string2, boolean bl) {
+        if (string2 == null || string2.trim().isEmpty()) {
             return true;
         }
-
-        String a = giaTri.toLowerCase(Locale.ROOT);
-        String b = tuKhoa.trim().toLowerCase(Locale.ROOT);
-
-        return chinhXac ? a.equals(b) : a.contains(b);
+        String string3 = string.toLowerCase(Locale.ROOT);
+        String string4 = string2.trim().toLowerCase(Locale.ROOT);
+        return bl ? string3.equals(string4) : string3.contains(string4);
     }
-
 }
+

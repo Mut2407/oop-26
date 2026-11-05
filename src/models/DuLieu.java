@@ -1,25 +1,65 @@
 package models;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.math.BigDecimal;
+
 public class DuLieu {
+    private static final Map<String, DanhMuc> DANH_MUC = new LinkedHashMap<>();
+
+    public static void khoiTaoDanhMuc() {
+        dangKyDanhMuc(new DanhMuc("DC", "Dụng cụ thể thao", ""));
+        dangKyDanhMuc(new DanhMuc("GIAY", "Giày thể thao", ""));
+    }
+
+    public static void dangKyDanhMuc(DanhMuc danhMuc) {
+        if (danhMuc == null) {
+            throw new IllegalArgumentException("Danh muc khong duoc null.");
+        }
+        String ma = danhMuc.getMaDanhMuc().toUpperCase(Locale.ROOT);
+        if (DANH_MUC.containsKey(ma)) {
+            throw new IllegalArgumentException("Ma danh muc da ton tai.");
+        }
+        DANH_MUC.put(ma, danhMuc);
+    }
+
+    public static DanhMuc timDanhMuc(String ma) {
+        return ma == null ? null : DANH_MUC.get(ma.trim().toUpperCase(Locale.ROOT));
+    }
+
+    public static List<DanhMuc> getDanhMuc() {
+        return List.copyOf(DANH_MUC.values());
+    }
+
     public static SanPham[] taoDanhSachSanPham() {
+        DanhMuc giay = yeuCauDanhMuc("GIAY");
+        DanhMuc dungCu = yeuCauDanhMuc("DC");
         return new SanPham[] {
             new GiayTheThao(
-                "SP03", "Giay chay bo", 1200000, "Nike",
-                8, "GIAY", 42, "Den", "Cao su"
+                "SP03", "Giay chay bo", "Nike", new BigDecimal("1200000"),
+                8, "Den", null, giay, "42", "Cao su"
             ),
             new GiayTheThao(
-                "SP04", "Giay bong da", 950000, "Adidas",
-                12, "GIAY", 41, "Trang", "Dinh cao su"
+                "SP04", "Giay bong da", "Adidas", new BigDecimal("950000"),
+                12, "Trang", null, giay, "41", "Dinh cao su"
             ),
             new DungCuTheThao(
-                "SP01", "Vot cau long", 350000, "Yonex",
-                10, "DC", "cau long", "Carbon", 0.085
+                "SP01", "Vot cau long", "Yonex", new BigDecimal("350000"),
+                10, null, "Carbon", dungCu, 0.085
             ),
             new DungCuTheThao(
-                "SP02", "Bong da", 250000, "Dong Luc",
-                20, "DC", "Bong da", "Da tong hop", 0.45
+                "SP02", "Bong da", "Dong Luc", new BigDecimal("250000"),
+                20, null, "Da tong hop", dungCu, 0.45
             )
         };
+    }
+
+    private static DanhMuc yeuCauDanhMuc(String ma) {
+        DanhMuc dm = timDanhMuc(ma);
+        if (dm == null) throw new IllegalArgumentException("Ma danh muc chua anh xa: " + ma);
+        return dm;
     }
 
     public static KhachHang[] taoDanhSachKhachHang() {
@@ -65,23 +105,23 @@ public class DuLieu {
         return new NhaCungCap[] {
             new NhaCungCap(
                 "NCC01", "The Thao An Phat",
-                "Quan 1, TP.HCM", "0902000001"
+                "0902000001", "Quan 1, TP.HCM"
             ),
             new NhaCungCap(
                 "NCC02", "Dung Cu Binh Minh",
-                "Quan 3, TP.HCM", "0902000002"
+                "0902000002", "Quan 3, TP.HCM"
             ),
             new NhaCungCap(
                 "NCC03", "Giay The Thao Minh Tam",
-                "Quan 10, TP.HCM", "0902000003"
+                "0902000003", "Quan 10, TP.HCM"
             ),
             new NhaCungCap(
                 "NCC04", "The Thao Thanh Cong",
-                "Tan Binh, TP.HCM", "0902000004"
+                "0902000004", "Tan Binh, TP.HCM"
             ),
             new NhaCungCap(
                 "NCC05", "Dung Cu Viet Sport",
-                "Thu Duc, TP.HCM", "0902000005"
+                "0902000005", "Thu Duc, TP.HCM"
             )
         };
     }

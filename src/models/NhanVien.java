@@ -1,3 +1,6 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
 package models;
 
 public class NhanVien {
@@ -7,53 +10,52 @@ public class NhanVien {
     private String soDienThoai;
     private String diaChi;
 
-    public NhanVien(String maNhanVien, String hoTen, String caLamViec, String soDienThoai, String diaChi) {
-        this.maNhanVien = maNhanVien;
-        this.hoTen = hoTen;
-        this.caLamViec = caLamViec;
-        this.soDienThoai = soDienThoai;
-        this.diaChi = diaChi;
+    public NhanVien(String string, String string2, String string3, String string4, String string5) {
+        this.maNhanVien = string;
+        this.hoTen = string2;
+        this.caLamViec = string3;
+        this.soDienThoai = string4;
+        this.diaChi = string5;
     }
 
     public String getMaNhanVien() {
-        return maNhanVien;
+        return this.maNhanVien;
     }
 
     public String getHoTen() {
-        return hoTen;
+        return this.hoTen;
     }
 
     public String getCaLamViec() {
-        return caLamViec;
+        return this.caLamViec;
     }
 
     public String getSoDienThoai() {
-        return soDienThoai;
+        return this.soDienThoai;
     }
 
     public String getDiaChi() {
-        return diaChi;
+        return this.diaChi;
     }
 
-    public void setMaNhanVien(String maNhanVien) {
-        this.maNhanVien = maNhanVien;
+    public void setMaNhanVien(String string) {
+        this.maNhanVien = string;
     }
 
-    public void setHoTen(String hoTen) {
-        this.hoTen = hoTen;
+    public void setHoTen(String string) {
+        this.hoTen = string;
     }
 
-    public void setCaLamViec(String caLamViec) {
-        this.caLamViec = caLamViec;
+    public void setCaLamViec(String string) {
+        this.caLamViec = string;
     }
-    public void setSoDienThoai(String soDienThoai) {
-        this.soDienThoai = soDienThoai;
+
+    public void setSoDienThoai(String string) {
+        this.soDienThoai = string;
     }
-    //method
+
     public String thongTinNhanVien() {
-        return "Ma Nhan Vien: " + maNhanVien + 
-               "\nHo ten Nhan Vien: " + hoTen + 
-               "\nSo dien thoai: " + soDienThoai + 
-               "\nDia chi: " + diaChi;
+        return "Ma Nhan Vien: " + this.maNhanVien + "\nHo ten Nhan Vien: " + this.hoTen + "\nSo dien thoai: " + this.soDienThoai + "\nDia chi: " + this.diaChi;
     }
 }
+

@@ -1,38 +1,40 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
 package models;
 
-public class DungCuTheThao extends SanPham{
-    private String monTheThao;
-    private String vatLieu;
-    private double khoiLuong;
-    public DungCuTheThao(String maSanPham, String tenSanPham, double giaban, String thuongHieu, int soLuongTon, String maLoai, String monTheThao, String vatLieu, double khoiLuong) {
-        super(maSanPham, tenSanPham, giaban, thuongHieu ,soLuongTon, maLoai);
-        this.monTheThao = monTheThao;
-        this.vatLieu = vatLieu;
-        this.khoiLuong = khoiLuong;
+import java.math.BigDecimal;
+import models.DanhMuc;
+import models.SanPham;
+
+public class DungCuTheThao
+extends SanPham {
+    private double khoiLuongKg;
+
+    public DungCuTheThao(String string, String string2, String string3, BigDecimal bigDecimal, int n, String string4, String string5, DanhMuc danhMuc, double d) {
+        super(string, string2, string3, bigDecimal, n, string4, string5, danhMuc);
+        this.capNhatKhoiLuong(d);
     }
-    public String getMonTheThao() {
-        return monTheThao;
+
+    public double getKhoiLuongKg() {
+        return this.khoiLuongKg;
     }
-    public void setMonTheThao(String monTheThao) {
-        this.monTheThao = monTheThao;
+
+    public void capNhatKhoiLuong(double d) {
+        if (!Double.isFinite(d) || d < 0.0) {
+            throw new IllegalArgumentException("Khoi luong khong hop le.");
+        }
+        this.khoiLuongKg = d;
     }
-    public String getVatLieu() {
-        return vatLieu;
+
+    @Override
+    public String layLoaiSanPham() {
+        return "DUNG_CU";
     }
-    public void setVatLieu(String vatLieu) {
-        this.vatLieu = vatLieu;
-    }
-    public double getKhoiLuong() {
-        return khoiLuong;
-    }
-    public void setKhoiLuong(double khoiLuong) {
-        this.khoiLuong = khoiLuong;
-    }
+
     @Override
     public String hienThiThongTin() {
-    return super.toString()
-            + "\nmon the thao: " + monTheThao
-            + "\nvat lieu: " + vatLieu
-            + "\nkhoi luong: " + khoiLuong + " kg";
+        return super.toString() + "\nKhoi luong: " + this.khoiLuongKg + " kg";
     }
 }
+

@@ -1,76 +1,115 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
 package services;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.List;
 
 final class FileText {
-    private FileText() { }
+    private FileText() {
+    }
 
-    static void ghi(String duongDan, List<String> dong) throws IOException {
-        Path dich = Path.of(duongDan).toAbsolutePath();
-        Files.createDirectories(dich.getParent());
-        Path tam = Files.createTempFile(dich.getParent(), "store-", ".tmp");
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
+    static void ghi(String string, List<String> list) throws IOException {
+        Path path = Path.of(string, new String[0]).toAbsolutePath();
+        Files.createDirectories(path.getParent(), new FileAttribute[0]);
+        Path path2 = Files.createTempFile(path.getParent(), "store-", ".tmp", new FileAttribute[0]);
         try {
-            Files.write(tam, dong, StandardCharsets.UTF_8);
+            Files.write(path2, list, StandardCharsets.UTF_8, new OpenOption[0]);
             try {
-                Files.move(tam, dich, StandardCopyOption.REPLACE_EXISTING,
-                        StandardCopyOption.ATOMIC_MOVE);
-            } catch (AtomicMoveNotSupportedException e) {
-                Files.move(tam, dich, StandardCopyOption.REPLACE_EXISTING);
+                Files.move(path2, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             }
-        } finally {
-            Files.deleteIfExists(tam);
+            catch (AtomicMoveNotSupportedException atomicMoveNotSupportedException) {
+                Files.move(path2, path, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+        finally {
+            Files.deleteIfExists(path2);
         }
     }
 
-    static List<String[]> doc(String duongDan, String... tieuDe) throws IOException {
-        List<String> dong = Files.readAllLines(Path.of(duongDan), StandardCharsets.UTF_8);
-        boolean hopLe = false;
-        if (!dong.isEmpty())
-            for (String tieuDeChoPhep : tieuDe)
-                if (tieuDeChoPhep.equals(dong.get(0))) hopLe = true;
-        if (!hopLe) throw new IOException("File khong dung dinh dang: " + duongDan);
-        List<String[]> ketQua = new ArrayList<>();
-        for (int i = 1; i < dong.size(); i++) {
+    static List<String[]> doc(String string, String ... stringArray) throws IOException {
+        List<String> list = Files.readAllLines(Path.of(string, new String[0]), StandardCharsets.UTF_8);
+        boolean bl = false;
+        if (!list.isEmpty()) {
+            for (String string2 : stringArray) {
+                if (!string2.equals(list.get(0))) continue;
+                bl = true;
+            }
+        }
+        if (!bl) {
+            throw new IOException("File khong dung dinh dang: " + string);
+        }
+        ArrayList arrayList = new ArrayList();
+        for (int i = 1; i < list.size(); ++i) {
             try {
-                String[] cot = dong.get(i).split("\t", -1);
-                for (int j = 0; j < cot.length; j++) cot[j] = giaiMa(cot[j]);
-                ketQua.add(cot);
-            } catch (IllegalArgumentException e) {
-                throw new IOException("Dong " + (i + 1) + ": " + e.getMessage(), e);
+                String[] stringArray2 = list.get(i).split("\t", -1);
+                for (int j = 0; j < stringArray2.length; ++j) {
+                    stringArray2[j] = FileText.giaiMa(stringArray2[j]);
+                }
+                arrayList.add(stringArray2);
+                continue;
+            }
+            catch (IllegalArgumentException illegalArgumentException) {
+                throw new IOException("Dong " + (i + 1) + ": " + illegalArgumentException.getMessage(), illegalArgumentException);
             }
         }
-        return ketQua;
+        return arrayList;
     }
 
-    static String dong(String... cot) {
-        String[] daMaHoa = new String[cot.length];
-        for (int i = 0; i < cot.length; i++)
-            daMaHoa[i] = cot[i].replace("\\", "\\\\").replace("\t", "\\t")
-                    .replace("\n", "\\n").replace("\r", "\\r");
-        return String.join("\t", daMaHoa);
+    static String dong(String ... stringArray) {
+        CharSequence[] charSequenceArray = new String[stringArray.length];
+        for (int i = 0; i < stringArray.length; ++i) {
+            charSequenceArray[i] = stringArray[i].replace("\\", "\\\\").replace("\t", "\\t").replace("\n", "\\n").replace("\r", "\\r");
+        }
+        return String.join((CharSequence)"\t", charSequenceArray);
     }
 
-    private static String giaiMa(String giaTri) {
-        StringBuilder ketQua = new StringBuilder();
-        for (int i = 0; i < giaTri.length(); i++) {
-            char c = giaTri.charAt(i);
-            if (c != '\\') { ketQua.append(c); continue; }
-            if (++i == giaTri.length()) throw new IllegalArgumentException("Ky tu escape khong hop le.");
-            switch (giaTri.charAt(i)) {
-                case '\\': ketQua.append('\\'); break;
-                case 't': ketQua.append('\t'); break;
-                case 'n': ketQua.append('\n'); break;
-                case 'r': ketQua.append('\r'); break;
-                default: throw new IllegalArgumentException("Ky tu escape khong hop le.");
+    private static String giaiMa(String string) {
+        StringBuilder stringBuilder = new StringBuilder();
+        block6: for (int i = 0; i < string.length(); ++i) {
+            char c = string.charAt(i);
+            if (c != '\\') {
+                stringBuilder.append(c);
+                continue;
+            }
+            if (++i == string.length()) {
+                throw new IllegalArgumentException("Ky tu escape khong hop le.");
+            }
+            switch (string.charAt(i)) {
+                case '\\': {
+                    stringBuilder.append('\\');
+                    continue block6;
+                }
+                case 't': {
+                    stringBuilder.append('\t');
+                    continue block6;
+                }
+                case 'n': {
+                    stringBuilder.append('\n');
+                    continue block6;
+                }
+                case 'r': {
+                    stringBuilder.append('\r');
+                    continue block6;
+                }
+                default: {
+                    throw new IllegalArgumentException("Ky tu escape khong hop le.");
+                }
             }
         }
-        return ketQua.toString();
+        return stringBuilder.toString();
     }
 }
+

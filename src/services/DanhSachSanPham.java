@@ -1,180 +1,352 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
 package services;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import models.*;
+import java.util.Map;
+import models.DanhMuc;
+import models.DuLieu;
+import models.DungCuTheThao;
+import models.GiayTheThao;
+import models.QuanAoTheThao;
+import models.SanPham;
+import services.FileText;
+import services.IQuanLyDanhSach;
+import services.LuuTruFile;
 
-public class DanhSachSanPham implements LuuTruFile {
+public class DanhSachSanPham
+implements IQuanLyDanhSach<SanPham>,
+LuuTruFile {
     private static final String TIEU_DE_CU = "SAN_PHAM_V1";
     private static final String TIEU_DE = "kieu\tmaSanPham\ttenSanPham\tgiaBan\tthuongHieu\tsoLuongTon\tmaLoai\tkichCoGiay\tmauSac\tloaiDeGiay\tmonTheThao\tvatLieu\tkhoiLuongKg\tkichCoQuanAo";
-    private final List<SanPham> danhSach = new ArrayList<>();
+    private static final String TIEU_DE_MOI = "kieu\tmaSanPham\ttenSanPham\tgiaBan\tthuongHieu\tsoLuongTon\tmaLoai\tkichCoGiay\tmauSac\tloaiDeGiay\tmonTheThao\tvatLieu\tkhoiLuongKg\tkichCoQuanAo\tmauSacChung\tchatLieuChung";
+    private SanPham[] ds;
+    private int soLuong;
+    private final Map<String, String> monTheThaoCu = new HashMap<String, String>();
 
-    public DanhSachSanPham(SanPham[] banDau) {
-        for (SanPham sp : banDau) them(sp);
+    public DanhSachSanPham(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("Suc chua khong duoc am.");
+        }
+        this.ds = new SanPham[n];
+    }
+
+    public DanhSachSanPham(SanPham[] sanPhamArray) {
+        this(sanPhamArray == null ? 0 : sanPhamArray.length);
+        this.nhapBanDau(sanPhamArray);
+    }
+
+    public int getSoLuong() {
+        return this.soLuong;
+    }
+
+    public void nhapBanDau(SanPham[] sanPhamArray) {
+        if (sanPhamArray == null) {
+            throw new IllegalArgumentException("Danh sach ban dau khong hop le.");
+        }
+        DanhSachSanPham danhSachSanPham = new DanhSachSanPham(sanPhamArray.length);
+        danhSachSanPham.themNhieu(sanPhamArray);
+        this.ds = danhSachSanPham.ds;
+        this.soLuong = danhSachSanPham.soLuong;
+        this.monTheThaoCu.keySet().removeIf(string -> danhSachSanPham.chiSo((String)string) < 0);
+    }
+
+    public String xuatDanhSach() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < this.soLuong; ++i) {
+            if (i > 0) {
+                stringBuilder.append("\n------------------------------\n");
+            }
+            stringBuilder.append(this.ds[i].hienThiThongTin());
+        }
+        return stringBuilder.toString();
     }
 
     public List<SanPham> getDanhSach() {
-        return List.copyOf(danhSach);
+        ArrayList<SanPham> arrayList = new ArrayList<SanPham>();
+        for (int i = 0; i < this.soLuong; ++i) {
+            arrayList.add(DanhSachSanPham.saoChep(this.ds[i]));
+        }
+        return List.copyOf(arrayList);
     }
 
-    public void them(SanPham sp) {
-        kiemTra(sp);
-        if (timTheoMa(sp.getMaSanPham()) != null)
+    @Override
+    public boolean them(SanPham sanPham) {
+        DanhSachSanPham.kiemTra(sanPham);
+        if (this.chiSo(sanPham.getMaSanPham()) >= 0) {
             throw new IllegalArgumentException("Ma san pham da ton tai.");
-        danhSach.add(sp);
+        }
+        if (this.soLuong == this.ds.length) {
+            this.moRongMang();
+        }
+        this.ds[this.soLuong++] = DanhSachSanPham.saoChep(sanPham);
+        return true;
     }
 
-    public boolean suaTheoMa(String ma, SanPham moi) {
-        int i = chiSo(ma);
-        if (i < 0) return false;
-        kiemTra(moi);
-        if (!danhSach.get(i).getMaSanPham().equalsIgnoreCase(moi.getMaSanPham()))
+    public int themNhieu(SanPham[] sanPhamArray) {
+        if (sanPhamArray == null) {
+            throw new IllegalArgumentException("Danh sach them khong hop le.");
+        }
+        DanhSachSanPham danhSachSanPham = new DanhSachSanPham(Math.max(this.ds.length, this.soLuong));
+        System.arraycopy(this.ds, 0, danhSachSanPham.ds, 0, this.soLuong);
+        danhSachSanPham.soLuong = this.soLuong;
+        for (SanPham sanPham : sanPhamArray) {
+            danhSachSanPham.them(sanPham);
+        }
+        this.ds = danhSachSanPham.ds;
+        this.soLuong = danhSachSanPham.soLuong;
+        return sanPhamArray.length;
+    }
+
+    @Override
+    public boolean suaTheoMa(String string, SanPham sanPham) {
+        int n = this.chiSo(string);
+        if (n < 0) {
+            return false;
+        }
+        DanhSachSanPham.kiemTra(sanPham);
+        if (!this.ds[n].getMaSanPham().equalsIgnoreCase(sanPham.getMaSanPham())) {
             throw new IllegalArgumentException("Khong duoc doi ma san pham.");
-        danhSach.set(i, moi);
-        return true;
-    }
-
-    public boolean xoaTheoMa(String ma) {
-        int i = chiSo(ma);
-        if (i < 0) return false;
-        danhSach.remove(i);
-        return true;
-    }
-
-    public SanPham timTheoMa(String ma) {
-        int i = chiSo(ma);
-        return i < 0 ? null : danhSach.get(i);
-    }
-
-    public List<SanPham> timGanDung(String tuKhoa) {
-        String khoa = tuKhoa.toLowerCase(Locale.ROOT);
-        List<SanPham> ketQua = new ArrayList<>();
-        for (SanPham sp : danhSach)
-            if (sp.getMaSanPham().toLowerCase(Locale.ROOT).contains(khoa)
-                    || sp.getTenSanPham().toLowerCase(Locale.ROOT).contains(khoa))
-                ketQua.add(sp);
-        return ketQua;
-    }
-
-    public List<SanPham> locTheoLoai(String maLoai) {
-        List<SanPham> ketQua = new ArrayList<>();
-        for (SanPham sp : danhSach)
-            if (sp.getMaLoai().equalsIgnoreCase(maLoai)) ketQua.add(sp);
-        return ketQua;
-    }
-
-    @Override
-    public void ghiFile(String duongDan) throws IOException {
-        List<String> dong = new ArrayList<>();
-        dong.add(TIEU_DE);
-        for (SanPham sp : danhSach) {
-            kiemTra(sp);
-            String[] chung = { sp.getMaSanPham(), sp.getTenSanPham(),
-                    Double.toString(sp.getGiaban()), sp.getThuongHieu(),
-                    Integer.toString(sp.getSoLuongTon()), sp.getMaLoai() };
-            if (sp instanceof GiayTheThao) {
-                GiayTheThao giay = (GiayTheThao) sp;
-                dong.add(FileText.dong("GIAY", chung[0], chung[1], chung[2], chung[3],
-                        chung[4], chung[5], Double.toString(giay.getKichCoGiay()),
-                        giay.getMauSac(), giay.getLoaiDeGiay(), "", "", "", ""));
-            } else if (sp instanceof DungCuTheThao) {
-                DungCuTheThao dungCu = (DungCuTheThao) sp;
-                dong.add(FileText.dong("DUNG_CU", chung[0], chung[1], chung[2], chung[3],
-                        chung[4], chung[5], "", "", "", dungCu.getMonTheThao(),
-                        dungCu.getVatLieu(), Double.toString(dungCu.getKhoiLuong()), ""));
-            } else if (sp instanceof QuanAoTheThao) {
-                QuanAoTheThao quanAo = (QuanAoTheThao) sp;
-                dong.add(FileText.dong("QUAN_AO", chung[0], chung[1], chung[2], chung[3],
-                        chung[4], chung[5], "", "", "", "", "", "", quanAo.getKichCoQuanAo()));
-            }
         }
-        FileText.ghi(duongDan, dong);
+        this.ds[n] = DanhSachSanPham.saoChep(sanPham);
+        return true;
     }
 
     @Override
-    public void docFile(String duongDan) throws IOException {
-        DanhSachSanPham moi = new DanhSachSanPham(new SanPham[0]);
-        List<String[]> dong = FileText.doc(duongDan, TIEU_DE, TIEU_DE_CU);
-        for (int i = 0; i < dong.size(); i++) {
-            String[] c = dong.get(i);
+    public boolean xoaTheoMa(String string) {
+        int n = this.chiSo(string);
+        if (n < 0) {
+            return false;
+        }
+        this.monTheThaoCu.remove(this.ds[n].getMaSanPham().toUpperCase(Locale.ROOT));
+        System.arraycopy(this.ds, n + 1, this.ds, n, this.soLuong - n - 1);
+        this.ds[--this.soLuong] = null;
+        return true;
+    }
+
+    @Override
+    public SanPham timTheoMa(String string) {
+        int n = this.chiSo(string);
+        return n < 0 ? null : DanhSachSanPham.saoChep(this.ds[n]);
+    }
+
+    @Override
+    public List<SanPham> timGanDung(String string) {
+        if (string == null || string.isBlank()) {
+            throw new IllegalArgumentException("Tu khoa khong duoc rong.");
+        }
+        String string2 = DanhSachSanPham.chuanHoaTimKiem(string.trim());
+        ArrayList<SanPham> arrayList = new ArrayList<SanPham>();
+        for (int i = 0; i < this.soLuong; ++i) {
+            if (!DanhSachSanPham.chuanHoaTimKiem(this.ds[i].getMaSanPham()).contains(string2) && !DanhSachSanPham.chuanHoaTimKiem(this.ds[i].getTenSanPham()).contains(string2)) continue;
+            arrayList.add(DanhSachSanPham.saoChep(this.ds[i]));
+        }
+        return List.copyOf(arrayList);
+    }
+
+    public List<SanPham> locTheoLoai(String string) {
+        return this.locTheoDanhMuc(string);
+    }
+
+    public List<SanPham> locTheoDanhMuc(String string) {
+        if (string == null || string.isBlank()) {
+            throw new IllegalArgumentException("Ma danh muc khong duoc rong.");
+        }
+        ArrayList<SanPham> arrayList = new ArrayList<SanPham>();
+        for (int i = 0; i < this.soLuong; ++i) {
+            if (!this.ds[i].getDanhMuc().getMaDanhMuc().equalsIgnoreCase(string.trim())) continue;
+            arrayList.add(DanhSachSanPham.saoChep(this.ds[i]));
+        }
+        return List.copyOf(arrayList);
+    }
+
+    public List<SanPham> locTheoKhoangGia(BigDecimal bigDecimal, BigDecimal bigDecimal2) {
+        if (bigDecimal == null || bigDecimal2 == null || bigDecimal.signum() < 0 || bigDecimal.compareTo(bigDecimal2) > 0) {
+            throw new IllegalArgumentException("Khoang gia khong hop le.");
+        }
+        ArrayList<SanPham> arrayList = new ArrayList<SanPham>();
+        for (int i = 0; i < this.soLuong; ++i) {
+            if (this.ds[i].getGiaBan().compareTo(bigDecimal) < 0 || this.ds[i].getGiaBan().compareTo(bigDecimal2) > 0) continue;
+            arrayList.add(DanhSachSanPham.saoChep(this.ds[i]));
+        }
+        return List.copyOf(arrayList);
+    }
+
+    public Map<String, Integer> thongKeTheoDanhMuc() {
+        LinkedHashMap<String, Integer> linkedHashMap = new LinkedHashMap<String, Integer>();
+        for (int i = 0; i < this.soLuong; ++i) {
+            String string = this.ds[i].getDanhMuc().getMaDanhMuc();
+            linkedHashMap.merge(string, 1, Integer::sum);
+        }
+        return Map.copyOf(linkedHashMap);
+    }
+
+    public List<SanPham> lietKeSapHetHang(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("Nguong khong duoc am.");
+        }
+        ArrayList<SanPham> arrayList = new ArrayList<SanPham>();
+        for (int i = 0; i < this.soLuong; ++i) {
+            if (this.ds[i].getSoLuongTon() > n) continue;
+            arrayList.add(DanhSachSanPham.saoChep(this.ds[i]));
+        }
+        return List.copyOf(arrayList);
+    }
+
+    public boolean tangTonTheoMa(String string, int n) {
+        int n2 = this.chiSo(string);
+        if (n2 < 0) {
+            return false;
+        }
+        this.ds[n2].tangTon(n);
+        return true;
+    }
+
+    public boolean giamTonTheoMa(String string, int n) {
+        int n2 = this.chiSo(string);
+        if (n2 < 0) {
+            return false;
+        }
+        this.ds[n2].giamTon(n);
+        return true;
+    }
+
+    @Override
+    public void ghiFile(String string) throws IOException {
+        ArrayList<String> arrayList = new ArrayList<String>();
+        arrayList.add(TIEU_DE_MOI);
+        for (int i = 0; i < this.soLuong; ++i) {
+            SanPham sanPham;
+            SanPham sanPham2 = this.ds[i];
+            DanhSachSanPham.kiemTra(sanPham2);
+            String string2 = sanPham2.getMaSanPham();
+            String string3 = this.monTheThaoCu.getOrDefault(string2.toUpperCase(Locale.ROOT), "");
+            String[] stringArray = new String[]{string2, sanPham2.getTenSanPham(), sanPham2.getGiaBan().toPlainString(), sanPham2.getThuongHieu(), Integer.toString(sanPham2.getSoLuongTon()), sanPham2.getDanhMuc().getMaDanhMuc()};
+            if (sanPham2 instanceof GiayTheThao) {
+                sanPham = (GiayTheThao)sanPham2;
+                arrayList.add(FileText.dong("GIAY", stringArray[0], stringArray[1], stringArray[2], stringArray[3], stringArray[4], stringArray[5], ((GiayTheThao)sanPham).getKichCoGiay(), DanhSachSanPham.text(sanPham2.getMauSac()), ((GiayTheThao)sanPham).getLoaiDeGiay(), string3, "", "", "", DanhSachSanPham.text(sanPham2.getMauSac()), DanhSachSanPham.text(sanPham2.getChatLieu())));
+                continue;
+            }
+            if (sanPham2 instanceof DungCuTheThao) {
+                sanPham = (DungCuTheThao)sanPham2;
+                arrayList.add(FileText.dong("DUNG_CU", stringArray[0], stringArray[1], stringArray[2], stringArray[3], stringArray[4], stringArray[5], "", "", "", string3, DanhSachSanPham.text(sanPham2.getChatLieu()), Double.toString(((DungCuTheThao)sanPham).getKhoiLuongKg()), "", DanhSachSanPham.text(sanPham2.getMauSac()), DanhSachSanPham.text(sanPham2.getChatLieu())));
+                continue;
+            }
+            if (!(sanPham2 instanceof QuanAoTheThao)) continue;
+            sanPham = (QuanAoTheThao)sanPham2;
+            arrayList.add(FileText.dong("QUAN_AO", stringArray[0], stringArray[1], stringArray[2], stringArray[3], stringArray[4], stringArray[5], "", "", "", string3, "", "", ((QuanAoTheThao)sanPham).getKichCoQuanAo(), DanhSachSanPham.text(sanPham2.getMauSac()), DanhSachSanPham.text(sanPham2.getChatLieu())));
+        }
+        FileText.ghi(string, arrayList);
+    }
+
+    @Override
+    public void docFile(String string) throws IOException {
+        DanhSachSanPham danhSachSanPham = new DanhSachSanPham(0);
+        List<String[]> list = FileText.doc(string, TIEU_DE_MOI, TIEU_DE, TIEU_DE_CU);
+        for (int i = 0; i < list.size(); ++i) {
+            String[] stringArray = list.get(i);
             try {
-                if (c.length < 8) throw new IllegalArgumentException("Thieu cot.");
-                double gia = Double.parseDouble(c[3]);
-                int ton = Integer.parseInt(c[5]);
-                SanPham sp;
-                switch (c[0]) {
-                    case "GIAY":
-                        if (c.length != 10 && c.length != 14) throw new IllegalArgumentException("Sai so cot.");
-                        if (c.length == 14 && !rong(c, 10, 14))
-                            throw new IllegalArgumentException("Cot cua loai khac phai de trong.");
-                        sp = new GiayTheThao(c[1], c[2], gia, c[4], ton, c[6],
-                                Double.parseDouble(c[7]), c[8], c[9]);
-                        break;
-                    case "DUNG_CU":
-                        if (c.length != 10 && c.length != 14) throw new IllegalArgumentException("Sai so cot.");
-                        if (c.length == 14 && (!rong(c, 7, 10) || !rong(c, 13, 14)))
-                            throw new IllegalArgumentException("Cot cua loai khac phai de trong.");
-                        sp = new DungCuTheThao(c[1], c[2], gia, c[4], ton, c[6],
-                                c.length == 14 ? c[10] : c[7],
-                                c.length == 14 ? c[11] : c[8],
-                                Double.parseDouble(c.length == 14 ? c[12] : c[9]));
-                        break;
-                    case "QUAN_AO":
-                        if (c.length != 8 && c.length != 14) throw new IllegalArgumentException("Sai so cot.");
-                        if (c.length == 14 && !rong(c, 7, 13))
-                            throw new IllegalArgumentException("Cot cua loai khac phai de trong.");
-                        sp = new QuanAoTheThao(c[1], c[2], gia, c[4], ton, c[6],
-                                c.length == 14 ? c[13] : c[7]);
-                        break;
-                    default: throw new IllegalArgumentException("Kieu san pham khong hop le.");
+                String string2;
+                if (stringArray.length < 8) {
+                    throw new IllegalArgumentException("Thieu cot.");
                 }
-                moi.them(sp);
-            } catch (IllegalArgumentException e) {
-                throw new IOException("Dong " + (i + 2) + ": " + e.getMessage(), e);
+                DanhMuc danhMuc = DuLieu.timDanhMuc(stringArray[6]);
+                if (danhMuc == null) {
+                    throw new IllegalArgumentException("Ma danh muc chua anh xa: " + stringArray[6]);
+                }
+                BigDecimal bigDecimal = new BigDecimal(stringArray[3]);
+                int n = Integer.parseInt(stringArray[5]);
+                SanPham sanPham = switch (stringArray[0]) {
+                    case "GIAY" -> {
+                        if (stringArray.length != 10 && stringArray.length != 14 && stringArray.length != 16) {
+                            throw new IllegalArgumentException("Sai so cot.");
+                        }
+                        yield new GiayTheThao(stringArray[1], stringArray[2], stringArray[4], bigDecimal, n, stringArray[8], stringArray.length == 16 ? DanhSachSanPham.unknown(stringArray[15]) : null, danhMuc, stringArray[7], stringArray[9]);
+                    }
+                    case "DUNG_CU" -> {
+                        if (stringArray.length != 10 && stringArray.length != 14 && stringArray.length != 16) {
+                            throw new IllegalArgumentException("Sai so cot.");
+                        }
+                        yield new DungCuTheThao(stringArray[1], stringArray[2], stringArray[4], bigDecimal, n, stringArray.length == 16 ? DanhSachSanPham.unknown(stringArray[14]) : null, stringArray.length == 10 ? DanhSachSanPham.unknown(stringArray[8]) : DanhSachSanPham.unknown(stringArray[11]), danhMuc, Double.parseDouble(stringArray.length == 10 ? stringArray[9] : stringArray[12]));
+                    }
+                    case "QUAN_AO" -> {
+                        if (stringArray.length != 8 && stringArray.length != 14 && stringArray.length != 16) {
+                            throw new IllegalArgumentException("Sai so cot.");
+                        }
+                        yield new QuanAoTheThao(stringArray[1], stringArray[2], stringArray[4], bigDecimal, n, stringArray.length == 16 ? DanhSachSanPham.unknown(stringArray[14]) : null, stringArray.length == 16 ? DanhSachSanPham.unknown(stringArray[15]) : null, danhMuc, stringArray.length == 8 ? stringArray[7] : stringArray[13]);
+                    }
+                    default -> throw new IllegalArgumentException("Kieu san pham khong hop le.");
+                };
+                danhSachSanPham.them(sanPham);
+                string2 = stringArray[0].equals("DUNG_CU") && stringArray.length == 10 ? stringArray[7] : (stringArray.length >= 14 ? stringArray[10] : "");
+                if (string2.isEmpty()) continue;
+                danhSachSanPham.monTheThaoCu.put(sanPham.getMaSanPham().toUpperCase(Locale.ROOT), string2);
+                continue;
+            }
+            catch (IllegalArgumentException illegalArgumentException) {
+                throw new IOException("Dong " + (i + 2) + ": " + illegalArgumentException.getMessage(), illegalArgumentException);
             }
         }
-        danhSach.clear();
-        danhSach.addAll(moi.danhSach);
+        this.ds = danhSachSanPham.ds;
+        this.soLuong = danhSachSanPham.soLuong;
+        this.monTheThaoCu.clear();
+        this.monTheThaoCu.putAll(danhSachSanPham.monTheThaoCu);
     }
 
-    private int chiSo(String ma) {
-        if (ma != null)
-            for (int i = 0; i < danhSach.size(); i++)
-                if (danhSach.get(i).getMaSanPham().equalsIgnoreCase(ma.trim())) return i;
+    private int chiSo(String string) {
+        if (string != null) {
+            for (int i = 0; i < this.soLuong; ++i) {
+                if (!this.ds[i].getMaSanPham().equalsIgnoreCase(string.trim())) continue;
+                return i;
+            }
+        }
         return -1;
     }
 
-    private static boolean rong(String[] cot, int tu, int den) {
-        for (int i = tu; i < den; i++) if (!cot[i].isBlank()) return false;
-        return true;
+    private void moRongMang() {
+        int n = this.ds.length == 0 ? 1 : Math.max(this.ds.length + 1, this.ds.length * 2);
+        SanPham[] sanPhamArray = new SanPham[n];
+        System.arraycopy(this.ds, 0, sanPhamArray, 0, this.soLuong);
+        this.ds = sanPhamArray;
     }
 
-    private static void kiemTra(SanPham sp) {
-        if (sp == null || !DanhSachKhachHang.maHopLe(sp.getMaSanPham())
-                || trong(sp.getTenSanPham()) || trong(sp.getThuongHieu())
-                || !DanhSachKhachHang.maHopLe(sp.getMaLoai())
-                || !Double.isFinite(sp.getGiaban()) || sp.getGiaban() < 0
-                || sp.getSoLuongTon() < 0
-                || (sp instanceof GiayTheThao && (
-                    !Double.isFinite(((GiayTheThao) sp).getKichCoGiay())
-                    || ((GiayTheThao) sp).getKichCoGiay() <= 0
-                    || trong(((GiayTheThao) sp).getMauSac())
-                    || trong(((GiayTheThao) sp).getLoaiDeGiay())))
-                || (sp instanceof DungCuTheThao && (
-                    trong(((DungCuTheThao) sp).getMonTheThao())
-                    || trong(((DungCuTheThao) sp).getVatLieu())
-                    || !Double.isFinite(((DungCuTheThao) sp).getKhoiLuong())
-                    || ((DungCuTheThao) sp).getKhoiLuong() < 0))
-                || (sp instanceof QuanAoTheThao &&
-                    trong(((QuanAoTheThao) sp).getKichCoQuanAo()))
-                || !(sp instanceof GiayTheThao || sp instanceof DungCuTheThao
-                    || sp instanceof QuanAoTheThao))
+    private static String chuanHoaTimKiem(String string) {
+        return Normalizer.normalize(string, Normalizer.Form.NFD).replaceAll("\\p{M}+", "").replace('\u0111', 'd').replace('\u0110', 'D').toLowerCase(Locale.ROOT);
+    }
+
+    private static SanPham saoChep(SanPham sanPham) {
+        if (sanPham instanceof GiayTheThao) {
+            GiayTheThao giayTheThao = (GiayTheThao)sanPham;
+            return new GiayTheThao(sanPham.getMaSanPham(), sanPham.getTenSanPham(), sanPham.getThuongHieu(), sanPham.getGiaBan(), sanPham.getSoLuongTon(), sanPham.getMauSac(), sanPham.getChatLieu(), sanPham.getDanhMuc(), giayTheThao.getKichCoGiay(), giayTheThao.getLoaiDeGiay());
+        }
+        if (sanPham instanceof DungCuTheThao) {
+            DungCuTheThao dungCuTheThao = (DungCuTheThao)sanPham;
+            return new DungCuTheThao(sanPham.getMaSanPham(), sanPham.getTenSanPham(), sanPham.getThuongHieu(), sanPham.getGiaBan(), sanPham.getSoLuongTon(), sanPham.getMauSac(), sanPham.getChatLieu(), sanPham.getDanhMuc(), dungCuTheThao.getKhoiLuongKg());
+        }
+        QuanAoTheThao quanAoTheThao = (QuanAoTheThao)sanPham;
+        return new QuanAoTheThao(sanPham.getMaSanPham(), sanPham.getTenSanPham(), sanPham.getThuongHieu(), sanPham.getGiaBan(), sanPham.getSoLuongTon(), sanPham.getMauSac(), sanPham.getChatLieu(), sanPham.getDanhMuc(), quanAoTheThao.getKichCoQuanAo());
+    }
+
+    private static void kiemTra(SanPham sanPham) {
+        if (sanPham == null || DuLieu.timDanhMuc(sanPham.getDanhMuc().getMaDanhMuc()) != sanPham.getDanhMuc() || !(sanPham instanceof GiayTheThao) && !(sanPham instanceof DungCuTheThao) && !(sanPham instanceof QuanAoTheThao)) {
             throw new IllegalArgumentException("Thong tin san pham khong hop le.");
+        }
     }
 
-    private static boolean trong(String s) {
-        return s == null || s.isBlank();
+    private static String text(String string) {
+        return string == null ? "" : string;
+    }
+
+    private static String unknown(String string) {
+        return string.isBlank() ? null : string;
     }
 }
+

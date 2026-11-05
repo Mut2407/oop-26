@@ -1,143 +1,279 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.util.Scanner;
 import java.util.List;
-import models.*;
+import java.util.Scanner;
+import models.DanhMuc;
+import models.DuLieu;
+import models.DungCuTheThao;
+import models.GiayTheThao;
+import models.KhachHang;
+import models.NhaCungCap;
+import models.QuanAoTheThao;
+import models.SanPham;
 import services.DanhSachKhachHang;
-import services.DanhSachSanPham;
 import services.DanhSachNhaCungCap;
 import services.DanhSachNhanVien;
+import services.DanhSachSanPham;
 import services.LuuTruFile;
+import services.LuuTruFileText;
+import services.VanBanConsole;
 
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
-    private static final String TEP_KHACH_HANG ="data/khachhang.txt";
-    private static final String TEP_SAN_PHAM = "data/sanpham.txt";
-    private static final String TEP_NHA_CUNG_CAP = "data/nhacungcap.txt";
+    private static final String TEP_KHACH_HANG = "data/khachhang.txt";
+    private static final String TEP_DANH_MUC = "danhmuc.txt";
+    private static final String TEP_SAN_PHAM = "sanpham.txt";
+    private static final String TEP_NHA_CUNG_CAP = "nhacungcap.txt";
     private static final String TEP_NHAN_VIEN = "data/nhanvien.txt";
+    private static final LuuTruFileText LUU_TRU = new LuuTruFileText("data");
 
     public static void main(String[] args) {
-        DanhSachSanPham danhSachSanPham =
-                new DanhSachSanPham(DuLieu.taoDanhSachSanPham());
+        Main.chay();
+    }
 
-        DanhSachKhachHang danhSachKhachHang =
-                new DanhSachKhachHang(
-                        DuLieu.taoDanhSachKhachHang());
-
-        DanhSachNhanVien danhSachNhanVien =
-                new DanhSachNhanVien(DuLieu.taoDanhSachNhanVien());
-
-        DanhSachNhaCungCap danhSachNhaCungCap =
-                new DanhSachNhaCungCap(DuLieu.taoDanhSachNhaCungCap());
-
+    private static void chay() {
+        DanhSachNhaCungCap danhSachNhaCungCap;
+        DanhSachSanPham danhSachSanPham;
+        DuLieu.khoiTaoDanhMuc();
+        DanhSachKhachHang danhSachKhachHang = new DanhSachKhachHang(DuLieu.taoDanhSachKhachHang());
+        DanhSachNhanVien danhSachNhanVien = new DanhSachNhanVien(DuLieu.taoDanhSachNhanVien());
         try {
-            taiHoacTao(danhSachKhachHang, TEP_KHACH_HANG);
-            taiHoacTao(danhSachSanPham, TEP_SAN_PHAM);
-            taiHoacTao(danhSachNhaCungCap, TEP_NHA_CUNG_CAP);
-            taiHoacTao(danhSachNhanVien, TEP_NHAN_VIEN);
-        } catch (IOException e) {
-            System.err.println("Khong the khoi dong: " + e.getMessage());
+            if (Main.tonTaiDuLieu(TEP_DANH_MUC)) {
+                Main.napDanhMuc();
+            }
+            danhSachSanPham = Main.tonTaiDuLieu(TEP_SAN_PHAM) ? LUU_TRU.docSanPham(TEP_SAN_PHAM, DuLieu.getDanhMuc()) : new DanhSachSanPham(DuLieu.taoDanhSachSanPham());
+            danhSachNhaCungCap = Main.tonTaiDuLieu(TEP_NHA_CUNG_CAP) ? LUU_TRU.docNhaCungCap(TEP_NHA_CUNG_CAP) : new DanhSachNhaCungCap(DuLieu.taoDanhSachNhaCungCap());
+            Main.taiHoacTao(danhSachKhachHang, TEP_KHACH_HANG);
+            Main.taiHoacTao(danhSachNhanVien, TEP_NHAN_VIEN);
+            if (!Main.tonTaiDuLieu(TEP_DANH_MUC)) {
+                LUU_TRU.ghiDanhMuc(TEP_DANH_MUC, DuLieu.getDanhMuc());
+            }
+            if (!Main.tonTaiDuLieu(TEP_SAN_PHAM)) {
+                LUU_TRU.ghiSanPham(TEP_SAN_PHAM, danhSachSanPham);
+            }
+            if (!Main.tonTaiDuLieu(TEP_NHA_CUNG_CAP)) {
+                LUU_TRU.ghiNhaCungCap(TEP_NHA_CUNG_CAP, danhSachNhaCungCap);
+            }
+        }
+        catch (IOException | IllegalArgumentException exception) {
+            System.err.println("Khong the khoi dong: " + exception.getMessage());
             System.err.println("Hay sua file du lieu; chuong trinh chua ghi de len file loi.");
             sc.close();
             System.exit(1);
             return;
         }
-
-        xuLyMenu(
-                danhSachSanPham,
-                danhSachKhachHang,
-                danhSachNhanVien,
-                danhSachNhaCungCap
-        );
-
+        Main.xuLyMenu(danhSachSanPham, danhSachKhachHang, danhSachNhanVien, danhSachNhaCungCap);
         sc.close();
     }
 
-    private static void taiHoacTao(LuuTruFile danhSach, String duongDan) throws IOException {
-        if (Files.exists(Path.of(duongDan))) danhSach.docFile(duongDan);
-        else danhSach.ghiFile(duongDan);
+    private static boolean tonTaiDuLieu(String string) {
+        return Files.exists(Path.of("data", string), new LinkOption[0]);
     }
 
-    private static void tuLuu(LuuTruFile danhSach, String duongDan) {
+    private static void napDanhMuc() throws IOException {
+        for (DanhMuc danhMuc : LUU_TRU.docDanhMuc(TEP_DANH_MUC)) {
+            DanhMuc danhMuc2 = DuLieu.timDanhMuc(danhMuc.getMaDanhMuc());
+            if (danhMuc2 == null) {
+                DuLieu.dangKyDanhMuc(danhMuc);
+                continue;
+            }
+            danhMuc2.capNhatThongTin(danhMuc.getTenDanhMuc(), danhMuc.getMoTa());
+        }
+    }
+
+    private static void taiHoacTao(LuuTruFile luuTruFile, String string) throws IOException {
+        if (Files.exists(Path.of(string, new String[0]), new LinkOption[0])) {
+            luuTruFile.docFile(string);
+        } else {
+            luuTruFile.ghiFile(string);
+        }
+    }
+
+    private static void tuLuu(LuuTruFile luuTruFile, String string) {
         try {
-            danhSach.ghiFile(duongDan);
-        } catch (IOException e) {
-            System.err.println("CHUA LUU DUOC " + duongDan + ": " + e.getMessage());
+            luuTruFile.ghiFile(string);
+        }
+        catch (IOException iOException) {
+            System.err.println("CHUA LUU DUOC " + string + ": " + iOException.getMessage());
             System.err.println("Du lieu moi chi dang trong bo nho. Hay thu luu lai truoc khi thoat.");
         }
     }
 
-    private static void xuLyMenu(
-            DanhSachSanPham danhSachSanPham,
-            DanhSachKhachHang danhSachKhachHang,
-            DanhSachNhanVien danhSachNhanVien,
-            DanhSachNhaCungCap danhSachNhaCungCap) {
-
-        int luaChon = -1;
-
-        do {
-            hienThiMenu();
+    private static void xuLyMenu(DanhSachSanPham danhSachSanPham, DanhSachKhachHang danhSachKhachHang, DanhSachNhanVien danhSachNhanVien, DanhSachNhaCungCap danhSachNhaCungCap) {
+        int n = -1;
+        block14: do {
+            Main.hienThiMenu();
             System.out.print("Nhap lua chon: ");
-
             if (!sc.hasNextLine()) {
                 return;
             }
-
             if (!sc.hasNextInt()) {
                 System.out.println("Vui long nhap mot so!");
                 sc.nextLine();
                 continue;
             }
-
-            luaChon = sc.nextInt();
+            n = sc.nextInt();
             sc.nextLine();
-
-            switch (luaChon) {
-                case 1:
-                    quanLySanPham(danhSachSanPham);
+            switch (n) {
+                case 1: {
+                    Main.quanLySanPham(danhSachSanPham);
                     break;
-
-                case 2:
-                    System.out.println("Quan ly loai san pham");
+                }
+                case 2: {
+                    Main.quanLyDanhMuc();
                     break;
-
-                case 3:
-                    quanLyKhachHang(danhSachKhachHang);
+                }
+                case 3: {
+                    Main.quanLyKhachHang(danhSachKhachHang);
                     break;
-
-                case 4:
+                }
+                case 4: {
                     danhSachNhanVien.quanLy(sc, TEP_NHAN_VIEN);
                     break;
-
-                case 5:
-                    quanLyNhaCungCap(danhSachNhaCungCap);
+                }
+                case 5: {
+                    Main.quanLyNhaCungCap(danhSachNhaCungCap);
                     break;
-
-                case 6:
-                    System.out.println("Quan ly hoa don");
+                }
+                case 6: {
+                    System.out.println("Quan ly hoa don chua trien khai.");
                     break;
-
-                case 7:
-                    System.out.println("Quan ly phieu nhap");
+                }
+                case 7: {
+                    System.out.println("Quan ly phieu nhap chua trien khai.");
                     break;
-
-                case 0:
+                }
+                case 8: {
+                    System.out.println("Bao cao doanh thu chua trien khai; thong ke san pham o menu san pham.");
+                    break;
+                }
+                case 9: {
+                    String string = Main.docDong("1. Luu danh muc/san pham/NCC  2. Doc lai danh muc/san pham/NCC: ");
+                    try {
+                        if ("1".equals(string)) {
+                            LUU_TRU.ghiDanhMuc(TEP_DANH_MUC, DuLieu.getDanhMuc());
+                            LUU_TRU.ghiSanPham(TEP_SAN_PHAM, danhSachSanPham);
+                            LUU_TRU.ghiNhaCungCap(TEP_NHA_CUNG_CAP, danhSachNhaCungCap);
+                            System.out.println("Da luu danh muc, san pham va nha cung cap.");
+                            break;
+                        }
+                        if ("2".equals(string)) {
+                            Main.napDanhMuc();
+                            DanhSachSanPham danhSachSanPham2 = LUU_TRU.docSanPham(TEP_SAN_PHAM, DuLieu.getDanhMuc());
+                            DanhSachNhaCungCap danhSachNhaCungCap2 = LUU_TRU.docNhaCungCap(TEP_NHA_CUNG_CAP);
+                            danhSachSanPham = danhSachSanPham2;
+                            danhSachNhaCungCap = danhSachNhaCungCap2;
+                            System.out.println("Da doc lai danh muc, san pham va nha cung cap.");
+                            break;
+                        }
+                        System.out.println("Lua chon khong hop le!");
+                    }
+                    catch (IOException | IllegalArgumentException exception) {
+                        System.out.println("Khong the luu/doc du lieu: " + exception.getMessage());
+                    }
+                    continue block14;
+                }
+                case 0: {
                     System.out.println("Thoat chuong trinh!");
                     break;
-
-                default:
+                }
+                default: {
                     System.out.println("Lua chon khong hop le!");
+                }
             }
-        } while (luaChon != 0);
+        } while (n != 0);
     }
 
-    private static void quanLyKhachHang(
-            DanhSachKhachHang danhSach) {
-
+    private static void quanLyDanhMuc() {
         while (true) {
-            System.out.println(
-                    "\n===== QUAN LY KHACH HANG =====");
+            System.out.println("\n===== QUAN LY DANH MUC =====");
+            System.out.println("1. Xem tat ca  2. Them  3. Sua  4. Tim theo ma  0. Quay lai");
+            String string = Main.docDong("Nhap lua chon: ");
+            if (string == null || string.equals("0")) {
+                return;
+            }
+            try {
+                switch (string) {
+                    case "1": {
+                        for (DanhMuc danhMuc : DuLieu.getDanhMuc()) {
+                            System.out.println(VanBanConsole.khongDau(danhMuc.hienThiThongTin()) + "\n------------------------------");
+                        }
+                        System.out.println("Tong so danh muc: " + DuLieu.getDanhMuc().size());
+                        break;
+                    }
+                    case "2": {
+                        Object object = Main.nhapBatBuoc("Ma danh muc: ");
+                        if (object == null) {
+                            return;
+                        }
+                        String string2 = Main.nhapBatBuoc("Ten danh muc: ");
+                        if (string2 == null) {
+                            return;
+                        }
+                        String string3 = Main.docDong("Mo ta (co the bo trong): ");
+                        if (string3 == null) {
+                            return;
+                        }
+                        DuLieu.dangKyDanhMuc(new DanhMuc((String)object, string2, string3));
+                        LUU_TRU.ghiDanhMuc(TEP_DANH_MUC, DuLieu.getDanhMuc());
+                        System.out.println("Da them danh muc.");
+                        break;
+                    }
+                    case "3": {
+                        Object object = Main.nhapBatBuoc("Ma danh muc can sua: ");
+                        if (object == null) {
+                            return;
+                        }
+                        DanhMuc danhMuc = DuLieu.timDanhMuc((String)object);
+                        if (danhMuc == null) {
+                            System.out.println("Khong tim thay.");
+                            break;
+                        }
+                        String string3 = Main.nhapBatBuoc("Ten moi: ");
+                        if (string3 == null) {
+                            return;
+                        }
+                        String string4 = Main.docDong("Mo ta moi (co the bo trong): ");
+                        if (string4 == null) {
+                            return;
+                        }
+                        danhMuc.capNhatThongTin(string3, string4);
+                        LUU_TRU.ghiDanhMuc(TEP_DANH_MUC, DuLieu.getDanhMuc());
+                        System.out.println("Da sua danh muc.");
+                        break;
+                    }
+                    case "4": {
+                        Object object = Main.nhapBatBuoc("Ma danh muc can tim: ");
+                        if (object == null) {
+                            return;
+                        }
+                        DanhMuc danhMuc = DuLieu.timDanhMuc((String)object);
+                        System.out.println(danhMuc == null ? "Khong tim thay." : VanBanConsole.khongDau(danhMuc.hienThiThongTin()));
+                        break;
+                    }
+                    default: {
+                        System.out.println("Lua chon khong hop le!");
+                        break;
+                    }
+                }
+                continue;
+            }
+            catch (IOException | IllegalArgumentException exception) {
+                System.out.println("Khong the thuc hien: " + exception.getMessage());
+                continue;
+            }
+        }
+    }
+
+    private static void quanLyKhachHang(DanhSachKhachHang danhSachKhachHang) {
+        block28: while (true) {
+            System.out.println("\n===== QUAN LY KHACH HANG =====");
             System.out.println("1. Xem danh sach khach hang");
             System.out.println("2. Them 1 khach hang");
             System.out.println("3. Sua theo ma");
@@ -149,629 +285,680 @@ public class Main {
             System.out.println("9. Doc lai tu file (thay danh sach hien tai)");
             System.out.println("10. Luu vao file");
             System.out.println("0. Quay lai");
-
-            String luaChon = docDong("Nhap lua chon: ");
-
-            if (luaChon == null) {
+            String string = Main.docDong("Nhap lua chon: ");
+            if (string == null) {
                 return;
             }
-
             try {
-                switch (luaChon) {
-                    case "1":
-                        hienThiDanhSachKhachHang(
-                                danhSach.getDanhSach());
+                switch (string) {
+                    case "1": {
+                        Main.hienThiDanhSachKhachHang(danhSachKhachHang.getDanhSach());
                         break;
-
-                    case "2":
-                        KhachHang kh = nhapKhachHang(danhSach);
-
-                        if (kh != null) {
-                            danhSach.them(kh);
-                            tuLuu(danhSach, TEP_KHACH_HANG);
-                            System.out.println(
-                                    "Them khach hang thanh cong!");
-                        }
-                        break;
-
-                    case "3":
-                        suaKhachHang(danhSach);
-                        tuLuu(danhSach, TEP_KHACH_HANG);
-                        break;
-
-                    case "4":
-                        xoaKhachHang(danhSach);
-                        tuLuu(danhSach, TEP_KHACH_HANG);
-                        break;
-
-                    case "5":
-                        nhapNhieuKhachHang(danhSach, true);
-                        tuLuu(danhSach, TEP_KHACH_HANG);
-                        break;
-
-                    case "6":
-                        nhapNhieuKhachHang(danhSach, false);
-                        tuLuu(danhSach, TEP_KHACH_HANG);
-                        break;
-
-                    case "7":
-                        timKiemKhachHang(danhSach);
-                        break;
-
-                    case "8":
-                        System.out.println(danhSach.thongKe());
-                        break;
-
-                    case "9":
-                        xuLyFile(danhSach, true);
-                        break;
-
-                    case "10":
-                        xuLyFile(danhSach, false);
-                        break;
-
-                    case "0":
-                        return;
-
-                    default:
-                        System.out.println(
-                                "Lua chon khong hop le!");
-                }
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-
-    private static void hienThiDanhSachKhachHang(
-            KhachHang[] danhSach) {
-
-        System.out.println(
-                "===== DANH SACH KHACH HANG =====");
-
-        if (danhSach.length == 0) {
-            System.out.println(
-                    "Danh sach khach hang dang trong.");
-            return;
-        }
-
-        for (KhachHang kh : danhSach) {
-            System.out.println(kh.thongTinKhachHang());
-            System.out.println("------------------------------");
-        }
-
-        System.out.println(
-                "Tong so khach hang: " + danhSach.length);
-    }
-
-    private static KhachHang nhapKhachHang(
-            DanhSachKhachHang danhSach) {
-
-        String ma;
-
-        while (true) {
-            ma = nhapBatBuoc("Nhap ma khach hang: ");
-
-            if (ma == null) {
-                return null;
-            }
-
-            if (!DanhSachKhachHang.maHopLe(ma)) {
-                System.out.println(
-                        "Ma chi gom chu, so, dau _ hoac -.");
-                continue;
-            }
-
-            if (danhSach.timTheoMa(ma) != null) {
-                System.out.println(
-                        "Ma khach hang da ton tai! "
-                        + "Vui long nhap ma khac.");
-                continue;
-            }
-
-            break;
-        }
-
-        String hoTen = nhapBatBuoc("Nhap ho ten: ");
-        if (hoTen == null) {
-            return null;
-        }
-
-        String soDienThoai = nhapSoDienThoai(
-                "Nhap so dien thoai: ", false);
-        if (soDienThoai == null) {
-            return null;
-        }
-
-        String diaChi = nhapBatBuoc("Nhap dia chi: ");
-        if (diaChi == null) {
-            return null;
-        }
-
-        return new KhachHang(
-                ma, hoTen, soDienThoai, diaChi);
-    }
-
-    private static void nhapNhieuKhachHang(
-            DanhSachKhachHang danhSach,
-            boolean thayMoi) {
-
-        if (thayMoi) {
-            System.out.println(
-                    "Danh sach nhap moi se thay the danh sach "
-                    + "hien tai sau khi nhap xong.");
-        }
-
-        Integer n = nhapSoNguyen(
-                thayMoi ? "Nhap n: " : "Nhap k: ",
-                thayMoi ? 0 : 1
-        );
-
-        if (n == null) {
-            return;
-        }
-
-        DanhSachKhachHang kiemTra = thayMoi
-                ? new DanhSachKhachHang()
-                : new DanhSachKhachHang(
-                        danhSach.getDanhSach());
-
-        KhachHang[] moi = new KhachHang[n];
-
-        for (int i = 0; i < n; i++) {
-            System.out.println(
-                    "--- Khach hang "
-                    + (i + 1) + "/" + n + " ---");
-
-            moi[i] = nhapKhachHang(kiemTra);
-
-            if (moi[i] == null) {
-                return;
-            }
-
-            kiemTra.them(moi[i]);
-        }
-
-        if (thayMoi) {
-            danhSach.nhapDanhSach(moi);
-        } else {
-            danhSach.themNhieu(moi);
-        }
-
-        System.out.println(
-                "Da " + (thayMoi ? "nhap moi " : "them ")
-                + n + " khach hang.");
-    }
-
-    private static void suaKhachHang(
-            DanhSachKhachHang danhSach) {
-
-        String ma = nhapBatBuoc(
-                "Nhap ma khach hang can sua: ");
-
-        if (ma == null) {
-            return;
-        }
-
-        KhachHang kh = danhSach.timTheoMa(ma);
-
-        if (kh == null) {
-            System.out.println(
-                    "Khong tim thay khach hang!");
-            return;
-        }
-
-        System.out.println(kh.thongTinKhachHang());
-        System.out.println(
-                "Giu nguyen ma khach hang. "
-                + "Nhan Enter de giu thong tin cu.");
-
-        String hoTen = docDong("Ho ten moi: ");
-        if (hoTen == null) {
-            return;
-        }
-
-        String soDienThoai = nhapSoDienThoai(
-                "So dien thoai moi: ", true);
-        if (soDienThoai == null) {
-            return;
-        }
-
-        String diaChi = docDong("Dia chi moi: ");
-        if (diaChi == null) {
-            return;
-        }
-
-        danhSach.sua(
-                ma,
-                hoTen.isEmpty()
-                        ? kh.getHoTen() : hoTen,
-                soDienThoai.isEmpty()
-                        ? kh.getSoDienThoai() : soDienThoai,
-                diaChi.isEmpty()
-                        ? kh.getDiaChi() : diaChi
-        );
-
-        System.out.println(
-                "Cap nhat khach hang thanh cong!");
-    }
-
-    private static void xoaKhachHang(
-            DanhSachKhachHang danhSach) {
-
-        String ma = nhapBatBuoc(
-                "Nhap ma khach hang can xoa: ");
-
-        if (ma != null) {
-            System.out.println(
-                    danhSach.xoa(ma)
-                            ? "Xoa khach hang thanh cong!"
-                            : "Khong tim thay khach hang!"
-            );
-        }
-    }
-
-    private static void timKiemKhachHang(
-            DanhSachKhachHang danhSach) {
-
-        System.out.println(
-                "1. Chinh xac (khong phan biet hoa/thuong)");
-        System.out.println(
-                "2. Gan dung (chua tu khoa, "
-                + "khong phan biet hoa/thuong)");
-
-        String kieu = docDong("Chon kieu tim: ");
-
-        if (kieu == null) {
-            return;
-        }
-
-        if (!kieu.equals("1") && !kieu.equals("2")) {
-            System.out.println("Lua chon khong hop le!");
-            return;
-        }
-
-        System.out.println(
-                "Bo trong khoa khong can loc; khach hang "
-                + "phai khop tat ca khoa da nhap.");
-
-        String ma = docDong("Ma khach hang: ");
-        if (ma == null) {
-            return;
-        }
-
-        String hoTen = docDong("Ho ten: ");
-        if (hoTen == null) {
-            return;
-        }
-
-        String soDienThoai = docDong("So dien thoai: ");
-        if (soDienThoai == null) {
-            return;
-        }
-
-        String diaChi = docDong("Dia chi: ");
-        if (diaChi == null) {
-            return;
-        }
-
-        KhachHang[] ketQua = danhSach.timKiem(
-                ma,
-                hoTen,
-                soDienThoai,
-                diaChi,
-                kieu.equals("1")
-        );
-
-        hienThiDanhSachKhachHang(ketQua);
-    }
-
-    // Su dung interface cho chuc nang doc/ghi file.
-    private static void xuLyFile(
-            LuuTruFile danhSach, boolean doc) {
-
-        try {
-            if (doc) {
-                danhSach.docFile(TEP_KHACH_HANG);
-            } else {
-                danhSach.ghiFile(TEP_KHACH_HANG);
-            }
-
-            System.out.println(
-                    (doc ? "Doc" : "Luu")
-                    + " file thanh cong: " + TEP_KHACH_HANG);
-
-        } catch (IOException e) {
-            System.out.println(
-                    "Khong " + (doc ? "doc" : "luu")
-                    + " duoc file: " + e.getMessage());
-        }
-    }
-
-    private static String docDong(String thongBao) {
-        System.out.print(thongBao);
-
-        return sc.hasNextLine()
-                ? sc.nextLine().trim()
-                : null;
-    }
-
-    private static String nhapBatBuoc(String thongBao) {
-        while (true) {
-            String giaTri = docDong(thongBao);
-
-            if (giaTri == null || !giaTri.isEmpty()) {
-                return giaTri;
-            }
-
-            System.out.println(
-                    "Thong tin khong duoc de trong!");
-        }
-    }
-
-    private static Integer nhapSoNguyen(
-            String thongBao, int nhoNhat) {
-
-        while (true) {
-            String giaTri = docDong(thongBao);
-
-            if (giaTri == null) {
-                return null;
-            }
-
-            try {
-                int so = Integer.parseInt(giaTri);
-
-                if (so >= nhoNhat) {
-                    return so;
-                }
-            } catch (NumberFormatException e) {
-                // Bao loi va cho nhap lai.
-            }
-
-            System.out.println(
-                    "Vui long nhap so nguyen >= "
-                    + nhoNhat + ".");
-        }
-    }
-
-    private static String nhapSoDienThoai(
-            String thongBao, boolean choPhepBoQua) {
-
-        while (true) {
-            String giaTri = docDong(thongBao);
-
-            if (giaTri == null
-                    || (choPhepBoQua && giaTri.isEmpty())) {
-                return giaTri;
-            }
-
-            if (DanhSachKhachHang.soDienThoaiHopLe(giaTri)) {
-                return giaTri;
-            }
-
-            System.out.println(
-                    "So dien thoai phai co 9-15 chu so, "
-                    + "co the bat dau bang +.");
-        }
-    }
-
-    private static void quanLySanPham(DanhSachSanPham ds) {
-        while (true) {
-            System.out.println("\n===== QUAN LY SAN PHAM =====");
-            System.out.println("1. Xem tat ca  2. Them  3. Sua  4. Xoa");
-            System.out.println("5. Tim ma/ten  6. Loc ma loai  7. Luu lai  0. Quay lai");
-            String chon = docDong("Nhap lua chon: ");
-            if (chon == null || chon.equals("0")) return;
-            try {
-                switch (chon) {
-                    case "1": hienThiSanPham(ds.getDanhSach()); break;
+                    }
                     case "2": {
-                        SanPham sp = nhapSanPham(null, ds);
-                        if (sp != null) { ds.them(sp); tuLuu(ds, TEP_SAN_PHAM); }
+                        KhachHang khachHang = Main.nhapKhachHang(danhSachKhachHang);
+                        if (khachHang == null) continue block28;
+                        danhSachKhachHang.them(khachHang);
+                        Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
+                        System.out.println("Them khach hang thanh cong!");
                         break;
                     }
                     case "3": {
-                        String ma = nhapBatBuoc("Ma can sua: ");
-                        if (ma == null) return;
-                        SanPham cu = ds.timTheoMa(ma);
-                        if (cu == null) { System.out.println("Khong tim thay."); break; }
-                        SanPham moi = nhapSanPham(cu.getMaSanPham(), ds);
-                        if (moi != null && ds.suaTheoMa(ma, moi)) tuLuu(ds, TEP_SAN_PHAM);
+                        Main.suaKhachHang(danhSachKhachHang);
+                        Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
                         break;
                     }
                     case "4": {
-                        String ma = nhapBatBuoc("Ma can xoa: ");
-                        if (ma == null) return;
-                        if (ds.xoaTheoMa(ma)) { tuLuu(ds, TEP_SAN_PHAM); System.out.println("Da xoa."); }
-                        else System.out.println("Khong tim thay.");
+                        Main.xoaKhachHang(danhSachKhachHang);
+                        Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
                         break;
                     }
                     case "5": {
-                        String khoa = nhapBatBuoc("Ma hoac ten: ");
-                        if (khoa == null) return;
-                        hienThiSanPham(ds.timGanDung(khoa));
+                        Main.nhapNhieuKhachHang(danhSachKhachHang, true);
+                        Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
                         break;
                     }
                     case "6": {
-                        String loai = nhapBatBuoc("Ma loai: ");
-                        if (loai == null) return;
-                        hienThiSanPham(ds.locTheoLoai(loai));
+                        Main.nhapNhieuKhachHang(danhSachKhachHang, false);
+                        Main.tuLuu(danhSachKhachHang, TEP_KHACH_HANG);
                         break;
                     }
-                    case "7": tuLuu(ds, TEP_SAN_PHAM); break;
-                    default: System.out.println("Lua chon khong hop le!");
+                    case "7": {
+                        Main.timKiemKhachHang(danhSachKhachHang);
+                        break;
+                    }
+                    case "8": {
+                        System.out.println(VanBanConsole.khongDau(danhSachKhachHang.thongKe()));
+                        break;
+                    }
+                    case "9": {
+                        Main.xuLyFile(danhSachKhachHang, true);
+                        break;
+                    }
+                    case "10": {
+                        Main.xuLyFile(danhSachKhachHang, false);
+                        break;
+                    }
+                    case "0": {
+                        return;
+                    }
+                    default: {
+                        System.out.println("Lua chon khong hop le!");
+                        break;
+                    }
                 }
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
+                continue;
+            }
+            catch (IllegalArgumentException illegalArgumentException) {
+                System.out.println(illegalArgumentException.getMessage());
+                continue;
             }
         }
     }
 
-    private static void hienThiSanPham(List<SanPham> danhSach) {
-        if (danhSach.isEmpty()) System.out.println("Danh sach trong.");
-        for (SanPham sp : danhSach)
-            System.out.println(sp.hienThiThongTin() + "\n------------------------------");
-        System.out.println("Tong so san pham: " + danhSach.size());
+    private static void hienThiDanhSachKhachHang(KhachHang[] khachHangArray) {
+        System.out.println("===== DANH SACH KHACH HANG =====");
+        if (khachHangArray.length == 0) {
+            System.out.println("Danh sach khach hang dang trong.");
+            return;
+        }
+        for (KhachHang khachHang : khachHangArray) {
+            System.out.println(VanBanConsole.khongDau(khachHang.thongTinKhachHang()));
+            System.out.println("------------------------------");
+        }
+        System.out.println("Tong so khach hang: " + khachHangArray.length);
     }
 
-    private static SanPham nhapSanPham(String maCoDinh, DanhSachSanPham danhSach) {
-        String ma = maCoDinh;
-        if (ma == null) {
-            while (true) {
-                ma = nhapBatBuoc("Ma san pham: ");
-                if (ma == null) return null;
-                if (!DanhSachKhachHang.maHopLe(ma)) {
-                    System.out.println("Ma chi gom chu, so, dau _ hoac -.");
-                } else if (danhSach.timTheoMa(ma) != null) {
-                    System.out.println("Ma san pham da ton tai. Nhap ma khac.");
-                } else break;
-            }
-        }
-        String ten = nhapBatBuoc("Ten san pham: ");
-        if (ten == null) return null;
-        Double gia = nhapSoThuc("Gia ban: ", 0);
-        if (gia == null) return null;
-        String hang = nhapBatBuoc("Thuong hieu: ");
-        if (hang == null) return null;
-        Integer ton = nhapSoNguyen("So luong ton: ", 0);
-        if (ton == null) return null;
-        String loai = nhapBatBuoc("Ma loai: ");
-        if (loai == null) return null;
+    private static KhachHang nhapKhachHang(DanhSachKhachHang danhSachKhachHang) {
+        String string;
         while (true) {
-            String kieu = docDong("Kieu (1=giay, 2=dung cu, 3=quan ao): ");
-            if (kieu == null) return null;
-            switch (kieu) {
-                case "1": {
-                    Double co = nhapSoThuc("Kich co giay: ", 1);
-                    if (co == null) return null;
-                    String mau = nhapBatBuoc("Mau sac: ");
-                    if (mau == null) return null;
-                    String de = nhapBatBuoc("Loai de giay: ");
-                    return de == null ? null : new GiayTheThao(ma, ten, gia, hang, ton, loai, co, mau, de);
-                }
-                case "2": {
-                    String mon = nhapBatBuoc("Mon the thao: ");
-                    if (mon == null) return null;
-                    String vatLieu = nhapBatBuoc("Vat lieu: ");
-                    if (vatLieu == null) return null;
-                    Double kg = nhapSoThuc("Khoi luong (kg): ", 0);
-                    return kg == null ? null : new DungCuTheThao(ma, ten, gia, hang, ton, loai, mon, vatLieu, kg);
-                }
-                case "3": {
-                    String co = nhapBatBuoc("Kich co quan ao: ");
-                    return co == null ? null : new QuanAoTheThao(ma, ten, gia, hang, ton, loai, co);
-                }
-                default: System.out.println("Kieu khong hop le.");
+            if ((string = Main.nhapBatBuoc("Nhap ma khach hang: ")) == null) {
+                return null;
             }
+            if (!DanhSachKhachHang.maHopLe(string)) {
+                System.out.println("Ma chi gom chu, so, dau _ hoac -.");
+                continue;
+            }
+            if (danhSachKhachHang.timTheoMa(string) == null) break;
+            System.out.println("Ma khach hang da ton tai! Vui long nhap ma khac.");
+        }
+        String string2 = Main.nhapBatBuoc("Nhap ho ten: ");
+        if (string2 == null) {
+            return null;
+        }
+        String string3 = Main.nhapSoDienThoai("Nhap so dien thoai: ", false);
+        if (string3 == null) {
+            return null;
+        }
+        String string4 = Main.nhapBatBuoc("Nhap dia chi: ");
+        if (string4 == null) {
+            return null;
+        }
+        return new KhachHang(string, string2, string3, string4);
+    }
+
+    private static void nhapNhieuKhachHang(DanhSachKhachHang danhSachKhachHang, boolean bl) {
+        Integer n;
+        if (bl) {
+            System.out.println("Danh sach nhap moi se thay the danh sach hien tai sau khi nhap xong.");
+        }
+        if ((n = Main.nhapSoNguyen(bl ? "Nhap n: " : "Nhap k: ", bl ? 0 : 1)) == null) {
+            return;
+        }
+        DanhSachKhachHang danhSachKhachHang2 = bl ? new DanhSachKhachHang() : new DanhSachKhachHang(danhSachKhachHang.getDanhSach());
+        KhachHang[] khachHangArray = new KhachHang[n.intValue()];
+        for (int i = 0; i < n; ++i) {
+            System.out.println("--- Khach hang " + (i + 1) + "/" + n + " ---");
+            khachHangArray[i] = Main.nhapKhachHang(danhSachKhachHang2);
+            if (khachHangArray[i] == null) {
+                return;
+            }
+            danhSachKhachHang2.them(khachHangArray[i]);
+        }
+        if (bl) {
+            danhSachKhachHang.nhapDanhSach(khachHangArray);
+        } else {
+            danhSachKhachHang.themNhieu(khachHangArray);
+        }
+        System.out.println("Da " + (bl ? "nhap moi " : "them ") + n + " khach hang.");
+    }
+
+    private static void suaKhachHang(DanhSachKhachHang danhSachKhachHang) {
+        String string = Main.nhapBatBuoc("Nhap ma khach hang can sua: ");
+        if (string == null) {
+            return;
+        }
+        KhachHang khachHang = danhSachKhachHang.timTheoMa(string);
+        if (khachHang == null) {
+            System.out.println("Khong tim thay khach hang!");
+            return;
+        }
+        System.out.println(VanBanConsole.khongDau(khachHang.thongTinKhachHang()));
+        System.out.println("Giu nguyen ma khach hang. Nhan Enter de giu thong tin cu.");
+        String string2 = Main.docDong("Ho ten moi: ");
+        if (string2 == null) {
+            return;
+        }
+        String string3 = Main.nhapSoDienThoai("So dien thoai moi: ", true);
+        if (string3 == null) {
+            return;
+        }
+        String string4 = Main.docDong("Dia chi moi: ");
+        if (string4 == null) {
+            return;
+        }
+        danhSachKhachHang.sua(string, string2.isEmpty() ? khachHang.getHoTen() : string2, string3.isEmpty() ? khachHang.getSoDienThoai() : string3, string4.isEmpty() ? khachHang.getDiaChi() : string4);
+        System.out.println("Cap nhat khach hang thanh cong!");
+    }
+
+    private static void xoaKhachHang(DanhSachKhachHang danhSachKhachHang) {
+        String string = Main.nhapBatBuoc("Nhap ma khach hang can xoa: ");
+        if (string != null) {
+            System.out.println(danhSachKhachHang.xoa(string) ? "Xoa khach hang thanh cong!" : "Khong tim thay khach hang!");
         }
     }
 
-    private static Double nhapSoThuc(String thongBao, double nhoNhat) {
-        while (true) {
-            String dong = docDong(thongBao);
-            if (dong == null) return null;
+    private static void timKiemKhachHang(DanhSachKhachHang danhSachKhachHang) {
+        System.out.println("1. Chinh xac (khong phan biet hoa/thuong)");
+        System.out.println("2. Gan dung (chua tu khoa, khong phan biet hoa/thuong)");
+        String string = Main.docDong("Chon kieu tim: ");
+        if (string == null) {
+            return;
+        }
+        if (!string.equals("1") && !string.equals("2")) {
+            System.out.println("Lua chon khong hop le!");
+            return;
+        }
+        System.out.println("Bo trong khoa khong can loc; khach hang phai khop tat ca khoa da nhap.");
+        String string2 = Main.docDong("Ma khach hang: ");
+        if (string2 == null) {
+            return;
+        }
+        String string3 = Main.docDong("Ho ten: ");
+        if (string3 == null) {
+            return;
+        }
+        String string4 = Main.docDong("So dien thoai: ");
+        if (string4 == null) {
+            return;
+        }
+        String string5 = Main.docDong("Dia chi: ");
+        if (string5 == null) {
+            return;
+        }
+        KhachHang[] khachHangArray = danhSachKhachHang.timKiem(string2, string3, string4, string5, string.equals("1"));
+        Main.hienThiDanhSachKhachHang(khachHangArray);
+    }
+
+    private static void xuLyFile(LuuTruFile luuTruFile, boolean bl) {
+        try {
+            if (bl) {
+                luuTruFile.docFile(TEP_KHACH_HANG);
+            } else {
+                luuTruFile.ghiFile(TEP_KHACH_HANG);
+            }
+            System.out.println((bl ? "Doc" : "Luu") + " file thanh cong: data/khachhang.txt");
+        }
+        catch (IOException iOException) {
+            System.out.println("Khong " + (bl ? "doc" : "luu") + " duoc file: " + iOException.getMessage());
+        }
+    }
+
+    private static String docDong(String string) {
+        System.out.print(string);
+        return sc.hasNextLine() ? sc.nextLine().trim() : null;
+    }
+
+    private static String nhapBatBuoc(String string) {
+        String string2;
+        while ((string2 = Main.docDong(string)) != null && string2.isEmpty()) {
+            System.out.println("Thong tin khong duoc de trong!");
+        }
+        return string2;
+    }
+
+    private static Integer nhapSoNguyen(String string, int n) {
+        String string2;
+        while ((string2 = Main.docDong(string)) != null) {
             try {
-                double so = Double.parseDouble(dong);
-                if (Double.isFinite(so) && so >= nhoNhat) return so;
-            } catch (NumberFormatException e) { }
-            System.out.println("Vui long nhap so >= " + nhoNhat + ".");
+                int n2 = Integer.parseInt(string2);
+                if (n2 >= n) {
+                    return n2;
+                }
+            }
+            catch (NumberFormatException numberFormatException) {
+                // empty catch block
+            }
+            System.out.println("Vui long nhap so nguyen >= " + n + ".");
         }
+        return null;
     }
 
-    private static void quanLyNhaCungCap(DanhSachNhaCungCap ds) {
-        while (true) {
-            System.out.println("\n===== QUAN LY NHA CUNG CAP =====");
-            System.out.println("1. Xem tat ca  2. Them  3. Sua  4. Xoa  5. Tim ma/ten  6. Luu lai  0. Quay lai");
-            String chon = docDong("Nhap lua chon: ");
-            if (chon == null || chon.equals("0")) return;
+    private static String nhapSoDienThoai(String string, boolean bl) {
+        String string2;
+        while (!((string2 = Main.docDong(string)) == null || bl && string2.isEmpty())) {
+            if (DanhSachKhachHang.soDienThoaiHopLe(string2)) {
+                return string2;
+            }
+            System.out.println("So dien thoai phai co 9-15 chu so, co the bat dau bang +.");
+        }
+        return string2;
+    }
+
+    private static void quanLySanPham(DanhSachSanPham danhSachSanPham) {
+        block30: while (true) {
+            System.out.println("\n===== QUAN LY SAN PHAM =====");
+            System.out.println("1. Xem tat ca  2. Nhap n ban dau  3. Them 1  4. Them k");
+            System.out.println("5. Sua  6. Xoa  7. Tim theo ma  8. Tim gan dung");
+            System.out.println("9. Loc danh muc  10. Loc gia  11. Thong ke danh muc  12. Sap het hang  0. Quay lai");
+            String string2 = Main.docDong("Nhap lua chon: ");
+            if (string2 == null || string2.equals("0")) {
+                return;
+            }
             try {
-                switch (chon) {
-                    case "1": hienThiNhaCungCap(ds.getDanhSach()); break;
+                switch (string2) {
+                    case "1": {
+                        Main.hienThiSanPham(danhSachSanPham.getDanhSach());
+                        break;
+                    }
                     case "2": {
-                        NhaCungCap ncc = nhapNhaCungCap(null, ds);
-                        if (ncc != null) { ds.them(ncc); tuLuu(ds, TEP_NHA_CUNG_CAP); }
+                        if (!Main.nhapNhieuSanPham(danhSachSanPham, true)) continue block30;
+                        LUU_TRU.ghiSanPham(TEP_SAN_PHAM, danhSachSanPham);
                         break;
                     }
                     case "3": {
-                        String ma = nhapBatBuoc("Ma can sua: ");
-                        if (ma == null) return;
-                        NhaCungCap cu = ds.timTheoMa(ma);
-                        if (cu == null) { System.out.println("Khong tim thay."); break; }
-                        NhaCungCap moi = nhapNhaCungCap(cu.getMaNhaCungCap(), ds);
-                        if (moi != null && ds.suaTheoMa(ma, moi)) tuLuu(ds, TEP_NHA_CUNG_CAP);
+                        Object object = Main.nhapSanPham(null, danhSachSanPham);
+                        if (object == null || !danhSachSanPham.them((SanPham)object)) continue block30;
+                        LUU_TRU.ghiSanPham(TEP_SAN_PHAM, danhSachSanPham);
+                        System.out.println("Da them san pham.");
                         break;
                     }
                     case "4": {
-                        String ma = nhapBatBuoc("Ma can xoa: ");
-
-                        if (ma == null) {
-                            return;
-                        }
-
-                        if (ds.xoaTheoMa(ma)) {
-                            tuLuu(ds, TEP_NHA_CUNG_CAP);
-                            System.out.println("Da xoa.");
-                        } else {
-                            System.out.println("Khong tim thay.");
-                        }
+                        if (!Main.nhapNhieuSanPham(danhSachSanPham, false)) continue block30;
+                        LUU_TRU.ghiSanPham(TEP_SAN_PHAM, danhSachSanPham);
                         break;
                     }
                     case "5": {
-                        String khoa = nhapBatBuoc("Ma hoac ten: ");
-                        if (khoa == null) return;
-                        hienThiNhaCungCap(ds.timGanDung(khoa));
+                        Object object = Main.nhapBatBuoc("Ma can sua: ");
+                        if (object == null) {
+                            return;
+                        }
+                        SanPham object2 = danhSachSanPham.timTheoMa((String)object);
+                        if (object2 == null) {
+                            System.out.println("Khong tim thay.");
+                            break;
+                        }
+                        SanPham sanPham = Main.nhapSanPham(((SanPham)object2).getMaSanPham(), danhSachSanPham);
+                        if (sanPham == null || !danhSachSanPham.suaTheoMa((String)object, sanPham)) continue block30;
+                        LUU_TRU.ghiSanPham(TEP_SAN_PHAM, danhSachSanPham);
+                        System.out.println("Da sua san pham.");
                         break;
                     }
-                    case "6": tuLuu(ds, TEP_NHA_CUNG_CAP); break;
-                    default: System.out.println("Lua chon khong hop le!");
+                    case "6": {
+                        Object object = Main.nhapBatBuoc("Ma can xoa: ");
+                        if (object == null) {
+                            return;
+                        }
+                        if (danhSachSanPham.xoaTheoMa((String)object)) {
+                            LUU_TRU.ghiSanPham(TEP_SAN_PHAM, danhSachSanPham);
+                            System.out.println("Da xoa san pham.");
+                            break;
+                        }
+                        System.out.println("Khong tim thay.");
+                        break;
+                    }
+                    case "7": {
+                        Object object = Main.nhapBatBuoc("Ma san pham can tim: ");
+                        if (object == null) {
+                            return;
+                        }
+                        SanPham object2 = danhSachSanPham.timTheoMa((String)object);
+                        Main.hienThiSanPham(object2 == null ? List.of() : List.of(object2));
+                        break;
+                    }
+                    case "8": {
+                        Object object = Main.nhapBatBuoc("Ma hoac ten: ");
+                        if (object == null) {
+                            return;
+                        }
+                        Main.hienThiSanPham(danhSachSanPham.timGanDung((String)object));
+                        break;
+                    }
+                    case "9": {
+                        Object object = Main.nhapBatBuoc("Ma danh muc: ");
+                        if (object == null) {
+                            return;
+                        }
+                        Main.hienThiSanPham(danhSachSanPham.locTheoDanhMuc((String)object));
+                        break;
+                    }
+                    case "10": {
+                        Object object = Main.nhapGia("Gia tu: ");
+                        if (object == null) {
+                            return;
+                        }
+                        Object object2 = Main.nhapGia("Gia den: ");
+                        if (object2 == null) {
+                            return;
+                        }
+                        Main.hienThiSanPham(danhSachSanPham.locTheoKhoangGia((BigDecimal)object, (BigDecimal)object2));
+                        break;
+                    }
+                    case "11": {
+                        danhSachSanPham.thongKeTheoDanhMuc().forEach((string, n) -> System.out.println(string + ": " + n + " san pham"));
+                        break;
+                    }
+                    case "12": {
+                        Object object = Main.nhapSoNguyen("Nguong ton kho: ", 0);
+                        if (object == null) {
+                            return;
+                        }
+                        Main.hienThiSanPham(danhSachSanPham.lietKeSapHetHang((Integer)object));
+                        break;
+                    }
+                    default: {
+                        System.out.println("Lua chon khong hop le!");
+                        break;
+                    }
                 }
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
+                continue;
+            }
+            catch (IOException | IllegalArgumentException exception) {
+                System.out.println("Khong the thuc hien: " + exception.getMessage());
+                continue;
             }
         }
     }
 
-    private static NhaCungCap nhapNhaCungCap(String maCoDinh, DanhSachNhaCungCap danhSach) {
-        String ma = maCoDinh;
-        if (ma == null) {
+    private static boolean nhapNhieuSanPham(DanhSachSanPham danhSachSanPham, boolean bl) {
+        Integer n = Main.nhapSoNguyen(bl ? "Nhap n: " : "Nhap k: ", bl ? 0 : 1);
+        if (n == null) {
+            return false;
+        }
+        DanhSachSanPham danhSachSanPham2 = bl ? new DanhSachSanPham(0) : new DanhSachSanPham(danhSachSanPham.getDanhSach().toArray(new SanPham[0]));
+        SanPham[] sanPhamArray = new SanPham[n.intValue()];
+        for (int i = 0; i < n; ++i) {
+            System.out.println("--- San pham " + (i + 1) + "/" + n + " ---");
+            sanPhamArray[i] = Main.nhapSanPham(null, danhSachSanPham2);
+            if (sanPhamArray[i] == null) {
+                return false;
+            }
+            danhSachSanPham2.them(sanPhamArray[i]);
+        }
+        if (bl) {
+            danhSachSanPham.nhapBanDau(sanPhamArray);
+        } else {
+            danhSachSanPham.themNhieu(sanPhamArray);
+        }
+        System.out.println("Da " + (bl ? "nhap moi " : "them ") + n + " san pham.");
+        return true;
+    }
+
+    private static void hienThiSanPham(List<SanPham> list) {
+        if (list.isEmpty()) {
+            System.out.println("Danh sach trong.");
+        }
+        for (SanPham sanPham : list) {
+            System.out.println(VanBanConsole.khongDau(sanPham.hienThiThongTin()) + "\n------------------------------");
+        }
+        System.out.println("Tong so san pham: " + list.size());
+    }
+
+    private static SanPham nhapSanPham(String string, DanhSachSanPham danhSachSanPham) {
+        DanhMuc danhMuc;
+        String string2;
+        String string3 = string;
+        if (string3 == null) {
             while (true) {
-                ma = nhapBatBuoc("Ma nha cung cap: ");
-                if (ma == null) return null;
-                if (!DanhSachKhachHang.maHopLe(ma)) {
+                if ((string3 = Main.nhapBatBuoc("Ma san pham: ")) == null) {
+                    return null;
+                }
+                if (!DanhSachKhachHang.maHopLe(string3)) {
                     System.out.println("Ma chi gom chu, so, dau _ hoac -.");
-                } else if (danhSach.timTheoMa(ma) != null) {
-                    System.out.println("Ma nha cung cap da ton tai. Nhap ma khac.");
-                } else break;
+                    continue;
+                }
+                if (danhSachSanPham.timTheoMa(string3) == null) break;
+                System.out.println("Ma san pham da ton tai. Nhap ma khac.");
             }
         }
-        String ten = nhapBatBuoc("Ten nha cung cap: ");
-        if (ten == null) return null;
-        String sdt = nhapSoDienThoai("So dien thoai: ", false);
-        if (sdt == null) return null;
-        String diaChi = nhapBatBuoc("Dia chi: ");
-        return diaChi == null ? null : new NhaCungCap(ma, ten, diaChi, sdt);
+        if ((string2 = Main.nhapBatBuoc("Ten san pham: ")) == null) {
+            return null;
+        }
+        BigDecimal bigDecimal = Main.nhapGia();
+        if (bigDecimal == null) {
+            return null;
+        }
+        String string4 = Main.nhapBatBuoc("Thuong hieu: ");
+        if (string4 == null) {
+            return null;
+        }
+        Integer n = Main.nhapSoNguyen("So luong ton: ", 0);
+        if (n == null) {
+            return null;
+        }
+        System.out.println("Danh muc hien co:");
+        for (DanhMuc object2 : DuLieu.getDanhMuc()) {
+            System.out.println(object2.getMaDanhMuc() + " - " + VanBanConsole.khongDau(object2.getTenDanhMuc()));
+        }
+        while (true) {
+            String string5;
+            if ((string5 = Main.nhapBatBuoc("Ma danh muc: ")) == null) {
+                return null;
+            }
+            danhMuc = DuLieu.timDanhMuc(string5);
+            if (danhMuc != null) break;
+            System.out.println("Ma danh muc chua ton tai: " + string5);
+        }
+        String string6 = Main.docDong("Mau sac (bo trong neu chua biet): ");
+        if (string6 == null) {
+            return null;
+        }
+        String string7 = Main.docDong("Chat lieu (bo trong neu chua biet): ");
+        if (string7 == null) {
+            return null;
+        }
+        String string8;
+        while ((string8 = Main.docDong("Kieu (1=giay, 2=dung cu, 3=quan ao): ")) != null) {
+            switch (string8) {
+                case "1": {
+                    String string9 = Main.nhapBatBuoc("Kich co giay: ");
+                    if (string9 == null) {
+                        return null;
+                    }
+                    String string10 = Main.nhapBatBuoc("Loai de giay: ");
+                    return string10 == null ? null : new GiayTheThao(string3, string2, string4, bigDecimal, n, string6, string7, danhMuc, string9, string10);
+                }
+                case "2": {
+                    Double d = Main.nhapSoThuc("Khoi luong (kg): ", 0.0);
+                    return d == null ? null : new DungCuTheThao(string3, string2, string4, bigDecimal, n, string6, string7, danhMuc, d);
+                }
+                case "3": {
+                    String string11 = Main.nhapBatBuoc("Kich co quan ao: ");
+                    return string11 == null ? null : new QuanAoTheThao(string3, string2, string4, bigDecimal, n, string6, string7, danhMuc, string11);
+                }
+            }
+            System.out.println("Kieu khong hop le.");
+        }
+        return null;
     }
 
-    private static void hienThiNhaCungCap(List<NhaCungCap> danhSach) {
-        if (danhSach.isEmpty()) System.out.println("Danh sach trong.");
-        for (NhaCungCap ncc : danhSach)
-            System.out.println(ncc.thongTinNhaCungCap() + "\n------------------------------");
-        System.out.println("Tong so nha cung cap: " + danhSach.size());
+    private static BigDecimal nhapGia() {
+        return Main.nhapGia("Gia ban: ");
+    }
+
+    private static BigDecimal nhapGia(String string) {
+        String string2;
+        while ((string2 = Main.docDong(string)) != null) {
+            try {
+                BigDecimal bigDecimal = new BigDecimal(string2);
+                if (bigDecimal.signum() >= 0) {
+                    return bigDecimal;
+                }
+            }
+            catch (NumberFormatException numberFormatException) {
+                // empty catch block
+            }
+            System.out.println("Vui long nhap gia >= 0.");
+        }
+        return null;
+    }
+
+    private static Double nhapSoThuc(String string, double d) {
+        String string2;
+        while ((string2 = Main.docDong(string)) != null) {
+            try {
+                double d2 = Double.parseDouble(string2);
+                if (Double.isFinite(d2) && d2 >= d) {
+                    return d2;
+                }
+            }
+            catch (NumberFormatException numberFormatException) {
+                // empty catch block
+            }
+            System.out.println("Vui long nhap so >= " + d + ".");
+        }
+        return null;
+    }
+
+    private static void quanLyNhaCungCap(DanhSachNhaCungCap danhSachNhaCungCap) {
+        block20: while (true) {
+            System.out.println("\n===== QUAN LY NHA CUNG CAP =====");
+            System.out.println("1. Xem tat ca  2. Them  3. Sua  4. Xoa  5. Tim gan dung  6. Tim theo ma  7. Luu lai  0. Quay lai");
+            String string = Main.docDong("Nhap lua chon: ");
+            if (string == null || string.equals("0")) {
+                return;
+            }
+            try {
+                switch (string) {
+                    case "1": {
+                        Main.hienThiNhaCungCap(danhSachNhaCungCap.getTatCa());
+                        break;
+                    }
+                    case "2": {
+                        Object object = Main.nhapNhaCungCap(null, danhSachNhaCungCap);
+                        if (object == null || !danhSachNhaCungCap.them((NhaCungCap)object)) continue block20;
+                        LUU_TRU.ghiNhaCungCap(TEP_NHA_CUNG_CAP, danhSachNhaCungCap);
+                        System.out.println("Da them nha cung cap.");
+                        break;
+                    }
+                    case "3": {
+                        Object object = Main.nhapBatBuoc("Ma can sua: ");
+                        if (object == null) {
+                            return;
+                        }
+                        NhaCungCap nhaCungCap = danhSachNhaCungCap.timTheoMa((String)object);
+                        if (nhaCungCap == null) {
+                            System.out.println("Khong tim thay.");
+                            break;
+                        }
+                        NhaCungCap nhaCungCap2 = Main.nhapNhaCungCap(nhaCungCap.getMaNhaCungCap(), danhSachNhaCungCap);
+                        if (nhaCungCap2 == null || !danhSachNhaCungCap.suaTheoMa((String)object, nhaCungCap2)) continue block20;
+                        LUU_TRU.ghiNhaCungCap(TEP_NHA_CUNG_CAP, danhSachNhaCungCap);
+                        System.out.println("Da sua nha cung cap.");
+                        break;
+                    }
+                    case "4": {
+                        Object object = Main.nhapBatBuoc("Ma can xoa: ");
+                        if (object == null) {
+                            return;
+                        }
+                        if (danhSachNhaCungCap.xoaTheoMa((String)object)) {
+                            LUU_TRU.ghiNhaCungCap(TEP_NHA_CUNG_CAP, danhSachNhaCungCap);
+                            System.out.println("Da xoa.");
+                            break;
+                        }
+                        System.out.println("Khong tim thay.");
+                        break;
+                    }
+                    case "5": {
+                        Object object = Main.nhapBatBuoc("Ma hoac ten: ");
+                        if (object == null) {
+                            return;
+                        }
+                        Main.hienThiNhaCungCap(danhSachNhaCungCap.timGanDung((String)object));
+                        break;
+                    }
+                    case "6": {
+                        Object object = Main.nhapBatBuoc("Ma nha cung cap can tim: ");
+                        if (object == null) {
+                            return;
+                        }
+                        NhaCungCap nhaCungCap = danhSachNhaCungCap.timTheoMa((String)object);
+                        if (nhaCungCap == null) {
+                            System.out.println("Khong tim thay.");
+                            break;
+                        }
+                        Main.hienThiNhaCungCap(List.of(nhaCungCap));
+                        break;
+                    }
+                    case "7": {
+                        LUU_TRU.ghiNhaCungCap(TEP_NHA_CUNG_CAP, danhSachNhaCungCap);
+                        break;
+                    }
+                    default: {
+                        System.out.println("Lua chon khong hop le!");
+                        break;
+                    }
+                }
+                continue;
+            }
+            catch (IOException | IllegalArgumentException exception) {
+                System.out.println("Khong the thuc hien: " + exception.getMessage());
+                continue;
+            }
+        }
+    }
+
+    private static NhaCungCap nhapNhaCungCap(String string, DanhSachNhaCungCap danhSachNhaCungCap) {
+        String string2;
+        String string3 = string;
+        if (string3 == null) {
+            while (true) {
+                if ((string3 = Main.nhapBatBuoc("Ma nha cung cap: ")) == null) {
+                    return null;
+                }
+                if (!DanhSachKhachHang.maHopLe(string3)) {
+                    System.out.println("Ma chi gom chu, so, dau _ hoac -.");
+                    continue;
+                }
+                if (danhSachNhaCungCap.timTheoMa(string3) == null) break;
+                System.out.println("Ma nha cung cap da ton tai. Nhap ma khac.");
+            }
+        }
+        if ((string2 = Main.nhapBatBuoc("Ten nha cung cap: ")) == null) {
+            return null;
+        }
+        String string4 = Main.nhapSoDienThoai("So dien thoai: ", false);
+        if (string4 == null) {
+            return null;
+        }
+        String string5 = Main.nhapBatBuoc("Dia chi: ");
+        return string5 == null ? null : new NhaCungCap(string3, string2, string4, string5);
+    }
+
+    private static void hienThiNhaCungCap(List<NhaCungCap> list) {
+        if (list.isEmpty()) {
+            System.out.println("Danh sach trong.");
+        }
+        for (NhaCungCap nhaCungCap : list) {
+            System.out.println(VanBanConsole.khongDau(nhaCungCap.hienThiThongTin()) + "\n------------------------------");
+        }
+        System.out.println("Tong so nha cung cap: " + list.size());
     }
 
     public static void hienThiMenu() {
-        System.out.println(
-                "\n===== QUAN LY CUA HANG DUNG CU THE THAO =====");
+        System.out.println("\n===== QUAN LY CUA HANG DUNG CU THE THAO =====");
         System.out.println("1. Quan ly san pham");
-        System.out.println("2. Quan ly loai san pham");
+        System.out.println("2. Quan ly danh muc");
         System.out.println("3. Quan ly khach hang");
         System.out.println("4. Quan ly nhan vien");
         System.out.println("5. Quan ly nha cung cap");
         System.out.println("6. Quan ly hoa don");
         System.out.println("7. Quan ly phieu nhap");
+        System.out.println("8. Thong ke/bao cao");
+        System.out.println("9. Luu/doc du lieu");
         System.out.println("0. Thoat");
-        System.out.println(
-                "============================================");
+        System.out.println("============================================");
     }
 }
+

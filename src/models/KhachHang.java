@@ -1,54 +1,55 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
 package models;
 
-public class KhachHang{
+public class KhachHang {
     private String maKhachHang;
     private String hoTen;
     private String diaChi;
     private String soDienThoai;
 
-    public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String diaChi) {
-        this.maKhachHang = maKhachHang;
-        this.hoTen = hoTen;
-        this.soDienThoai = soDienThoai;
-        this.diaChi = diaChi;
+    public KhachHang(String string, String string2, String string3, String string4) {
+        this.maKhachHang = string;
+        this.hoTen = string2;
+        this.soDienThoai = string3;
+        this.diaChi = string4;
     }
 
     public String getMaKhachHang() {
-         return maKhachHang; 
+        return this.maKhachHang;
     }
 
     public String getHoTen() {
-         return hoTen; 
+        return this.hoTen;
     }
 
     public String getDiaChi() {
-         return diaChi; 
+        return this.diaChi;
     }
 
     public String getSoDienThoai() {
-         return soDienThoai; 
+        return this.soDienThoai;
     }
 
-    public void setMaKhachHang(String maKhachHang) {
-        this.maKhachHang = maKhachHang; 
+    public void setMaKhachHang(String string) {
+        this.maKhachHang = string;
     }
 
-    public void setHoTen(String hoTen) {
-        this.hoTen = hoTen;
+    public void setHoTen(String string) {
+        this.hoTen = string;
     }
 
-    public void setDiaChi(String diaChi) {
-        this.diaChi = diaChi;
+    public void setDiaChi(String string) {
+        this.diaChi = string;
     }
-    
-    public void setSoDienThoai(String soDienThoai) {
-        this.soDienThoai = soDienThoai;
+
+    public void setSoDienThoai(String string) {
+        this.soDienThoai = string;
     }
-    //method
+
     public String thongTinKhachHang() {
-        return "Ma khach hang: " + maKhachHang + 
-               "\nHo ten: " + hoTen + 
-               "\nSo dien thoai: " + soDienThoai + 
-               "\nDia chi: " + diaChi;
+        return "Ma khach hang: " + this.maKhachHang + "\nHo ten: " + this.hoTen + "\nSo dien thoai: " + this.soDienThoai + "\nDia chi: " + this.diaChi;
     }
 }
+

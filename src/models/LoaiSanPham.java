@@ -1,32 +1,37 @@
+/*
+ * Decompiled with CFR 0.152.
+ */
 package models;
 
-public class LoaiSanPham{
-    private String maLoai;
-    private String tenLoai;
-    private String moTa;
-    
-    public LoaiSanPham(String maLoai, String tenLoai, String moTa){
-        this.maLoai = maLoai;
-        this.tenLoai = tenLoai;
-        this.moTa = moTa;
+import models.DanhMuc;
+
+@Deprecated
+public class LoaiSanPham
+extends DanhMuc {
+    public LoaiSanPham(String string, String string2, String string3) {
+        super(string, string2, string3);
     }
 
     public String getMaLoai() {
-        return maLoai;
+        return this.getMaDanhMuc();
     }
-    public void setMaLoai(String maLoai) {
-        this.maLoai = maLoai;
+
+    public void setMaLoai(String string) {
+        if (!this.getMaDanhMuc().equals(string)) {
+            throw new IllegalArgumentException("Khong duoc doi ma danh muc.");
+        }
     }
+
     public String getTenLoai() {
-        return tenLoai;
+        return this.getTenDanhMuc();
     }
-    public void setTenLoai(String tenLoai) {
-        this.tenLoai = tenLoai;
+
+    public void setTenLoai(String string) {
+        this.capNhatThongTin(string, this.getMoTa());
     }
-    public String getMoTa() {
-        return moTa;
-    }
-    public void setMoTa(String moTa) {
-        this.moTa = moTa;
+
+    public void setMoTa(String string) {
+        this.capNhatThongTin(this.getTenDanhMuc(), string);
     }
 }
+
