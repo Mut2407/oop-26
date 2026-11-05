@@ -1,21 +1,23 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package models;
 
 public class NhanVien {
-    private String maNhanVien;
-    private String hoTen;
+    private final String maNhanVien;
+    private final String hoTen;
     private String caLamViec;
     private String soDienThoai;
-    private String diaChi;
 
-    public NhanVien(String string, String string2, String string3, String string4, String string5) {
-        this.maNhanVien = string;
-        this.hoTen = string2;
-        this.caLamViec = string3;
-        this.soDienThoai = string4;
-        this.diaChi = string5;
+    /** UML order: code, name, phone, shift (unlike the old five-argument constructor). */
+    public NhanVien(String ma, String ten, String sdt, String ca) {
+        if (ma == null || !ma.trim().matches("[A-Za-z0-9_-]+")) {
+            throw new IllegalArgumentException("Ma nhan vien khong hop le.");
+        }
+        if (ten == null || ten.isBlank()) {
+            throw new IllegalArgumentException("Ho ten khong duoc de trong.");
+        }
+        this.maNhanVien = ma.trim();
+        this.hoTen = ten.trim();
+        capNhatLienHe(sdt);
+        doiCaLamViec(ca);
     }
 
     public String getMaNhanVien() {
@@ -34,28 +36,28 @@ public class NhanVien {
         return this.soDienThoai;
     }
 
-    public String getDiaChi() {
-        return this.diaChi;
+    public void doiCaLamViec(String caMoi) {
+        if (caMoi == null || caMoi.isBlank()) {
+            throw new IllegalArgumentException("Ca lam viec khong duoc de trong.");
+        }
+        this.caLamViec = caMoi.trim();
     }
 
-    public void setMaNhanVien(String string) {
-        this.maNhanVien = string;
+    public void capNhatLienHe(String soDienThoai) {
+        if (soDienThoai == null || !soDienThoai.trim().matches("\\+?[0-9]{9,15}")) {
+            throw new IllegalArgumentException("So dien thoai phai co 9-15 chu so, co the bat dau bang +.");
+        }
+        this.soDienThoai = soDienThoai.trim();
     }
 
-    public void setHoTen(String string) {
-        this.hoTen = string;
+    public String hienThiThongTin() {
+        return "Ma Nhan Vien: " + this.maNhanVien + "\nHo ten Nhan Vien: " + this.hoTen + "\nSo dien thoai: " + this.soDienThoai + "\nCa lam viec: " + this.caLamViec;
     }
 
-    public void setCaLamViec(String string) {
-        this.caLamViec = string;
-    }
-
-    public void setSoDienThoai(String string) {
-        this.soDienThoai = string;
-    }
-
+    /** Adapter for the old display API; legacy addresses belong to list metadata. */
+    @Deprecated
     public String thongTinNhanVien() {
-        return "Ma Nhan Vien: " + this.maNhanVien + "\nHo ten Nhan Vien: " + this.hoTen + "\nSo dien thoai: " + this.soDienThoai + "\nDia chi: " + this.diaChi;
+        return hienThiThongTin();
     }
 }
 

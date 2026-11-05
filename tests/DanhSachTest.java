@@ -92,12 +92,12 @@ public class DanhSachTest {
         check(kh.xoa("K2") && kh.getSoLuong() == 1);
 
         DanhSachNhanVien nv = new DanhSachNhanVien();
-        nv.them(new NhanVien("V1", "Nhan vien", "Sang", "0901000001", "Ha Noi"));
-        nv.themNhieu(new NhanVien[] { new NhanVien("V2", "Nhan vien hai", "Chieu", "0901000002", "Hue") });
+        nv.them(new NhanVien("V1", "Nhan vien", "0901000001", "Sang"), "Ha Noi");
+        nv.themNhieu(new NhanVien[] { new NhanVien("V2", "Nhan vien hai", "0901000002", "Chieu") });
         check(nv.timTheoMa("v1") != null && nv.timKiem(null, "hai", null, null, null, false).length == 1);
         check(nv.sua("V1", "Nhan vien moi", "Toi", "0901000003", "Ha Noi"));
         check(nv.timTheoMa("V1").getCaLamViec().equals("Toi"));
-        expectError(() -> nv.them(new NhanVien("V1", "Trung", "Sang", "0901000004", "Hue")));
+        expectError(() -> nv.them(new NhanVien("V1", "Trung", "0901000004", "Sang"), "Hue"));
         check(nv.xoa("V2") && nv.getSoLuong() == 1);
     }
 
@@ -197,12 +197,12 @@ public class DanhSachTest {
             check(Files.readAllLines(tepKhachHang).get(0).startsWith("maKhachHang\t"));
             check(kh.timTheoMa("KH1").getSoDienThoai().equals("0901234567"));
 
-            DanhSachNhanVien nv = new DanhSachNhanVien(new NhanVien[] {
-                new NhanVien("NV1", "Nhan vien", "Sang", "0901000001", "Ha Noi")
-            });
+            DanhSachNhanVien nv = new DanhSachNhanVien();
+            nv.them(new NhanVien("NV1", "Nhan vien", "0901000001", "Sang"), "Ha Noi");
             nv.ghiFile(tepNhanVien.toString());
             nv.docFile(tepNhanVien.toString());
             check(nv.getDanhSach()[0].getSoDienThoai().equals("0901000001"));
+            check(nv.getDiaChiCu("NV1").equals("Ha Noi"));
         } finally {
             Files.deleteIfExists(tepSanPham);
             Files.deleteIfExists(tepNhaCungCap);

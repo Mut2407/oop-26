@@ -79,27 +79,32 @@ public class DuLieu {
     public static NhanVien[] taoDanhSachNhanVien() {
     return new NhanVien[] {
         new NhanVien(
-            "NV01", "Nguyen Van An", "Sang",
-            "0901000001", "Quan 1, TP.HCM"
+            "NV01", "Nguyen Van An", "0901000001", "Sang"
         ),
         new NhanVien(
-            "NV02", "Tran Thi Binh", "Chieu",
-            "0901000002", "Quan 3, TP.HCM"
+            "NV02", "Tran Thi Binh", "0901000002", "Chieu"
         ),
         new NhanVien(
-            "NV03", "Le Minh Chau", "Toi",
-            "0901000003", "Quan 5, TP.HCM"
+            "NV03", "Le Minh Chau", "0901000003", "Toi"
         ),
         new NhanVien(
-            "NV04", "Pham Ngoc Dung", "Sang",
-            "0901000004", "Binh Thanh, TP.HCM"
+            "NV04", "Pham Ngoc Dung", "0901000004", "Sang"
         ),
         new NhanVien(
-            "NV05", "Vo Thanh Hai", "Chieu",
-            "0901000005", "Thu Duc, TP.HCM"
+            "NV05", "Vo Thanh Hai", "0901000005", "Chieu"
         )
     };
 }
+
+    /** Legacy sample addresses kept separately from the four-field employee model. */
+    public static Map<String, String> taoDiaChiNhanVienCu() {
+        return Map.of(
+                "NV01", "Quan 1, TP.HCM",
+                "NV02", "Quan 3, TP.HCM",
+                "NV03", "Quan 5, TP.HCM",
+                "NV04", "Binh Thanh, TP.HCM",
+                "NV05", "Thu Duc, TP.HCM");
+    }
 
     public static NhaCungCap[] taoDanhSachNhaCungCap() {
         return new NhaCungCap[] {

@@ -42,7 +42,7 @@ public class Main {
         DanhSachSanPham danhSachSanPham;
         DuLieu.khoiTaoDanhMuc();
         DanhSachKhachHang danhSachKhachHang = new DanhSachKhachHang(DuLieu.taoDanhSachKhachHang());
-        DanhSachNhanVien danhSachNhanVien = new DanhSachNhanVien(DuLieu.taoDanhSachNhanVien());
+        DanhSachNhanVien danhSachNhanVien = new DanhSachNhanVien(DuLieu.taoDanhSachNhanVien(), DuLieu.taoDiaChiNhanVienCu());
         try {
             if (Main.tonTaiDuLieu(TEP_DANH_MUC)) {
                 Main.napDanhMuc();
@@ -367,7 +367,7 @@ public class Main {
             return;
         }
         for (KhachHang khachHang : khachHangArray) {
-            System.out.println(VanBanConsole.khongDau(khachHang.thongTinKhachHang()));
+            System.out.println(VanBanConsole.khongDau(khachHang.hienThiThongTin()));
             System.out.println("------------------------------");
         }
         System.out.println("Tong so khach hang: " + khachHangArray.length);
@@ -437,7 +437,7 @@ public class Main {
             System.out.println("Khong tim thay khach hang!");
             return;
         }
-        System.out.println(VanBanConsole.khongDau(khachHang.thongTinKhachHang()));
+        System.out.println(VanBanConsole.khongDau(khachHang.hienThiThongTin()));
         System.out.println("Giu nguyen ma khach hang. Nhan Enter de giu thong tin cu.");
         String string2 = Main.docDong("Ho ten moi: ");
         if (string2 == null) {
