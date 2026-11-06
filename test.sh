@@ -11,3 +11,8 @@ for test_source in tests/*Test.java; do
     count=$((count + 1))
 done
 printf 'PASS: %s test programs\n' "$count"
+if command -v pwsh >/dev/null 2>&1; then
+    java -ea -Dfile.encoding=UTF-8 -cp "$test_build/classes" ConsoleLauncherCheck "$(command -v pwsh)"
+else
+    printf 'SKIP: PowerShell launcher checks (pwsh not installed)\n'
+fi

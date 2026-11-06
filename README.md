@@ -9,22 +9,53 @@ kết quả kiểm thử và các việc cần làm ở Task 07.
 
 ## Chạy ứng dụng
 
-Dùng JDK 21. Chạy từ thư mục repository để ứng dụng tìm đúng thư mục dữ liệu.
+Dùng **JDK 21 trở lên** (có module `jdk.compiler`). Đặt `JAVA_HOME` trỏ đến JDK,
+hoặc thêm `java` của JDK vào `PATH`. Java đi kèm extension của IDE chưa chắc đã được
+thêm vào `PATH` của terminal.
 
 Windows CMD/PowerShell:
 
 ~~~powershell
-powershell -ExecutionPolicy Bypass -File .\run.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1
 ~~~
 
-Linux/cloud:
+Chỉ giữ **run.ps1** làm script chạy ứng dụng. Script luôn biên dịch toàn bộ `src/`
+vào thư mục sạch `out/console`, sau đó mới chạy `Main` bằng cùng một JDK. Nếu biên dịch
+lỗi, script dừng và không chạy class cũ. Script tự chọn thư mục repository làm thư mục
+làm việc để đọc đúng `data/`; không phụ thuộc bộ nhớ đệm Java của IDE.
+
+Nếu chưa cấu hình `JAVA_HOME`/`PATH`, có thể chỉ định đường dẫn JDK:
+
+~~~powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -JavaHome 'C:\Program Files\Java\jdk-21'
+~~~
+
+Để chỉ biên dịch, thêm `-BuildOnly`. Linux/macOS/cloud có PowerShell 7 dùng cùng script:
 
 ~~~bash
-bash run.sh
+pwsh -NoProfile -File ./run.ps1
 ~~~
 
-Script Linux gọi module trình biên dịch của JDK, dùng được cả trong môi trường chỉ
-có lệnh java nhưng vẫn có module jdk.compiler. Không cần database, server hoặc thư viện ngoài.
+Không cần database, server hoặc thư viện Java ngoài.
+
+### Chạy trong Antigravity IDE / VS Code
+
+Mở đúng thư mục repository chứa `src/`, `data/` và `run.ps1`. Trong **Run and Debug**,
+chọn **Sport Store - Console** rồi nhấn **F5**. Cấu hình dùng `run.ps1 -BuildOnly`
+trước khi chạy và lấy class từ `out/console`, với terminal tương tác để nhập menu.
+
+Nếu gặp `Unresolved compilation problems` và báo thiếu `docKhachHang`, `docNhanVien`,
+`ghiKhachHang` hoặc `DanhSachNhanVien.getTatCa()`:
+
+1. Lưu các file đang sửa, rồi cập nhật toàn bộ source bằng `git pull --ff-only origin main`.
+   Nếu Git báo xung đột/thay đổi cục bộ, giữ lại các thay đổi đó và xử lý trước khi tiếp tục.
+   Không chỉ chép `Main.java` hoặc giải nén `src.zip` cũ đè lên source hiện tại.
+2. Mở Command Palette (`Ctrl+Shift+P`), chạy **Java: Clean Java Language Server Workspace**,
+   chọn khởi động lại và xóa cache workspace của Java khi IDE hỏi.
+3. Chạy cấu hình **Sport Store - Console** hoặc lệnh `powershell ... -File .\run.ps1` ở trên.
+
+Bốn phương thức này đã có trong source Task 06.4. Lỗi trên cho biết bản biên dịch của
+IDE không giải quyết được API; cần kiểm tra source đang mở và cache, không sửa chữ ký UML.
 
 ## Menu
 
@@ -104,8 +135,14 @@ Script biên dịch mới toàn bộ source/test vào thư mục tạm và chạ
 *Test.java với assertions bật. Các kiểm thử ghi file vào thư mục tạm; kiểm thử Console
 khởi động tiến trình Main riêng, bao gồm lưu, thoát, mở lại và file lỗi.
 
-Đã xác minh trên OpenJDK 21/Linux: **16/16 chương trình kiểm thử đạt**.
-Chưa chạy trực tiếp trên Windows CMD/PowerShell.
+Script cũng chạy `ConsoleLauncherCheck` nếu có lệnh `pwsh`; nếu không có, phần kiểm tra
+PowerShell được thông báo bỏ qua riêng, không tính vào số chương trình Java đạt.
+Kiểm tra launcher dùng bản sao tạm có đường dẫn chứa dấu cách/tiếng Việt, mở các menu,
+loại class cũ, chặn khởi động khi source thiếu API và thử lại sau khi sửa source.
+
+Đã xác minh trên OpenJDK 21/Linux: **16/16 chương trình kiểm thử Java đạt**.
+Script `run.ps1` được kiểm tra riêng bằng PowerShell 7 trên Linux; chưa chạy trực tiếp
+trên Windows PowerShell 5.1 hoặc giao diện Antigravity IDE.
 
 ## Cấu trúc
 

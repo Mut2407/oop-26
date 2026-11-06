@@ -5,7 +5,9 @@ out/
 # IDE
 .idea/
 *.iml
-.vscode/
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
 
 # OS
 Thumbs.db

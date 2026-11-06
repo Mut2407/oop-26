@@ -4,6 +4,10 @@ Thực hiện tiếp từ commit c705ff9 (Task 06.1 đã được duyệt). Đã
 đối chiếu artifacts/Sport_Store.drawio.xml, trang **01 - Tổng quan (20 class)**.
 Không sử dụng ZIP hoặc báo cáo audit cũ làm nguồn hiện trạng.
 
+Cập nhật ngày 2026-11-06: chỉ giữ `run.ps1` để chạy ứng dụng theo yêu cầu người dùng.
+Phần kiểm thử Task 06 dưới đây ghi nhận kết quả tại thời điểm nghiệm thu; xem mục
+**Sửa cách khởi động Console** cho thay đổi sau nghiệm thu.
+
 ## Tiến độ từng task
 
 | Mốc | Công việc | Build / hồi quy trước khi chuyển tiếp |
@@ -159,6 +163,32 @@ run.sh đã chạy trên bản sao source và dữ liệu riêng: biên dịch, 
 khách hàng/nhân viên và thoát thành công. git diff --check đạt.
 Còn cảnh báo deprecated có sẵn trong DanhMucTest; không có lỗi build.
 Môi trường: OpenJDK 21/Linux; chưa chạy trực tiếp Windows CMD/PowerShell.
+
+## Sửa cách khởi động Console — 2026-11-06
+
+Lỗi người dùng cung cấp là `Unresolved compilation problems` tại `Main.chay`,
+báo thiếu `docKhachHang`, `docNhanVien`, `ghiKhachHang` và `DanhSachNhanVien.getTatCa`.
+Source trên `main` tại commit `2d8a4bf` đã có đủ API và biên dịch sạch thành công.
+Chưa truy cập được source/cache trên máy Windows của người dùng để xác định chính xác
+đó là source cũ hay cache IDE. README hướng dẫn cập nhật đầy đủ source và làm sạch
+Java Language Server Workspace.
+
+| File | Thay đổi |
+| --- | --- |
+| run.ps1 | Luôn biên dịch toàn bộ source vào `out/console` sạch; dùng cùng JDK để biên dịch/chạy; có `-BuildOnly` và `-JavaHome`; dừng khi biên dịch lỗi; hỗ trợ đường dẫn có dấu cách/tiếng Việt |
+| run.sh | Xóa theo yêu cầu chỉ giữ một script chạy ứng dụng |
+| .vscode/tasks.json, .vscode/launch.json | Cấu hình **Sport Store - Console** biên dịch trước khi chạy, dùng `out/console`, terminal tương tác và thư mục làm việc của repo |
+| .gitignore | Cho phép lưu hai cấu hình dùng chung, tiếp tục bỏ qua thiết lập IDE cá nhân |
+| tests/ConsoleLauncherCheck.java | Kiểm tra PowerShell thật bằng tiến trình con, dữ liệu và source sao chép vào thư mục tạm |
+| test.sh | Chạy thêm kiểm tra launcher khi có `pwsh`, thông báo bỏ qua riêng khi thiếu PowerShell |
+| README.md | Cách chạy Windows/IDE, chọn JDK và xử lý cache Java |
+
+Kết quả: **16/16 chương trình kiểm thử Java đạt**; kiểm tra launcher riêng đạt cả
+**4 nhóm**: biên dịch với đường dẫn tiếng Việt, loại class cũ/mở đủ 5 menu, chặn chạy
+khi cố ý làm thiếu API dù timestamp source cũ, và chạy lại sau khi khôi phục source.
+Kiểm tra SHA-256 xác nhận dữ liệu gốc và Class Diagram không thay đổi.
+Đã chạy launcher trên PowerShell 7.4.6/OpenJDK 21/Linux; chưa chạy trực tiếp Windows
+PowerShell 5.1 hoặc giao diện IDE. Không sửa model, API UML hay nghiệp vụ Task 06.
 
 ## Adapter và chuẩn bị Task 07
 
