@@ -34,9 +34,9 @@ public final class MenuHoaDon {
     public void chay(Scanner sc) {
         while (true) {
             System.out.println("\n===== QUAN LY HOA DON =====");
-            System.out.println("1. Danh sach  2. Lap hoa don cho  3. Xem chi tiet");
-            System.out.println("4. Them dong  5. Sua dong  6. Xoa dong  7. Xac nhan ban hang");
-            System.out.println("8. Tim/loc nhieu tieu chi  9. Doanh thu  10. Luu  11. Doc lai  0. Quay lai");
+            System.out.println("1. Danh sach  \n2. Lap hoa don cho  \n3. Xem chi tiet");
+            System.out.println("4. Them dong  \n5. Sua dong  \n6. Xoa dong  \n7. Xac nhan ban hang");
+            System.out.println("8. Tim/loc nhieu tieu chi  \n9. Doanh thu  \n10. Luu  \n11. Doc lai  \n0. Quay lai");
             try {
                 String choice = doc(sc, "Nhap lua chon: ");
                 switch (choice) {
