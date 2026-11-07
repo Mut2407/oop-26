@@ -184,6 +184,15 @@ public class LuuTruFileText {
         return ds.getTatCa();
     }
 
+    public void ghiHoaDon(String path, DanhSachHoaDon ds) throws IOException {
+        models.TepHoaDon.ghi(duongDan(path), ds);
+    }
+
+    public DanhSachHoaDon docHoaDon(String path, DanhSachSanPham dsSP,
+            DanhSachKhachHang dsKH, List<NhanVien> dsNV) throws IOException {
+        return models.TepHoaDon.doc(duongDan(path), dsSP, dsKH, dsNV);
+    }
+
     private Path duongDan(String string) {
         if (string == null || string.isBlank()) {
             throw new IllegalArgumentException("Duong dan khong hop le.");

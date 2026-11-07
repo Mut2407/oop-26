@@ -28,6 +28,8 @@ LuuTruFile {
     private static final String TIEU_DE_CU = "SAN_PHAM_V1";
     private static final String TIEU_DE = "kieu\tmaSanPham\ttenSanPham\tgiaBan\tthuongHieu\tsoLuongTon\tmaLoai\tkichCoGiay\tmauSac\tloaiDeGiay\tmonTheThao\tvatLieu\tkhoiLuongKg\tkichCoQuanAo";
     private static final String TIEU_DE_MOI = "kieu\tmaSanPham\ttenSanPham\tgiaBan\tthuongHieu\tsoLuongTon\tmaLoai\tkichCoGiay\tmauSac\tloaiDeGiay\tmonTheThao\tvatLieu\tkhoiLuongKg\tkichCoQuanAo\tmauSacChung\tchatLieuChung";
+    private final BaoVeThamChieu baoVe = new BaoVeThamChieu("SP");
+    public void ganHoaDon(DanhSachHoaDon dsHD) { baoVe.gan(dsHD); }
     private SanPham[] ds;
     private int soLuong;
     private final Map<String, String> monTheThaoCu = new HashMap<String, String>();
@@ -44,6 +46,34 @@ LuuTruFile {
         this.nhapBanDau(sanPhamArray);
     }
 
+    public DanhSachSanPham banSao() {
+        DanhSachSanPham copy = new DanhSachSanPham(getDanhSach().toArray(new SanPham[0]));
+        copy.monTheThaoCu.putAll(monTheThaoCu);
+        return copy;
+    }
+
+    /** Validate the entire batch before touching any actual inventory. */
+    public synchronized void giamTonDongBo(Map<String, Integer> soLuongBan) {
+        Map<Integer, Integer> quantities = new LinkedHashMap<>();
+        for (var entry : soLuongBan.entrySet()) {
+            int i = chiSo(entry.getKey());
+            Integer n = entry.getValue();
+            if (i < 0 || n == null || n <= 0 || quantities.putIfAbsent(i, n) != null || !ds[i].conDuHang(n)) {
+                throw new IllegalArgumentException("San pham khong ton tai, trung hoac khong du hang: " + entry.getKey());
+            }
+        }
+        quantities.forEach((i, n) -> ds[i].giamTon(n));
+    }
+
+    public void thayDuLieu(DanhSachSanPham moi) {
+        DanhSachSanPham copy = moi.banSao();
+        baoVe.thay(getDanhSach().stream().map(SanPham::getMaSanPham).toList(), copy.getDanhSach().stream().map(SanPham::getMaSanPham).toList());
+        ds = copy.ds;
+        soLuong = copy.soLuong;
+        monTheThaoCu.clear();
+        monTheThaoCu.putAll(copy.monTheThaoCu);
+    }
+
     public int getSoLuong() {
         return this.soLuong;
     }
@@ -54,6 +84,7 @@ LuuTruFile {
         }
         DanhSachSanPham danhSachSanPham = new DanhSachSanPham(sanPhamArray.length);
         danhSachSanPham.themNhieu(sanPhamArray);
+        baoVe.thay(getDanhSach().stream().map(SanPham::getMaSanPham).toList(), danhSachSanPham.getDanhSach().stream().map(SanPham::getMaSanPham).toList());
         this.ds = danhSachSanPham.ds;
         this.soLuong = danhSachSanPham.soLuong;
         this.monTheThaoCu.keySet().removeIf(string -> danhSachSanPham.chiSo((String)string) < 0);
@@ -101,6 +132,7 @@ LuuTruFile {
         for (SanPham sanPham : sanPhamArray) {
             danhSachSanPham.them(sanPham);
         }
+        baoVe.thay(getDanhSach().stream().map(SanPham::getMaSanPham).toList(), danhSachSanPham.getDanhSach().stream().map(SanPham::getMaSanPham).toList());
         this.ds = danhSachSanPham.ds;
         this.soLuong = danhSachSanPham.soLuong;
         return sanPhamArray.length;
@@ -126,6 +158,7 @@ LuuTruFile {
         if (n < 0) {
             return false;
         }
+        baoVe.xoa(this.ds[n].getMaSanPham());
         this.monTheThaoCu.remove(this.ds[n].getMaSanPham().toUpperCase(Locale.ROOT));
         System.arraycopy(this.ds, n + 1, this.ds, n, this.soLuong - n - 1);
         this.ds[--this.soLuong] = null;
@@ -295,6 +328,7 @@ LuuTruFile {
                 throw new IOException("Dong " + (i + 2) + ": " + illegalArgumentException.getMessage(), illegalArgumentException);
             }
         }
+        baoVe.thay(getDanhSach().stream().map(SanPham::getMaSanPham).toList(), danhSachSanPham.getDanhSach().stream().map(SanPham::getMaSanPham).toList());
         this.ds = danhSachSanPham.ds;
         this.soLuong = danhSachSanPham.soLuong;
         this.monTheThaoCu.clear();
@@ -322,7 +356,7 @@ LuuTruFile {
         return Normalizer.normalize(string, Normalizer.Form.NFD).replaceAll("\\p{M}+", "").replace('\u0111', 'd').replace('\u0110', 'D').toLowerCase(Locale.ROOT);
     }
 
-    private static SanPham saoChep(SanPham sanPham) {
+    public static SanPham saoChep(SanPham sanPham) {
         if (sanPham instanceof GiayTheThao) {
             GiayTheThao giayTheThao = (GiayTheThao)sanPham;
             return new GiayTheThao(sanPham.getMaSanPham(), sanPham.getTenSanPham(), sanPham.getThuongHieu(), sanPham.getGiaBan(), sanPham.getSoLuongTon(), sanPham.getMauSac(), sanPham.getChatLieu(), sanPham.getDanhMuc(), giayTheThao.getKichCoGiay(), giayTheThao.getLoaiDeGiay());

@@ -5,7 +5,8 @@
 
 Task 06.1–06.5 đã hoàn thành cho khách hàng và nhân viên. Xem
 [báo cáo Task 06](docs/BAO_CAO_TASK_06.md) để biết đối chiếu UML, tiến độ từng task,
-kết quả kiểm thử và các việc cần làm ở Task 07.
+kết quả kiểm thử của giai đoạn đó. Task 07 — Hóa đơn đã được triển khai; xem
+[báo cáo Task 07](docs/BAO_CAO_TASK_07.md).
 
 ## Chạy ứng dụng
 
@@ -60,7 +61,7 @@ IDE không giải quyết được API; cần kiểm tra source đang mở và c
 ## Menu
 
 Menu chính: **1** sản phẩm, **2** danh mục, **3** khách hàng, **4** nhân viên,
-**5** nhà cung cấp; **0** thoát. Số mục cũ được giữ để tiếp tục dùng các thao tác quen thuộc.
+**5** nhà cung cấp, **6** hóa đơn; **0** thoát. Số mục cũ được giữ để tiếp tục dùng các thao tác quen thuộc.
 
 | Mục | Khách hàng | Nhân viên |
 | --- | --- | --- |
@@ -83,14 +84,39 @@ Tìm tên tiếng Việt hỗ trợ hoa/thường và tìm không dấu. Mã tr�
 hoa/thường. Nhập lô được kiểm tra toàn bộ trước khi áp dụng. Nhập sai được báo lỗi;
 sửa/xóa không thành công, xem hoặc tìm kiếm không tự ghi file.
 
-Các mục hóa đơn, phiếu nhập, báo cáo doanh thu vẫn thông báo chưa triển khai,
-thuộc giai đoạn sau. Mục lưu/đọc chung ở menu chính đang phục vụ danh mục/sản phẩm/NCC;
+Menu **6 — Hóa đơn** gồm: 1 xem danh sách, 2 lập hóa đơn chờ, 3 xem chi tiết,
+4 thêm dòng, 5 sửa dòng, 6 xóa dòng, 7 xác nhận bán hàng, 8 tìm/lọc kết hợp,
+9 doanh thu, 10 lưu, 11 đọc lại, 0 quay lại. Ngày nhập theo `yyyy-MM-dd`.
+Khi lập hóa đơn, để trống mã để sinh tự động, ngày trống lấy ngày hiện tại.
+Chọn mã khách hàng, nhân viên và sản phẩm đã có. Đơn giá trống lấy giá hiện tại;
+đơn giá đã ghi nhận được giữ nguyên khi giá bán thay đổi. `/huy` hoặc EOF hủy
+thao tác nhập đang dở. Hóa đơn chờ chưa lưu sẽ được nhắc khi rời menu.
+
+Mỗi sản phẩm tối đa một dòng; dùng sửa dòng nếu muốn đổi số lượng/đơn giá.
+Mục 10 lưu hóa đơn chờ, chưa giảm tồn. Mục 7 hỏi xác nhận `Y/N`, lưu đồng bộ
+hóa đơn và tồn kho rồi mới báo thành công. Hóa đơn rỗng/thiếu hàng không được
+xác nhận. Hóa đơn đã xác nhận chỉ xem/tìm; xác nhận lặp không giảm tồn.
+Doanh thu chỉ tính hóa đơn `DA_XAC_NHAN`, lấy cả hai ngày biên.
+Không xóa hoặc nhập lại danh sách làm mất KH/NV/SP mà hóa đơn đang tham chiếu.
+
+Phiếu nhập và báo cáo tổng hợp ở menu chính thuộc Task 08–09, chưa triển khai. Mục lưu/đọc chung ở menu chính đang phục vụ danh mục/sản phẩm/NCC;
 khách hàng và nhân viên có mục đọc/lưu trong menu riêng.
 
 ## Dữ liệu và địa chỉ nhân viên cũ
 
 Dữ liệu gồm năm file UTF-8 trong data/: danhmuc.txt, sanpham.txt, khachhang.txt,
-nhanvien.txt, nhacungcap.txt. Repository có dữ liệu mẫu; khi sửa/chạy thử hãy dùng bản sao.
+nhanvien.txt, nhacungcap.txt. Hóa đơn được lưu thêm trong `data/hoadon.txt`
+khi người dùng lưu hoặc xác nhận lần đầu. File hóa đơn dùng header `HOA_DON_V1`,
+các bản ghi H (mã/ngày/mã KH/mã NV/trạng thái/số dòng) và D (mã SP/số lượng/đơn giá).
+Không tự tạo đối tượng thay thế khi mã tham chiếu không tồn tại.
+
+Giao dịch bán dùng `data/banhang.undo` chứa bản gốc hai file và checksum SHA-256.
+Nếu chương trình dừng giữa chừng, lần mở sau phục hồi cả hai file về trước giao dịch;
+đọc lại hóa đơn không trừ tồn lần nữa. Không xóa journal bằng tay. Journal lỗi làm
+ứng dụng chặn khởi động; giữ các file để xử lý phục hồi. Chỉ chạy một phiên ứng dụng
+trên cùng thư mục dữ liệu; không sửa file bằng công cụ khác khi đang chạy.
+
+Repository có dữ liệu mẫu; khi sửa/chạy thử hãy dùng bản sao.
 Khi file không tồn tại, ứng dụng tạo mẫu. File rỗng danh sách nhưng có header hợp lệ
 được giữ rỗng, không tự thay bằng dữ liệu mẫu.
 
@@ -140,7 +166,7 @@ PowerShell được thông báo bỏ qua riêng, không tính vào số chương
 Kiểm tra launcher dùng bản sao tạm có đường dẫn chứa dấu cách/tiếng Việt, mở các menu,
 loại class cũ, chặn khởi động khi source thiếu API và thử lại sau khi sửa source.
 
-Đã xác minh trên OpenJDK 21/Linux: **16/16 chương trình kiểm thử Java đạt**.
+Đã xác minh trên OpenJDK 21/Linux: **24/24 chương trình kiểm thử Java đạt**.
 Script `run.ps1` được kiểm tra riêng bằng PowerShell 7 trên Linux; chưa chạy trực tiếp
 trên Windows PowerShell 5.1 hoặc giao diện Antigravity IDE.
 
@@ -159,6 +185,8 @@ docs/                  Tài liệu và báo cáo theo task
 
 DanhSachKhachHang dùng List<KhachHang> và IQuanLyDanhSach<KhachHang>.
 DanhSachNhanVien giữ mảng NhanVien[]; NhanVien chỉ có mã, tên, điện thoại và ca.
-Mã khách hàng/nhân viên ổn định. Ràng buộc hóa đơn tham chiếu và xóa đối tượng đã có
-chứng từ sẽ được thiết kế ở Task 07.
+Mã khách hàng/nhân viên ổn định. Ràng buộc xóa/thay danh sách được gắn vào các
+nguồn dữ liệu khi khởi động module hóa đơn. DichVuKho nằm trong package models
+để giữ quyền package của HoaDon.danhDauDaXacNhan theo UML; không có setter
+trạng thái công khai. API nhập kho của DichVuKho báo chưa hỗ trợ, dành cho Task 08.
 

@@ -1,49 +1,24 @@
 package models;
 
-public class ChiTietHoaDon {
-    private HoaDon hoaDon;
-    private SanPham sanPham;
-    private int soLuong;
-    private double donGiaBan;
-    private double thanhTien;
+import java.math.BigDecimal;
+import services.DanhSachSanPham;
 
-    public ChiTietHoaDon(HoaDon hoaDon, SanPham sanPham, int soLuong, double donGiaBan, double thanhTien){
-        this.hoaDon = hoaDon;
-        this.sanPham = sanPham;
-        this.soLuong = soLuong;
-        this.donGiaBan = donGiaBan;
-        this.thanhTien = thanhTien;
-    }
+/** Immutable sale line. The price is captured at transaction time. */
+public final class ChiTietHoaDon {
+    private final SanPham sanPham;
+    private final int soLuong;
+    private final BigDecimal donGiaBan;
 
-    public HoaDon getHoaDon() {
-        return hoaDon;
-    }
-    public void setHoaDon(HoaDon hoaDon) {
-        this.hoaDon = hoaDon;
-    }
-    public SanPham getSanPham() {
-        return sanPham;
-    }
-    public void setSanPham(SanPham sanPham) {
-        this.sanPham = sanPham;
-    }
-    public int getSoLuong() {
-        return soLuong;
-    }
-    public void setSoLuong(int soLuong) {
+    public ChiTietHoaDon(SanPham sp, int soLuong, BigDecimal donGia) {
+        if (sp == null || soLuong <= 0 || donGia == null || donGia.signum() < 0) {
+            throw new IllegalArgumentException("San pham/so luong/don gia khong hop le.");
+        }
+        this.sanPham = DanhSachSanPham.saoChep(sp);
         this.soLuong = soLuong;
+        this.donGiaBan = donGia;
     }
-    public double getDonGiaBan() {
-        return donGiaBan;
-    }
-    public void setDonGiaBan(double donGiaBan) {
-        this.donGiaBan = donGiaBan;
-    }
-    public double getThanhTien() {
-        return thanhTien;
-    }
-    public void setThanhTien(double thanhTien) {
-        this.thanhTien = thanhTien;
-    }
-    
+    public SanPham getSanPham() { return DanhSachSanPham.saoChep(sanPham); }
+    public int getSoLuong() { return soLuong; }
+    public BigDecimal getDonGiaBan() { return donGiaBan; }
+    public BigDecimal thanhTien() { return donGiaBan.multiply(BigDecimal.valueOf(soLuong)); }
 }

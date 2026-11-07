@@ -11,6 +11,8 @@ import models.KhachHang;
 public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>, LuuTruFile {
     private static final String TIEU_DE_CU = "KHACH_HANG_V1";
     private static final String TIEU_DE_FILE = "maKhachHang\thoTen\tsoDienThoai\tdiaChi";
+    private final BaoVeThamChieu baoVe = new BaoVeThamChieu("KH");
+    public void ganHoaDon(DanhSachHoaDon dsHD) { baoVe.gan(dsHD); }
     private final List<KhachHang> ds = new ArrayList<>();
 
     public DanhSachKhachHang() {
@@ -95,6 +97,7 @@ public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>, LuuT
         if (index < 0) {
             return false;
         }
+        baoVe.xoa(ds.get(index).getMaKhachHang());
         ds.remove(index);
         return true;
     }
@@ -204,6 +207,7 @@ public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>, LuuT
     }
 
     private void thayBang(DanhSachKhachHang moi) {
+        baoVe.thay(ds.stream().map(KhachHang::getMaKhachHang).toList(), moi.ds.stream().map(KhachHang::getMaKhachHang).toList());
         ds.clear();
         ds.addAll(moi.ds);
     }

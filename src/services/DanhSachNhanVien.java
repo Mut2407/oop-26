@@ -25,6 +25,8 @@ implements LuuTruFile {
     static final String TIEU_DE = "maNhanVien\thoTen\tcaLamViec\tsoDienThoai\tdiaChi";
     static final String TIEU_DE_MOI = "maNhanVien\thoTen\tsoDienThoai\tcaLamViec\tdiaChiCu";
     static final String TIEU_DE_UML = "maNhanVien\thoTen\tsoDienThoai\tcaLamViec";
+    private final BaoVeThamChieu baoVe = new BaoVeThamChieu("NV");
+    public void ganHoaDon(DanhSachHoaDon dsHD) { baoVe.gan(dsHD); }
     private NhanVien[] danhSach = new NhanVien[SUC_CHUA_BAN_DAU];
     private int soLuong;
     // Compatibility data belongs to this list, never to NhanVien or a global registry.
@@ -82,6 +84,7 @@ implements LuuTruFile {
     }
 
     private void thayBang(DanhSachNhanVien moi) {
+        baoVe.thay(java.util.Arrays.stream(getDanhSach()).map(NhanVien::getMaNhanVien).toList(), java.util.Arrays.stream(moi.getDanhSach()).map(NhanVien::getMaNhanVien).toList());
         this.danhSach = moi.danhSach;
         this.soLuong = moi.soLuong;
         this.diaChiCuTheoMa = moi.diaChiCuTheoMa;
@@ -183,6 +186,7 @@ implements LuuTruFile {
         if (n < 0) {
             return false;
         }
+        baoVe.xoa(this.danhSach[n].getMaNhanVien());
         diaChiCuTheoMa.remove(khoaMa(this.danhSach[n].getMaNhanVien()));
         for (int i = n; i < this.soLuong - 1; ++i) {
             this.danhSach[i] = this.danhSach[i + 1];

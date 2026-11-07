@@ -14,19 +14,22 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.List;
 
-final class FileText {
+public final class FileText {
     private FileText() {
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    static void ghi(String string, List<String> list) throws IOException {
+    public static void ghi(String string, List<String> list) throws IOException {
         Path path = Path.of(string, new String[0]).toAbsolutePath();
         Files.createDirectories(path.getParent(), new FileAttribute[0]);
         Path path2 = Files.createTempFile(path.getParent(), "store-", ".tmp", new FileAttribute[0]);
         try {
             Files.write(path2, list, StandardCharsets.UTF_8, new OpenOption[0]);
+            try (var channel = java.nio.channels.FileChannel.open(path2, java.nio.file.StandardOpenOption.WRITE)) {
+                channel.force(true);
+            }
             try {
                 Files.move(path2, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             }
@@ -39,7 +42,7 @@ final class FileText {
         }
     }
 
-    static List<String[]> doc(String string, String ... stringArray) throws IOException {
+    public static List<String[]> doc(String string, String ... stringArray) throws IOException {
         return docBang(string, stringArray).dong();
     }
 
@@ -78,7 +81,7 @@ final class FileText {
         return new Bang(list.get(0), arrayList);
     }
 
-    static String dong(String ... stringArray) {
+    public static String dong(String ... stringArray) {
         CharSequence[] charSequenceArray = new String[stringArray.length];
         for (int i = 0; i < stringArray.length; ++i) {
             charSequenceArray[i] = stringArray[i].replace("\\", "\\\\").replace("\t", "\\t").replace("\n", "\\n").replace("\r", "\\r");
