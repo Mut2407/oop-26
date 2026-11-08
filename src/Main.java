@@ -23,6 +23,7 @@ import services.DanhSachSanPham;
 import services.LuuTruFileText;
 import services.VanBanConsole;
 import services.MenuHoaDon;
+import services.MenuPhieuNhap;
 import services.GiaoDichBanHang;
 
 public class Main {
@@ -40,6 +41,7 @@ public class Main {
 
     private static void chay() {
         MenuHoaDon hoaDon;
+        MenuPhieuNhap phieuNhap;
         DanhSachNhaCungCap danhSachNhaCungCap;
         DanhSachSanPham danhSachSanPham;
         DuLieu.khoiTaoDanhMuc();
@@ -50,6 +52,10 @@ public class Main {
             if (tonTaiDuLieu("hoadon.txt") && (!tonTaiDuLieu(TEP_KHACH_HANG)
                     || !tonTaiDuLieu(TEP_NHAN_VIEN) || !tonTaiDuLieu(TEP_SAN_PHAM) || !tonTaiDuLieu(TEP_DANH_MUC))) {
                 throw new IOException("Thieu file nguon cua hoa don; khong tao du lieu mau thay the.");
+            }
+            if (tonTaiDuLieu("phieunhap.txt") && (!tonTaiDuLieu(TEP_NHA_CUNG_CAP)
+                    || !tonTaiDuLieu(TEP_NHAN_VIEN) || !tonTaiDuLieu(TEP_SAN_PHAM) || !tonTaiDuLieu(TEP_DANH_MUC))) {
+                throw new IOException("Thieu file nguon cua phieu nhap; khong tao du lieu mau.");
             }
             if (Main.tonTaiDuLieu(TEP_DANH_MUC)) {
                 Main.napDanhMuc();
@@ -63,6 +69,7 @@ public class Main {
                 danhSachNhanVien = DanhSachNhanVien.tuDanhSach(LUU_TRU.docNhanVien(TEP_NHAN_VIEN));
             }
             hoaDon = new MenuHoaDon(danhSachSanPham, danhSachKhachHang, danhSachNhanVien, LUU_TRU, Path.of("data"));
+            phieuNhap = new MenuPhieuNhap(danhSachSanPham, danhSachNhaCungCap, danhSachNhanVien, LUU_TRU, Path.of("data"));
             // Validate all existing data before creating any missing files.
             if (!tonTaiDuLieu(TEP_KHACH_HANG)) {
                 LUU_TRU.ghiKhachHang(TEP_KHACH_HANG, danhSachKhachHang);
@@ -87,7 +94,7 @@ public class Main {
             System.exit(1);
             return;
         }
-        Main.xuLyMenu(danhSachSanPham, danhSachKhachHang, danhSachNhanVien, danhSachNhaCungCap, hoaDon);
+        Main.xuLyMenu(danhSachSanPham, danhSachKhachHang, danhSachNhanVien, danhSachNhaCungCap, hoaDon, phieuNhap);
         sc.close();
     }
 
@@ -116,13 +123,14 @@ public class Main {
         }
     }
 
-    private static void xuLyMenu(DanhSachSanPham danhSachSanPham, DanhSachKhachHang danhSachKhachHang, DanhSachNhanVien danhSachNhanVien, DanhSachNhaCungCap danhSachNhaCungCap, MenuHoaDon hoaDon) {
+    private static void xuLyMenu(DanhSachSanPham danhSachSanPham, DanhSachKhachHang danhSachKhachHang, DanhSachNhanVien danhSachNhanVien, DanhSachNhaCungCap danhSachNhaCungCap, MenuHoaDon hoaDon, MenuPhieuNhap phieuNhap) {
         int n = -1;
         block14: do {
             Main.hienThiMenu();
             System.out.print("Nhap lua chon: ");
             if (!sc.hasNextLine()) {
                 hoaDon.nhacChuaLuu();
+                phieuNhap.nhacChuaLuu();
                 return;
             }
             if (!sc.hasNextInt()) {
@@ -158,7 +166,7 @@ public class Main {
                     break;
                 }
                 case 7: {
-                    System.out.println("Quan ly phieu nhap chua trien khai.");
+                    phieuNhap.chay(sc);
                     break;
                 }
                 case 8: {
@@ -180,7 +188,7 @@ public class Main {
                             DanhSachSanPham danhSachSanPham2 = LUU_TRU.docSanPham(TEP_SAN_PHAM, DuLieu.getDanhMuc());
                             DanhSachNhaCungCap danhSachNhaCungCap2 = LUU_TRU.docNhaCungCap(TEP_NHA_CUNG_CAP);
                             danhSachSanPham.thayDuLieu(danhSachSanPham2);
-                            danhSachNhaCungCap = danhSachNhaCungCap2;
+                            danhSachNhaCungCap.thayDuLieu(danhSachNhaCungCap2);
                             System.out.println("Da doc lai danh muc, san pham va nha cung cap.");
                             break;
                         }
@@ -193,6 +201,7 @@ public class Main {
                 }
                 case 0: {
                     hoaDon.nhacChuaLuu();
+                    phieuNhap.nhacChuaLuu();
                     System.out.println("Thoat chuong trinh!");
                     break;
                 }

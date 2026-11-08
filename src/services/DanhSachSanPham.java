@@ -25,6 +25,7 @@ import services.LuuTruFile;
 public class DanhSachSanPham
 implements IQuanLyDanhSach<SanPham>,
 LuuTruFile {
+    public void ganPhieuNhap(DanhSachPhieuNhap dsPN) { baoVe.ganNhap(dsPN); }
     private static final String TIEU_DE_CU = "SAN_PHAM_V1";
     private static final String TIEU_DE = "kieu\tmaSanPham\ttenSanPham\tgiaBan\tthuongHieu\tsoLuongTon\tmaLoai\tkichCoGiay\tmauSac\tloaiDeGiay\tmonTheThao\tvatLieu\tkhoiLuongKg\tkichCoQuanAo";
     private static final String TIEU_DE_MOI = "kieu\tmaSanPham\ttenSanPham\tgiaBan\tthuongHieu\tsoLuongTon\tmaLoai\tkichCoGiay\tmauSac\tloaiDeGiay\tmonTheThao\tvatLieu\tkhoiLuongKg\tkichCoQuanAo\tmauSacChung\tchatLieuChung";
@@ -63,6 +64,18 @@ LuuTruFile {
             }
         }
         quantities.forEach((i, n) -> ds[i].giamTon(n));
+    }
+
+    public synchronized void tangTonDongBo(Map<String, Integer> soLuongBan) {
+        Map<Integer, Integer> quantities = new LinkedHashMap<>();
+        for (var entry : soLuongBan.entrySet()) {
+            int i = chiSo(entry.getKey());
+            Integer n = entry.getValue();
+            if (i < 0 || n == null || n <= 0 || quantities.putIfAbsent(i, n) != null || ds[i].getSoLuongTon() > Integer.MAX_VALUE - n) {
+                throw new IllegalArgumentException("San pham khong ton tai, trung hoac vuot gioi han ton: " + entry.getKey());
+            }
+        }
+        quantities.forEach((i, n) -> ds[i].tangTon(n));
     }
 
     public void thayDuLieu(DanhSachSanPham moi) {

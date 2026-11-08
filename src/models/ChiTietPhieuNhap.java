@@ -1,47 +1,24 @@
 package models;
 
-public class ChiTietPhieuNhap {
-    private String maPhieuNhap;
-    private SanPham sanPham;
-    private double giaNhap;
-    private double tongTien;
+import java.math.BigDecimal;
+import services.DanhSachSanPham;
 
-    public ChiTietPhieuNhap(String maPhieuNhap, SanPham sanPham, double giaNhap, double tongTien) {
-        this.maPhieuNhap = maPhieuNhap;
-        this.sanPham = sanPham;
-        this.giaNhap = giaNhap;
-        this.tongTien = tongTien;
-    }
+/** Immutable receiving line. The price is captured at transaction time. */
+public final class ChiTietPhieuNhap {
+    private final SanPham sanPham;
+    private final int soLuong;
+    private final BigDecimal donGiaNhap;
 
-    public String getMaPhieuNhap() {
-        return maPhieuNhap;
+    public ChiTietPhieuNhap(SanPham sp, int soLuong, BigDecimal donGia) {
+        if (sp == null || soLuong <= 0 || donGia == null || donGia.signum() < 0) {
+            throw new IllegalArgumentException("San pham/so luong/don gia khong hop le.");
+        }
+        this.sanPham = DanhSachSanPham.saoChep(sp);
+        this.soLuong = soLuong;
+        this.donGiaNhap = donGia;
     }
-
-    public void setMaPhieuNhap(String maPhieuNhap) {
-        this.maPhieuNhap = maPhieuNhap;
-    }
-
-    public SanPham getSanPham() {
-        return sanPham;
-    }
-
-    public void setSanPham(SanPham sanPham) {
-        this.sanPham = sanPham;
-    }
-
-    public double getGiaNhap() {
-        return giaNhap;
-    }
-
-    public void setGiaNhap(double giaNhap) {
-        this.giaNhap = giaNhap;
-    }
-
-    public double getTongTien() {
-        return tongTien;
-    }
-
-    public void setTongTien(double tongTien) {
-        this.tongTien = tongTien;
-    }
+    public SanPham getSanPham() { return DanhSachSanPham.saoChep(sanPham); }
+    public int getSoLuong() { return soLuong; }
+    public BigDecimal getDonGiaNhap() { return donGiaNhap; }
+    public BigDecimal thanhTienNhap() { return donGiaNhap.multiply(BigDecimal.valueOf(soLuong)); }
 }

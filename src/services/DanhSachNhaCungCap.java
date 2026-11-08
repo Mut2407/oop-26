@@ -16,6 +16,8 @@ import services.LuuTruFile;
 public class DanhSachNhaCungCap
 implements IQuanLyDanhSach<NhaCungCap>,
 LuuTruFile {
+    public void ganPhieuNhap(DanhSachPhieuNhap dsPN) { baoVe.ganNhap(dsPN); }
+    private final BaoVeThamChieu baoVe = new BaoVeThamChieu("NCC");
     private static final String TIEU_DE_CU = "NHA_CUNG_CAP_V1";
     private static final String TIEU_DE = "maNhaCungCap\ttenNhaCungCap\tsoDienThoai\tdiaChi";
     private final List<NhaCungCap> ds = new ArrayList<NhaCungCap>();
@@ -74,6 +76,7 @@ LuuTruFile {
         if (n < 0) {
             return false;
         }
+        baoVe.xoa(ds.get(n).getMaNhaCungCap());
         this.ds.remove(n);
         return true;
     }
@@ -125,8 +128,14 @@ LuuTruFile {
                 throw new IOException("Dong " + (i + 2) + ": " + illegalArgumentException.getMessage(), illegalArgumentException);
             }
         }
-        this.ds.clear();
-        this.ds.addAll(danhSachNhaCungCap.ds);
+        thayDuLieu(danhSachNhaCungCap);
+    }
+
+    public void thayDuLieu(DanhSachNhaCungCap moi) {
+        var copy = moi.getTatCa();
+        baoVe.thay(ds.stream().map(NhaCungCap::getMaNhaCungCap).toList(), copy.stream().map(NhaCungCap::getMaNhaCungCap).toList());
+        ds.clear();
+        ds.addAll(copy);
     }
 
     private int chiSo(String string) {

@@ -6,7 +6,8 @@
 Task 06.1–06.5 đã hoàn thành cho khách hàng và nhân viên. Xem
 [báo cáo Task 06](docs/BAO_CAO_TASK_06.md) để biết đối chiếu UML, tiến độ từng task,
 kết quả kiểm thử của giai đoạn đó. Task 07 — Hóa đơn đã được triển khai; xem
-[báo cáo Task 07](docs/BAO_CAO_TASK_07.md).
+[báo cáo Task 07](docs/BAO_CAO_TASK_07.md). Task 08 đã hoàn thành phiếu nhập; xem
+[báo cáo Task 08](docs/BAO_CAO_TASK_08.md).
 
 ## Chạy ứng dụng
 
@@ -61,7 +62,7 @@ IDE không giải quyết được API; cần kiểm tra source đang mở và c
 ## Menu
 
 Menu chính: **1** sản phẩm, **2** danh mục, **3** khách hàng, **4** nhân viên,
-**5** nhà cung cấp, **6** hóa đơn; **0** thoát. Số mục cũ được giữ để tiếp tục dùng các thao tác quen thuộc.
+**5** nhà cung cấp, **6** hóa đơn, **7** phiếu nhập; **0** thoát. Số mục cũ được giữ để tiếp tục dùng các thao tác quen thuộc.
 
 | Mục | Khách hàng | Nhân viên |
 | --- | --- | --- |
@@ -99,7 +100,18 @@ xác nhận. Hóa đơn đã xác nhận chỉ xem/tìm; xác nhận lặp khôn
 Doanh thu chỉ tính hóa đơn `DA_XAC_NHAN`, lấy cả hai ngày biên.
 Không xóa hoặc nhập lại danh sách làm mất KH/NV/SP mà hóa đơn đang tham chiếu.
 
-Phiếu nhập và báo cáo tổng hợp ở menu chính thuộc Task 08–09, chưa triển khai. Mục lưu/đọc chung ở menu chính đang phục vụ danh mục/sản phẩm/NCC;
+Menu **7 — Phiếu nhập** có các mục con giống luồng chứng từ: 1 danh sách,
+2 lập phiếu chờ, 3 chi tiết, 4 thêm dòng, 5 sửa dòng, 6 xóa dòng, 7 xác nhận
+nhập kho, 8 tìm/lọc kết hợp, 9 giá trị nhập theo ngày, 10 lưu, 11 đọc lại,
+0 quay lại. Chọn NCC/NV/SP đã có, ngày `yyyy-MM-dd`, mã trống tự sinh PN...
+Đơn giá nhập phải nhập rõ, không lấy giá bán làm mặc định. Lưu chờ chưa tăng tồn;
+xác nhận tăng toàn bộ tồn một lần và không đổi giá bán. Phiếu đã nhập kho bị khóa.
+Nếu nhập sản phẩm mới, tạo sản phẩm ở menu sản phẩm trước rồi lập dòng nhận hàng.
+Không có trả hàng, hủy phiếu đã nhập hoặc tự động cập nhật giá bán.
+
+Menu 8 — Báo cáo tổng hợp thuộc Task 09, chưa triển khai.
+
+Mục lưu/đọc chung ở menu chính đang phục vụ danh mục/sản phẩm/NCC;
 khách hàng và nhân viên có mục đọc/lưu trong menu riêng.
 
 ## Dữ liệu và địa chỉ nhân viên cũ
@@ -110,7 +122,13 @@ khi người dùng lưu hoặc xác nhận lần đầu. File hóa đơn dùng h
 các bản ghi H (mã/ngày/mã KH/mã NV/trạng thái/số dòng) và D (mã SP/số lượng/đơn giá).
 Không tự tạo đối tượng thay thế khi mã tham chiếu không tồn tại.
 
-Giao dịch bán dùng `data/banhang.undo` chứa bản gốc hai file và checksum SHA-256.
+Phiếu nhập được lưu ở `data/phieunhap.txt`, header `PHIEU_NHAP_V1`, gồm H
+(mã/ngày nhập/mã NCC/mã NV/trạng thái/số dòng) và D (mã SP/số lượng/đơn giá nhập).
+Đọc phiếu không tăng tồn. Không xóa/thay mất NCC/NV/SP được phiếu tham chiếu.
+
+Cả bán và nhập dùng chung `data/banhang.undo` và khóa `banhang.lock`.
+Journal chứa bản gốc sản phẩm cùng hóa đơn hoặc phiếu nhập, kèm checksum SHA-256.
+Định dạng journal bán hàng cũ vẫn được hỗ trợ.
 Nếu chương trình dừng giữa chừng, lần mở sau phục hồi cả hai file về trước giao dịch;
 đọc lại hóa đơn không trừ tồn lần nữa. Không xóa journal bằng tay. Journal lỗi làm
 ứng dụng chặn khởi động; giữ các file để xử lý phục hồi. Chỉ chạy một phiên ứng dụng
@@ -166,7 +184,7 @@ PowerShell được thông báo bỏ qua riêng, không tính vào số chương
 Kiểm tra launcher dùng bản sao tạm có đường dẫn chứa dấu cách/tiếng Việt, mở các menu,
 loại class cũ, chặn khởi động khi source thiếu API và thử lại sau khi sửa source.
 
-Đã xác minh trên OpenJDK 21/Linux: **24/24 chương trình kiểm thử Java đạt**.
+Đã xác minh trên OpenJDK 21/Linux: **32/32 chương trình kiểm thử Java đạt**.
 Script `run.ps1` được kiểm tra riêng bằng PowerShell 7 trên Linux; chưa chạy trực tiếp
 trên Windows PowerShell 5.1 hoặc giao diện Antigravity IDE.
 
@@ -188,5 +206,5 @@ DanhSachNhanVien giữ mảng NhanVien[]; NhanVien chỉ có mã, tên, điện 
 Mã khách hàng/nhân viên ổn định. Ràng buộc xóa/thay danh sách được gắn vào các
 nguồn dữ liệu khi khởi động module hóa đơn. DichVuKho nằm trong package models
 để giữ quyền package của HoaDon.danhDauDaXacNhan theo UML; không có setter
-trạng thái công khai. API nhập kho của DichVuKho báo chưa hỗ trợ, dành cho Task 08.
+trạng thái công khai. DichVuKho cũng giữ quyền package của PhieuNhap.danhDauDaNhapKho theo UML.
 

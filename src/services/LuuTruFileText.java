@@ -193,6 +193,14 @@ public class LuuTruFileText {
         return models.TepHoaDon.doc(duongDan(path), dsSP, dsKH, dsNV);
     }
 
+    public void ghiPhieuNhap(String path, DanhSachPhieuNhap ds) throws IOException {
+        models.TepPhieuNhap.ghi(duongDan(path), ds);
+    }
+    public DanhSachPhieuNhap docPhieuNhap(String path, DanhSachSanPham dsSP,
+            DanhSachNhaCungCap dsNCC, List<NhanVien> dsNV) throws IOException {
+        return models.TepPhieuNhap.doc(duongDan(path), dsSP, dsNCC, dsNV);
+    }
+
     private Path duongDan(String string) {
         if (string == null || string.isBlank()) {
             throw new IllegalArgumentException("Duong dan khong hop le.");

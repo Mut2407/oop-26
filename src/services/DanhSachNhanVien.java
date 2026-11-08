@@ -21,6 +21,7 @@ import services.VanBanConsole;
 
 public final class DanhSachNhanVien
 implements LuuTruFile {
+    public void ganPhieuNhap(DanhSachPhieuNhap dsPN) { baoVe.ganNhap(dsPN); }
     private static final int SUC_CHUA_BAN_DAU = 10;
     static final String TIEU_DE = "maNhanVien\thoTen\tcaLamViec\tsoDienThoai\tdiaChi";
     static final String TIEU_DE_MOI = "maNhanVien\thoTen\tsoDienThoai\tcaLamViec\tdiaChiCu";

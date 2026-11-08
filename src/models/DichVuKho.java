@@ -26,8 +26,14 @@ public final class DichVuKho {
         danhSachSanPham.giamTonDongBo(quantities);
         hd.danhDauDaXacNhan();
     }
-    /** Task 08 owns the receiving workflow; deliberately unavailable in this stage. */
+    /** Validate and receive every line before transitioning the receipt. */
     public void xacNhanNhapHang(PhieuNhap pn) {
-        throw new UnsupportedOperationException("Nhap kho thuoc Task 08.");
+        if (pn == null || !pn.coTheChinhSua() || pn.getDanhSachChiTiet().isEmpty()) {
+            throw new IllegalArgumentException("Phieu rong hoac da nhap kho.");
+        }
+        Map<String, Integer> quantities = new LinkedHashMap<>();
+        for (ChiTietPhieuNhap ct : pn.getDanhSachChiTiet()) quantities.put(ct.getSanPham().getMaSanPham(), ct.getSoLuong());
+        danhSachSanPham.tangTonDongBo(quantities);
+        pn.danhDauDaNhapKho();
     }
 }
