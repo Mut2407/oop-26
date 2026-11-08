@@ -35,9 +35,9 @@ public final class MenuPhieuNhap {
     public void chay(Scanner sc) {
         while (true) {
             System.out.println("\n===== QUAN LY PHIEU NHAP =====");
-            System.out.println("1. Danh sach  2. Lap phieu nhap cho  3. Xem chi tiet");
-            System.out.println("4. Them dong  5. Sua dong  6. Xoa dong  7. Xac nhan nhap kho");
-            System.out.println("8. Tim/loc nhieu tieu chi  9. Gia tri nhap  10. Luu  11. Doc lai  0. Quay lai");
+            System.out.println("1. Danh sach  \n2. Lap phieu nhap cho  \n3. Xem chi tiet");
+            System.out.println("4. Them dong  \n5. Sua dong  \n6. Xoa dong  \n7. Xac nhan nhap kho");
+            System.out.println("8. Tim/loc nhieu tieu chi  \n9. Gia tri nhap  \n10. Luu  \n11. Doc lai  \n0. Quay lai");
             try {
                 String choice = doc(sc, "Nhap lua chon: ");
                 switch (choice) {
