@@ -28,6 +28,7 @@ public final class MenuPhieuNhap {
         pn = Files.exists(dir.resolve("phieunhap.txt")) ? store.docPhieuNhap("phieunhap.txt", sp, ncc, nv.getTatCa()) : new DanhSachPhieuNhap();
         sp.ganPhieuNhap(pn); ncc.ganPhieuNhap(pn); nv.ganPhieuNhap(pn);
     }
+    DanhSachPhieuNhap danhSach() { return pn; }
     public void nhacChuaLuu() {
         if (chuaLuu) System.out.println("CON PHIEU NHAP CHUA LUU: dung muc 10 trong menu Phieu nhap truoc khi thoat.");
     }

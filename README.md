@@ -6,8 +6,8 @@
 Task 06.1–06.5 đã hoàn thành cho khách hàng và nhân viên. Xem
 [báo cáo Task 06](docs/BAO_CAO_TASK_06.md) để biết đối chiếu UML, tiến độ từng task,
 kết quả kiểm thử của giai đoạn đó. Task 07 — Hóa đơn đã được triển khai; xem
-[báo cáo Task 07](docs/BAO_CAO_TASK_07.md). Task 08 đã hoàn thành phiếu nhập; xem
-[báo cáo Task 08](docs/BAO_CAO_TASK_08.md).
+[báo cáo Task 07](docs/BAO_CAO_TASK_07.md). Task 08–09 đã hoàn thành phiếu nhập
+và báo cáo: [báo cáo Task 08–09](docs/BAO_CAO_TASK_08_09.md).
 
 ## Chạy ứng dụng
 
@@ -62,7 +62,7 @@ IDE không giải quyết được API; cần kiểm tra source đang mở và c
 ## Menu
 
 Menu chính: **1** sản phẩm, **2** danh mục, **3** khách hàng, **4** nhân viên,
-**5** nhà cung cấp, **6** hóa đơn, **7** phiếu nhập; **0** thoát. Số mục cũ được giữ để tiếp tục dùng các thao tác quen thuộc.
+**5** nhà cung cấp, **6** hóa đơn, **7** phiếu nhập, **8** báo cáo; **0** thoát. Số mục cũ được giữ để tiếp tục dùng các thao tác quen thuộc.
 
 | Mục | Khách hàng | Nhân viên |
 | --- | --- | --- |
@@ -109,7 +109,12 @@ xác nhận tăng toàn bộ tồn một lần và không đổi giá bán. Phi�
 Nếu nhập sản phẩm mới, tạo sản phẩm ở menu sản phẩm trước rồi lập dòng nhận hàng.
 Không có trả hàng, hủy phiếu đã nhập hoặc tự động cập nhật giá bán.
 
-Menu 8 — Báo cáo tổng hợp thuộc Task 09, chưa triển khai.
+Menu **8 — Báo cáo**: 1 doanh thu theo ngày, 2 giá trị nhập theo ngày,
+3 top bán chạy, 4 cảnh báo tồn, 5 giá trị tồn theo giá bán hiện tại, 0 quay lại.
+Chỉ tính chứng từ đã xác nhận, ngày bao gồm hai đầu. Bán chạy tính toàn bộ lịch sử,
+xếp theo số lượng đã bán, hòa thì theo mã; top 0 trả rỗng, số âm bị từ chối.
+Cảnh báo lấy tồn <= ngưỡng. Giá trị tồn theo giá bán không phải giá vốn/lợi nhuận.
+Các báo cáo chỉ đọc và dùng dữ liệu hiện tại sau xác nhận hoặc đọc lại.
 
 Mục lưu/đọc chung ở menu chính đang phục vụ danh mục/sản phẩm/NCC;
 khách hàng và nhân viên có mục đọc/lưu trong menu riêng.
@@ -184,7 +189,7 @@ PowerShell được thông báo bỏ qua riêng, không tính vào số chương
 Kiểm tra launcher dùng bản sao tạm có đường dẫn chứa dấu cách/tiếng Việt, mở các menu,
 loại class cũ, chặn khởi động khi source thiếu API và thử lại sau khi sửa source.
 
-Đã xác minh trên OpenJDK 21/Linux: **32/32 chương trình kiểm thử Java đạt**.
+Đã xác minh trên OpenJDK 21/Linux: **36/36 chương trình kiểm thử Java đạt**.
 Script `run.ps1` được kiểm tra riêng bằng PowerShell 7 trên Linux; chưa chạy trực tiếp
 trên Windows PowerShell 5.1 hoặc giao diện Antigravity IDE.
 

@@ -28,6 +28,7 @@ public final class MenuHoaDon {
         hd = Files.exists(dir.resolve("hoadon.txt")) ? store.docHoaDon("hoadon.txt", sp, kh, nv.getTatCa()) : new DanhSachHoaDon();
         sp.ganHoaDon(hd); kh.ganHoaDon(hd); nv.ganHoaDon(hd);
     }
+    DanhSachHoaDon danhSach() { return hd; }
     public void nhacChuaLuu() {
         if (chuaLuu) System.out.println("CON HOA DON CHUA LUU: dung muc 10 trong menu Hoa don truoc khi thoat.");
     }

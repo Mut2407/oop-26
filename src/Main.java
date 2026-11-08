@@ -24,6 +24,7 @@ import services.LuuTruFileText;
 import services.VanBanConsole;
 import services.MenuHoaDon;
 import services.MenuPhieuNhap;
+import services.MenuBaoCao;
 import services.GiaoDichBanHang;
 
 public class Main {
@@ -170,7 +171,7 @@ public class Main {
                     break;
                 }
                 case 8: {
-                    System.out.println("Bao cao doanh thu chua trien khai; thong ke san pham o menu san pham.");
+                    new MenuBaoCao(danhSachSanPham, hoaDon, phieuNhap).chay(sc);
                     break;
                 }
                 case 9: {
