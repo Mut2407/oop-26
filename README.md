@@ -4,7 +4,7 @@
 
 Code dùng constructor không tham số/có tham số/sao chép, getter/setter, `this`, `super`, mảng đối tượng, vòng lặp, `switch-case`, kế thừa, đa hình, abstract và interface. Phần generic chỉ dùng kiểu `T` của interface danh sách. Không dùng lambda, Stream, callback, reflection, menu generic hoặc cơ chế snapshot của bản trước.
 
-## Chạy chương trình
+## Chạy chương trình.
 
 Khuyến nghị cài **JDK 17 hoặc mới hơn** và đặt `JAVA_HOME`. Code Java trong `src/` dùng cú pháp và API có từ Java 8; script dùng `javac` và `java` thông thường.
 
