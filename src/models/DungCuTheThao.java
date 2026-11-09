@@ -2,21 +2,30 @@ package models;
 
 import java.math.BigDecimal;
 
-public final class DungCuTheThao extends SanPham {
+public class DungCuTheThao extends SanPham {
     private String monTheThao;
     private String vatLieu;
     private double khoiLuongKg;
 
     public DungCuTheThao() {
         super();
+        monTheThao = "";
+        vatLieu = "";
     }
 
-    public DungCuTheThao(String ma, String ten, String thuongHieu, BigDecimal giaBan,
-            LoaiSP loaiSP, String monTheThao, String vatLieu, double khoiLuongKg) {
-        super(ma, ten, thuongHieu, giaBan, loaiSP);
+    public DungCuTheThao(String ma, String ten, String thuongHieu, BigDecimal gia,
+            LoaiSP loai, String monTheThao, String vatLieu, double khoiLuongKg) {
+        super(ma, ten, thuongHieu, gia, loai);
         setMonTheThao(monTheThao);
         setVatLieu(vatLieu);
         setKhoiLuongKg(khoiLuongKg);
+    }
+
+    public DungCuTheThao(DungCuTheThao cu) {
+        super(cu);
+        setMonTheThao(cu.monTheThao);
+        setVatLieu(cu.vatLieu);
+        setKhoiLuongKg(cu.khoiLuongKg);
     }
 
     public String getMonTheThao() {
@@ -24,7 +33,8 @@ public final class DungCuTheThao extends SanPham {
     }
 
     public void setMonTheThao(String monTheThao) {
-        this.monTheThao = KiemTra.batBuoc(monTheThao, "Mon the thao");
+        kiemTraChuoi(monTheThao, "monTheThao");
+        this.monTheThao = monTheThao.trim();
     }
 
     public String getVatLieu() {
@@ -32,7 +42,8 @@ public final class DungCuTheThao extends SanPham {
     }
 
     public void setVatLieu(String vatLieu) {
-        this.vatLieu = KiemTra.batBuoc(vatLieu, "Vat lieu");
+        kiemTraChuoi(vatLieu, "vatLieu");
+        this.vatLieu = vatLieu.trim();
     }
 
     public double getKhoiLuongKg() {
@@ -40,13 +51,27 @@ public final class DungCuTheThao extends SanPham {
     }
 
     public void setKhoiLuongKg(double khoiLuongKg) {
-        this.khoiLuongKg = KiemTra.soDuong(khoiLuongKg);
+        if (!Double.isFinite(khoiLuongKg) || khoiLuongKg <= 0) {
+            throw new IllegalArgumentException("khoiLuongKg phai > 0.");
+        }
+        this.khoiLuongKg = khoiLuongKg;
     }
 
     @Override
-    public DungCuTheThao saoChep() {
-        return giuTonKho(new DungCuTheThao(getMaSanPham(), getTenSanPham(), getThuongHieu(),
-                getGiaBan(), getLoaiSP(), monTheThao, vatLieu, khoiLuongKg));
+    public void capNhatThongTin(SanPham moi) {
+        if (!(moi instanceof DungCuTheThao)) {
+            throw new IllegalArgumentException("Khong duoc doi lop san pham.");
+        }
+        DungCuTheThao hopLe = new DungCuTheThao((DungCuTheThao) moi);
+        super.capNhatThongTin(hopLe);
+        this.monTheThao = hopLe.monTheThao;
+        this.vatLieu = hopLe.vatLieu;
+        this.khoiLuongKg = hopLe.khoiLuongKg;
+    }
+
+    @Override
+    public void kiemTraHopLe() {
+        new DungCuTheThao(this);
     }
 
     @Override

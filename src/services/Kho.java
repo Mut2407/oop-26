@@ -1,79 +1,104 @@
 package services;
 
-import models.*;
+import models.ChiTietHoaDon;
+import models.ChiTietPhieuNhap;
+import models.HoaDon;
+import models.PhieuNhap;
+import models.SanPham;
 
-/** Tính và kiểm tra toàn bộ chênh lệch trước khi ghi bất kỳ tồn nào. */
-public final class Kho {
-    private final DanhSachSanPham sanPham;
+public class Kho {
+    private DanhSachSanPham danhSachSanPham;
 
-    public Kho(DanhSachSanPham sanPham) {
-        this.sanPham = KiemTra.khacNull(sanPham, "Danh sach san pham");
+    public Kho() {
+    }
+
+    public Kho(DanhSachSanPham danhSachSanPham) {
+        setDanhSachSanPham(danhSachSanPham);
+    }
+
+    public void setDanhSachSanPham(DanhSachSanPham danhSachSanPham) {
+        if (danhSachSanPham == null) {
+            throw new IllegalArgumentException("Danh sach san pham khong duoc null.");
+        }
+        this.danhSachSanPham = danhSachSanPham;
     }
 
     public int traCuuTon(String maSP) {
-        SanPham timThay = sanPham.timTheoMa(maSP);
-        if (timThay == null) {
+        kiemTraDanhSach();
+        SanPham sp = danhSachSanPham.timTheoMa(maSP);
+        if (sp == null) {
             throw new IllegalArgumentException("Khong tim thay san pham: " + maSP);
         }
-        return timThay.getSoLuongTon();
+        return sp.getSoLuongTon();
     }
 
-    void capNhatTheoHoaDon(HoaDon cu, HoaDon moi) {
-        KiemTra.khacNull(cu == null ? moi : cu, "Chung tu");
-        SanPham[] tatCa = sanPham.getTatCa();
-        long[] chenhLech = new long[tatCa.length];
-        congHoaDon(tatCa, chenhLech, cu, 1);
-        congHoaDon(tatCa, chenhLech, moi, -1);
-        apDung(tatCa, chenhLech);
-    }
-
-    void capNhatTheoPhieuNhap(PhieuNhap cu, PhieuNhap moi) {
-        KiemTra.khacNull(cu == null ? moi : cu, "Chung tu");
-        SanPham[] tatCa = sanPham.getTatCa();
-        long[] chenhLech = new long[tatCa.length];
-        congPhieuNhap(tatCa, chenhLech, cu, -1);
-        congPhieuNhap(tatCa, chenhLech, moi, 1);
-        apDung(tatCa, chenhLech);
-    }
-
-    private void congHoaDon(SanPham[] tatCa, long[] chenhLech, HoaDon hoaDon, int dau) {
-        if (hoaDon == null) {
-            return;
+    public void capNhatTheoHoaDon(HoaDon cu, HoaDon moi) {
+        kiemTraDanhSach();
+        if (cu == null && moi == null) {
+            throw new IllegalArgumentException("Chua co hoa don de cap nhat.");
         }
-        for (ChiTietHoaDon dong : hoaDon.getChiTiet()) {
-            int viTri = timViTri(tatCa, dong.getSanPham().getMaSanPham());
-            chenhLech[viTri] += (long) dau * dong.getSoLuong();
+        SanPham[] ds = danhSachSanPham.getTatCa();
+        int[] chenhLech = new int[ds.length];
+        for (int i = 0; i < ds.length; i++) {
+            String ma = ds[i].getMaSanPham();
+            chenhLech[i] = soLuongHoaDon(cu, ma) - soLuongHoaDon(moi, ma);
         }
+        kiemTraVaCapNhat(ds, chenhLech);
     }
 
-    private void congPhieuNhap(SanPham[] tatCa, long[] chenhLech, PhieuNhap phieu, int dau) {
-        if (phieu == null) {
-            return;
+    public void capNhatTheoPhieuNhap(PhieuNhap cu, PhieuNhap moi) {
+        kiemTraDanhSach();
+        if (cu == null && moi == null) {
+            throw new IllegalArgumentException("Chua co phieu nhap de cap nhat.");
         }
-        for (ChiTietPhieuNhap dong : phieu.getChiTiet()) {
-            int viTri = timViTri(tatCa, dong.getSanPham().getMaSanPham());
-            chenhLech[viTri] += (long) dau * dong.getSoLuong();
+        SanPham[] ds = danhSachSanPham.getTatCa();
+        int[] chenhLech = new int[ds.length];
+        for (int i = 0; i < ds.length; i++) {
+            String ma = ds[i].getMaSanPham();
+            chenhLech[i] = soLuongPhieuNhap(moi, ma) - soLuongPhieuNhap(cu, ma);
         }
+        kiemTraVaCapNhat(ds, chenhLech);
     }
 
-    private int timViTri(SanPham[] tatCa, String maSP) {
-        for (int i = 0; i < tatCa.length; i++) {
-            if (tatCa[i].getMaSanPham().equals(maSP)) {
-                return i;
+    private int soLuongHoaDon(HoaDon hd, String maSP) {
+        if (hd == null) {
+            return 0;
+        }
+        ChiTietHoaDon dong = hd.timChiTiet(maSP);
+        if (dong == null) {
+            return 0;
+        }
+        return dong.getSoLuong();
+    }
+
+    private int soLuongPhieuNhap(PhieuNhap pn, String maSP) {
+        if (pn == null) {
+            return 0;
+        }
+        ChiTietPhieuNhap dong = pn.timChiTiet(maSP);
+        if (dong == null) {
+            return 0;
+        }
+        return dong.getSoLuong();
+    }
+
+    private void kiemTraVaCapNhat(SanPham[] ds, int[] chenhLech) {
+        // Vong 1 chi kiem tra, chua thay doi ton cua bat ky san pham nao.
+        for (int i = 0; i < ds.length; i++) {
+            long tonMoi = (long) ds[i].getSoLuongTon() + chenhLech[i];
+            if (tonMoi < 0 || tonMoi > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException("Ton kho khong hop le: " + ds[i].getMaSanPham());
             }
         }
-        throw new IllegalArgumentException("San pham khong ton tai: " + maSP);
+        // Chi khi tat ca hop le moi chay vong 2 de cap nhat.
+        for (int i = 0; i < ds.length; i++) {
+            ds[i].capNhatTon(chenhLech[i]);
+        }
     }
 
-    private void apDung(SanPham[] tatCa, long[] chenhLech) {
-        int[] tonMoi = new int[tatCa.length];
-        for (int i = 0; i < tatCa.length; i++) {
-            long soLuong = tatCa[i].getSoLuongTon() + chenhLech[i];
-            if (soLuong < 0 || soLuong > Integer.MAX_VALUE) {
-                throw new IllegalArgumentException("Ton kho khong hop le cho " + tatCa[i].getMaSanPham());
-            }
-            tonMoi[i] = (int) soLuong;
+    private void kiemTraDanhSach() {
+        if (danhSachSanPham == null) {
+            throw new IllegalArgumentException("Kho chua duoc gan danh sach san pham.");
         }
-        sanPham.apDungTonKho(tonMoi);
     }
 }

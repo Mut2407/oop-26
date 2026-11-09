@@ -1,6 +1,6 @@
 package models;
 
-public final class LoaiSP {
+public class LoaiSP {
     private final String maLoaiSP;
     private String tenLoaiSP;
     private String moTa;
@@ -12,9 +12,14 @@ public final class LoaiSP {
     }
 
     public LoaiSP(String maLoaiSP, String tenLoaiSP, String moTa) {
-        this.maLoaiSP = KiemTra.ma(maLoaiSP);
-        this.tenLoaiSP = KiemTra.batBuoc(tenLoaiSP, "tenLoaiSP");
-        this.moTa = moTa == null ? "" : moTa.trim();
+        kiemTraMa(maLoaiSP);
+        this.maLoaiSP = maLoaiSP.trim().toUpperCase(java.util.Locale.ROOT);
+        setTenLoaiSP(tenLoaiSP);
+        setMoTa(moTa);
+    }
+
+    public LoaiSP(LoaiSP cu) {
+        this(cu.maLoaiSP, cu.tenLoaiSP, cu.moTa);
     }
 
     public String getMaLoaiSP() {
@@ -26,7 +31,8 @@ public final class LoaiSP {
     }
 
     public void setTenLoaiSP(String tenLoaiSP) {
-        this.tenLoaiSP = KiemTra.batBuoc(tenLoaiSP, "tenLoaiSP");
+        kiemTraChuoi(tenLoaiSP, "tenLoaiSP");
+        this.tenLoaiSP = tenLoaiSP.trim();
     }
 
     public String getMoTa() {
@@ -34,11 +40,32 @@ public final class LoaiSP {
     }
 
     public void setMoTa(String moTa) {
-        this.moTa = moTa == null ? "" : moTa.trim();
+        if (moTa == null) {
+            moTa = "";
+        }
+        this.moTa = moTa.trim();
     }
 
-    public LoaiSP saoChep() {
-        return new LoaiSP(maLoaiSP, tenLoaiSP, moTa);
+    public void capNhatThongTin(LoaiSP moi) {
+        LoaiSP hopLe = new LoaiSP(moi);
+        this.tenLoaiSP = hopLe.tenLoaiSP;
+        this.moTa = hopLe.moTa;
+    }
+
+    public void kiemTraHopLe() {
+        new LoaiSP(maLoaiSP, tenLoaiSP, moTa);
+    }
+
+    private static void kiemTraMa(String ma) {
+        if (ma == null || !ma.trim().matches("[A-Za-z0-9_-]+")) {
+            throw new IllegalArgumentException("Ma chi gom chu, so, _ hoac -.");
+        }
+    }
+
+    private static void kiemTraChuoi(String giaTri, String ten) {
+        if (giaTri == null || giaTri.trim().isEmpty()) {
+            throw new IllegalArgumentException(ten + " khong duoc rong.");
+        }
     }
 
     public String hienThiThongTin() {

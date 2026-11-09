@@ -1,16 +1,15 @@
 package services;
 
 import java.util.Arrays;
+import java.util.Locale;
 import models.SanPham;
-import models.KiemTra;
 
-/** Mảng đối tượng có mở rộng, không lộ dữ liệu nội bộ cho bên gọi. */
-public final class DanhSachSanPham implements IQuanLyDanhSach<SanPham> {
+public class DanhSachSanPham implements IQuanLyDanhSach<SanPham> {
     private SanPham[] ds;
     private int soLuong;
 
     public DanhSachSanPham() {
-        this(KiemTra.SUC_CHUA_MAC_DINH);
+        this(SanPham.SUC_CHUA_BAN_DAU);
     }
 
     public DanhSachSanPham(int sucChua) {
@@ -18,11 +17,16 @@ public final class DanhSachSanPham implements IQuanLyDanhSach<SanPham> {
             throw new IllegalArgumentException("Suc chua phai >= 0.");
         }
         ds = new SanPham[sucChua];
+        soLuong = 0;
     }
 
     public DanhSachSanPham(SanPham[] banDau) {
-        this(KiemTra.khacNull(banDau, "Mang ban dau").length);
-        themNhieu(banDau);
+        this(banDau.length);
+        for (int i = 0; i < banDau.length; i++) {
+            if (!them(banDau[i])) {
+                throw new IllegalArgumentException("Ma trung trong mang ban dau.");
+            }
+        }
     }
 
     @Override
@@ -32,55 +36,45 @@ public final class DanhSachSanPham implements IQuanLyDanhSach<SanPham> {
 
     @Override
     public SanPham[] getTatCa() {
-        SanPham[] ketQua = new SanPham[soLuong];
-        for (int i = 0; i < soLuong; i++) {
-            ketQua[i] = ds[i].saoChep();
-        }
-        return ketQua;
+        return Arrays.copyOf(ds, soLuong);
     }
 
     @Override
     public boolean them(SanPham doiTuong) {
-        SanPham hopLe = KiemTra.khacNull(doiTuong, "Doi tuong").saoChep();
-        if (timViTri(hopLe.getMaSanPham()) >= 0) {
-            throw new IllegalArgumentException("Ma da ton tai: " + hopLe.getMaSanPham());
+        if (doiTuong == null) {
+            return false;
         }
-        if (soLuong == ds.length) {
-            ds = Arrays.copyOf(ds, Math.max(1, ds.length * 2));
+        doiTuong.kiemTraHopLe();
+        if (!kiemTraMaDuyNhat(doiTuong.getMaSanPham())) {
+            return false;
         }
-        ds[soLuong++] = hopLe;
+        moRongMang();
+        ds[soLuong] = doiTuong;
+        soLuong++;
         return true;
     }
 
-    /** Kiểm tra toàn bộ trước khi thay đổi mảng, kể cả mã trùng trong lô. */
-    public void themNhieu(SanPham[] doiTuong) {
-        KiemTra.khacNull(doiTuong, "Mang can them");
-        DanhSachSanPham moi = new DanhSachSanPham(soLuong + doiTuong.length);
-        for (SanPham cu : getTatCa()) {
-            moi.them(cu);
+    private boolean kiemTraMaDuyNhat(String ma) {
+        return timViTri(ma) == -1;
+    }
+
+    private void moRongMang() {
+        if (soLuong == ds.length) {
+            ds = Arrays.copyOf(ds, ds.length + SanPham.SUC_CHUA_BAN_DAU);
         }
-        for (SanPham item : doiTuong) {
-            moi.them(item);
-        }
-        ds = moi.ds;
-        soLuong = moi.soLuong;
     }
 
     @Override
-    public boolean sua(String ma, SanPham doiTuongMoi) {
+    public boolean sua(String ma, SanPham moi) {
         int viTri = timViTri(ma);
-        if (viTri < 0) {
+        if (viTri < 0 || moi == null) {
             return false;
         }
-        SanPham hopLe = KiemTra.khacNull(doiTuongMoi, "Doi tuong").saoChep();
-        if (!ds[viTri].getMaSanPham().equals(hopLe.getMaSanPham())) {
-            throw new IllegalArgumentException("Khong duoc doi ma dinh danh.");
+        moi.kiemTraHopLe();
+        if (!ds[viTri].getMaSanPham().equals(moi.getMaSanPham())) {
+            return false;
         }
-        if (ds[viTri].getSoLuongTon() != hopLe.getSoLuongTon()
-                || ds[viTri].getClass() != hopLe.getClass()) {
-            throw new IllegalArgumentException("Khong duoc sua ton kho hoac doi lop san pham.");
-        }
-        ds[viTri] = hopLe;
+        ds[viTri].capNhatThongTin(moi);
         return true;
     }
 
@@ -90,7 +84,9 @@ public final class DanhSachSanPham implements IQuanLyDanhSach<SanPham> {
         if (viTri < 0) {
             return false;
         }
-        System.arraycopy(ds, viTri + 1, ds, viTri, soLuong - viTri - 1);
+        for (int i = viTri; i < soLuong - 1; i++) {
+            ds[i] = ds[i + 1];
+        }
         ds[--soLuong] = null;
         return true;
     }
@@ -98,13 +94,18 @@ public final class DanhSachSanPham implements IQuanLyDanhSach<SanPham> {
     @Override
     public SanPham timTheoMa(String ma) {
         int viTri = timViTri(ma);
-        return viTri < 0 ? null : ds[viTri].saoChep();
+        if (viTri < 0) {
+            return null;
+        }
+        return ds[viTri];
     }
 
     private int timViTri(String ma) {
-        String maChuan = KiemTra.ma(ma);
+        if (ma == null) {
+            return -1;
+        }
         for (int i = 0; i < soLuong; i++) {
-            if (ds[i].getMaSanPham().equals(maChuan)) {
+            if (ds[i].getMaSanPham().equalsIgnoreCase(ma.trim())) {
                 return i;
             }
         }
@@ -113,48 +114,47 @@ public final class DanhSachSanPham implements IQuanLyDanhSach<SanPham> {
 
     @Override
     public SanPham[] timKiem(String tuKhoa) {
+        String khoa = tuKhoa == null ? "" : tuKhoa.trim().toLowerCase(Locale.ROOT);
         SanPham[] ketQua = new SanPham[soLuong];
         int soKetQua = 0;
         for (int i = 0; i < soLuong; i++) {
-            if (KiemTra.chua(ds[i].getMaSanPham(), tuKhoa)
-                    || KiemTra.chua(ds[i].getTenSanPham(), tuKhoa)) {
-                ketQua[soKetQua++] = ds[i].saoChep();
+            if (ds[i].getMaSanPham().toLowerCase(Locale.ROOT).contains(khoa)
+                    || ds[i].getTenSanPham().toLowerCase(Locale.ROOT).contains(khoa)) {
+                ketQua[soKetQua++] = ds[i];
             }
         }
         return Arrays.copyOf(ketQua, soKetQua);
     }
 
     public SanPham[] locTheoLoaiSP(String maLoai) {
-        String maChuan = KiemTra.ma(maLoai);
         SanPham[] ketQua = new SanPham[soLuong];
         int soKetQua = 0;
         for (int i = 0; i < soLuong; i++) {
-            if (ds[i].getLoaiSP().getMaLoaiSP().equals(maChuan)) {
-                ketQua[soKetQua++] = ds[i].saoChep();
+            if (ds[i].getLoaiSP().getMaLoaiSP().equalsIgnoreCase(maLoai.trim())) {
+                ketQua[soKetQua++] = ds[i];
             }
         }
         return Arrays.copyOf(ketQua, soKetQua);
     }
 
     public SanPham[] locTheoKhoangGia(java.math.BigDecimal tu, java.math.BigDecimal den) {
-        KiemTra.tien(tu);
-        KiemTra.tien(den);
-        if (tu.compareTo(den) > 0) {
+        if (tu == null || den == null || tu.signum() < 0 || tu.compareTo(den) > 0) {
             throw new IllegalArgumentException("Khoang gia khong hop le.");
         }
-        return Arrays.stream(getTatCa()).filter(sp -> sp.getGiaBan().compareTo(tu) >= 0
-                && sp.getGiaBan().compareTo(den) <= 0).toArray(SanPham[]::new);
+        SanPham[] ketQua = new SanPham[soLuong];
+        int soKetQua = 0;
+        for (int i = 0; i < soLuong; i++) {
+            if (ds[i].getGiaBan().compareTo(tu) >= 0 && ds[i].getGiaBan().compareTo(den) <= 0) {
+                ketQua[soKetQua++] = ds[i];
+            }
+        }
+        return Arrays.copyOf(ketQua, soKetQua);
     }
 
-    /** Chỉ Kho gọi: dựng xong tất cả bản sao rồi mới thay mảng đang dùng. */
-    void apDungTonKho(int[] tonMoi) {
-        if (tonMoi.length != soLuong) {
-            throw new IllegalArgumentException("So phan tu ton kho khong khop.");
-        }
-        SanPham[] moi = Arrays.copyOf(ds, ds.length);
+    public void hienThiDanhSach() {
         for (int i = 0; i < soLuong; i++) {
-            moi[i] = ds[i].voiTonKho(tonMoi[i]);
+            // Goi ham qua SanPham: Java chay phien ban cua lop con.
+            System.out.println(ds[i].hienThiThongTin());
         }
-        ds = moi;
     }
 }

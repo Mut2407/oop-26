@@ -1,0 +1,6 @@
+maNhaCungCap	tenNhaCungCap	soDienThoai	diaChi
+NCC01	The Thao An Phat	0902000001	Quan 1, TP.HCM
+NCC02	Dung Cu Binh Minh	0902000002	Quan 3, TP.HCM
+NCC03	Giay The Thao Minh Tam	0902000003	Quan 10, TP.HCM
+NCC04	The Thao Thanh Cong	0902000004	Tan Binh, TP.HCM
+NCC05	Dung Cu Viet Sport	0902000005	Thu Duc, TP.HCM

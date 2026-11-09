@@ -1,6 +1,6 @@
 package models;
 
-public final class NhanVien {
+public class NhanVien {
     private final String maNhanVien;
     private String hoTen;
     private String soDienThoai;
@@ -14,10 +14,15 @@ public final class NhanVien {
     }
 
     public NhanVien(String maNhanVien, String hoTen, String soDienThoai, String caLamViec) {
-        this.maNhanVien = KiemTra.ma(maNhanVien);
-        this.hoTen = KiemTra.batBuoc(hoTen, "hoTen");
-        this.soDienThoai = KiemTra.dienThoai(soDienThoai);
-        this.caLamViec = KiemTra.batBuoc(caLamViec, "caLamViec");
+        kiemTraMa(maNhanVien);
+        this.maNhanVien = maNhanVien.trim().toUpperCase(java.util.Locale.ROOT);
+        setHoTen(hoTen);
+        setSoDienThoai(soDienThoai);
+        setCaLamViec(caLamViec);
+    }
+
+    public NhanVien(NhanVien cu) {
+        this(cu.maNhanVien, cu.hoTen, cu.soDienThoai, cu.caLamViec);
     }
 
     public String getMaNhanVien() {
@@ -29,7 +34,8 @@ public final class NhanVien {
     }
 
     public void setHoTen(String hoTen) {
-        this.hoTen = KiemTra.batBuoc(hoTen, "hoTen");
+        kiemTraChuoi(hoTen, "hoTen");
+        this.hoTen = hoTen.trim();
     }
 
     public String getSoDienThoai() {
@@ -37,7 +43,10 @@ public final class NhanVien {
     }
 
     public void setSoDienThoai(String soDienThoai) {
-        this.soDienThoai = KiemTra.dienThoai(soDienThoai);
+        if (soDienThoai == null || !soDienThoai.trim().matches("\\+?[0-9]{9,15}")) {
+            throw new IllegalArgumentException("So dien thoai phai co 9-15 chu so.");
+        }
+        this.soDienThoai = soDienThoai.trim();
     }
 
     public String getCaLamViec() {
@@ -45,11 +54,31 @@ public final class NhanVien {
     }
 
     public void setCaLamViec(String caLamViec) {
-        this.caLamViec = KiemTra.batBuoc(caLamViec, "caLamViec");
+        kiemTraChuoi(caLamViec, "caLamViec");
+        this.caLamViec = caLamViec.trim();
     }
 
-    public NhanVien saoChep() {
-        return new NhanVien(maNhanVien, hoTen, soDienThoai, caLamViec);
+    public void capNhatThongTin(NhanVien moi) {
+        NhanVien hopLe = new NhanVien(moi);
+        this.hoTen = hopLe.hoTen;
+        this.soDienThoai = hopLe.soDienThoai;
+        this.caLamViec = hopLe.caLamViec;
+    }
+
+    public void kiemTraHopLe() {
+        new NhanVien(maNhanVien, hoTen, soDienThoai, caLamViec);
+    }
+
+    private static void kiemTraMa(String ma) {
+        if (ma == null || !ma.trim().matches("[A-Za-z0-9_-]+")) {
+            throw new IllegalArgumentException("Ma chi gom chu, so, _ hoac -.");
+        }
+    }
+
+    private static void kiemTraChuoi(String giaTri, String ten) {
+        if (giaTri == null || giaTri.trim().isEmpty()) {
+            throw new IllegalArgumentException(ten + " khong duoc rong.");
+        }
     }
 
     public String hienThiThongTin() {

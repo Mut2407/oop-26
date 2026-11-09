@@ -2,7 +2,7 @@ package models;
 
 import java.math.BigDecimal;
 
-public final class GiayTheThao extends SanPham {
+public class GiayTheThao extends SanPham {
     private double kichCoGiay;
     private String mauSac;
     private String chatLieu;
@@ -10,15 +10,26 @@ public final class GiayTheThao extends SanPham {
 
     public GiayTheThao() {
         super();
+        mauSac = "";
+        chatLieu = "";
+        loaiDeGiay = "";
     }
 
-    public GiayTheThao(String ma, String ten, String thuongHieu, BigDecimal giaBan,
-            LoaiSP loaiSP, double kichCoGiay, String mauSac, String chatLieu, String loaiDeGiay) {
-        super(ma, ten, thuongHieu, giaBan, loaiSP);
+    public GiayTheThao(String ma, String ten, String thuongHieu, BigDecimal gia,
+            LoaiSP loai, double kichCoGiay, String mauSac, String chatLieu, String loaiDeGiay) {
+        super(ma, ten, thuongHieu, gia, loai);
         setKichCoGiay(kichCoGiay);
         setMauSac(mauSac);
         setChatLieu(chatLieu);
         setLoaiDeGiay(loaiDeGiay);
+    }
+
+    public GiayTheThao(GiayTheThao cu) {
+        super(cu);
+        setKichCoGiay(cu.kichCoGiay);
+        setMauSac(cu.mauSac);
+        setChatLieu(cu.chatLieu);
+        setLoaiDeGiay(cu.loaiDeGiay);
     }
 
     public double getKichCoGiay() {
@@ -26,7 +37,10 @@ public final class GiayTheThao extends SanPham {
     }
 
     public void setKichCoGiay(double kichCoGiay) {
-        this.kichCoGiay = KiemTra.soDuong(kichCoGiay);
+        if (!Double.isFinite(kichCoGiay) || kichCoGiay <= 0) {
+            throw new IllegalArgumentException("kichCoGiay phai > 0.");
+        }
+        this.kichCoGiay = kichCoGiay;
     }
 
     public String getMauSac() {
@@ -34,7 +48,8 @@ public final class GiayTheThao extends SanPham {
     }
 
     public void setMauSac(String mauSac) {
-        this.mauSac = KiemTra.batBuoc(mauSac, "Mau sac");
+        kiemTraChuoi(mauSac, "mauSac");
+        this.mauSac = mauSac.trim();
     }
 
     public String getChatLieu() {
@@ -42,7 +57,10 @@ public final class GiayTheThao extends SanPham {
     }
 
     public void setChatLieu(String chatLieu) {
-        this.chatLieu = chatLieu == null ? "" : chatLieu.trim();
+        if (chatLieu == null) {
+            chatLieu = "";
+        }
+        this.chatLieu = chatLieu.trim();
     }
 
     public String getLoaiDeGiay() {
@@ -50,13 +68,26 @@ public final class GiayTheThao extends SanPham {
     }
 
     public void setLoaiDeGiay(String loaiDeGiay) {
-        this.loaiDeGiay = KiemTra.batBuoc(loaiDeGiay, "Loai de giay");
+        kiemTraChuoi(loaiDeGiay, "loaiDeGiay");
+        this.loaiDeGiay = loaiDeGiay.trim();
     }
 
     @Override
-    public GiayTheThao saoChep() {
-        return giuTonKho(new GiayTheThao(getMaSanPham(), getTenSanPham(), getThuongHieu(),
-                getGiaBan(), getLoaiSP(), kichCoGiay, mauSac, chatLieu, loaiDeGiay));
+    public void capNhatThongTin(SanPham moi) {
+        if (!(moi instanceof GiayTheThao)) {
+            throw new IllegalArgumentException("Khong duoc doi lop san pham.");
+        }
+        GiayTheThao hopLe = new GiayTheThao((GiayTheThao) moi);
+        super.capNhatThongTin(hopLe);
+        this.kichCoGiay = hopLe.kichCoGiay;
+        this.mauSac = hopLe.mauSac;
+        this.chatLieu = hopLe.chatLieu;
+        this.loaiDeGiay = hopLe.loaiDeGiay;
+    }
+
+    @Override
+    public void kiemTraHopLe() {
+        new GiayTheThao(this);
     }
 
     @Override

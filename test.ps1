@@ -5,13 +5,14 @@ $testBuild = Join-Path ([IO.Path]::GetTempPath()) ('oop26-tests-' + [guid]::NewG
 Push-Location $PSScriptRoot
 try {
     $java = if ($JavaHome) { Join-Path $JavaHome 'bin/java' } else { (Get-Command java -ErrorAction Stop).Source }
+    $javac = if ($JavaHome) { Join-Path $JavaHome 'bin/javac' } else { 'javac' }
     New-Item -ItemType Directory -Path $testBuild | Out-Null
     $sources = Get-ChildItem src, tests -Recurse -Filter '*.java' | Sort-Object FullName
     $sourceList = Join-Path $testBuild 'sources.txt'
     $paths = [string[]]@($sources | ForEach-Object { '"' + $_.FullName.Replace('\', '/') + '"' })
     [IO.File]::WriteAllLines($sourceList, $paths, (New-Object Text.UTF8Encoding($false)))
     $classes = Join-Path $testBuild 'classes'
-    & $java -m jdk.compiler/com.sun.tools.javac.Main -source 17 -target 17 -Xlint:all -encoding UTF-8 -d $classes "@$sourceList"
+    & $javac --release 8 -Xlint:all -encoding UTF-8 -d $classes "@$sourceList"
     if ($LASTEXITCODE -ne 0) { throw 'Bien dich tests that bai.' }
     foreach ($test in Get-ChildItem tests -Filter '*Test.java' | Sort-Object Name) {
         & $java '-Dfile.encoding=UTF-8' -ea -cp $classes $test.BaseName

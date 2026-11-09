@@ -1,18 +1,18 @@
 package services;
 
 import java.util.Arrays;
+import java.util.Locale;
 import models.HoaDon;
-import models.KiemTra;
+import models.SanPham;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/** Mảng đối tượng có mở rộng, không lộ dữ liệu nội bộ cho bên gọi. */
-public final class DanhSachHoaDon implements IQuanLyDanhSach<HoaDon> {
+public class DanhSachHoaDon implements IQuanLyDanhSach<HoaDon> {
     private HoaDon[] ds;
     private int soLuong;
 
     public DanhSachHoaDon() {
-        this(KiemTra.SUC_CHUA_MAC_DINH);
+        this(SanPham.SUC_CHUA_BAN_DAU);
     }
 
     public DanhSachHoaDon(int sucChua) {
@@ -20,11 +20,16 @@ public final class DanhSachHoaDon implements IQuanLyDanhSach<HoaDon> {
             throw new IllegalArgumentException("Suc chua phai >= 0.");
         }
         ds = new HoaDon[sucChua];
+        soLuong = 0;
     }
 
     public DanhSachHoaDon(HoaDon[] banDau) {
-        this(KiemTra.khacNull(banDau, "Mang ban dau").length);
-        themNhieu(banDau);
+        this(banDau.length);
+        for (int i = 0; i < banDau.length; i++) {
+            if (!them(banDau[i])) {
+                throw new IllegalArgumentException("Ma trung trong mang ban dau.");
+            }
+        }
     }
 
     @Override
@@ -36,49 +41,47 @@ public final class DanhSachHoaDon implements IQuanLyDanhSach<HoaDon> {
     public HoaDon[] getTatCa() {
         HoaDon[] ketQua = new HoaDon[soLuong];
         for (int i = 0; i < soLuong; i++) {
-            ketQua[i] = ds[i].saoChep();
+            ketQua[i] = new HoaDon(ds[i]);
         }
         return ketQua;
     }
 
     @Override
     public boolean them(HoaDon doiTuong) {
-        HoaDon hopLe = KiemTra.khacNull(doiTuong, "Doi tuong").saoChep();
-        if (timViTri(hopLe.getMaHoaDon()) >= 0) {
-            throw new IllegalArgumentException("Ma da ton tai: " + hopLe.getMaHoaDon());
+        if (doiTuong == null) {
+            return false;
         }
-        if (soLuong == ds.length) {
-            ds = Arrays.copyOf(ds, Math.max(1, ds.length * 2));
+        doiTuong.kiemTraHopLe();
+        if (!kiemTraMaDuyNhat(doiTuong.getMaHoaDon())) {
+            return false;
         }
-        ds[soLuong++] = hopLe;
+        moRongMang();
+        ds[soLuong] = new HoaDon(doiTuong);
+        soLuong++;
         return true;
     }
 
-    /** Kiểm tra toàn bộ trước khi thay đổi mảng, kể cả mã trùng trong lô. */
-    public void themNhieu(HoaDon[] doiTuong) {
-        KiemTra.khacNull(doiTuong, "Mang can them");
-        DanhSachHoaDon moi = new DanhSachHoaDon(soLuong + doiTuong.length);
-        for (HoaDon cu : getTatCa()) {
-            moi.them(cu);
+    private boolean kiemTraMaDuyNhat(String ma) {
+        return timViTri(ma) == -1;
+    }
+
+    private void moRongMang() {
+        if (soLuong == ds.length) {
+            ds = Arrays.copyOf(ds, ds.length + SanPham.SUC_CHUA_BAN_DAU);
         }
-        for (HoaDon item : doiTuong) {
-            moi.them(item);
-        }
-        ds = moi.ds;
-        soLuong = moi.soLuong;
     }
 
     @Override
-    public boolean sua(String ma, HoaDon doiTuongMoi) {
+    public boolean sua(String ma, HoaDon moi) {
         int viTri = timViTri(ma);
-        if (viTri < 0) {
+        if (viTri < 0 || moi == null) {
             return false;
         }
-        HoaDon hopLe = KiemTra.khacNull(doiTuongMoi, "Doi tuong").saoChep();
-        if (!ds[viTri].getMaHoaDon().equals(hopLe.getMaHoaDon())) {
-            throw new IllegalArgumentException("Khong duoc doi ma dinh danh.");
+        moi.kiemTraHopLe();
+        if (!ds[viTri].getMaHoaDon().equals(moi.getMaHoaDon())) {
+            return false;
         }
-        ds[viTri] = hopLe;
+        ds[viTri] = new HoaDon(moi);
         return true;
     }
 
@@ -88,7 +91,9 @@ public final class DanhSachHoaDon implements IQuanLyDanhSach<HoaDon> {
         if (viTri < 0) {
             return false;
         }
-        System.arraycopy(ds, viTri + 1, ds, viTri, soLuong - viTri - 1);
+        for (int i = viTri; i < soLuong - 1; i++) {
+            ds[i] = ds[i + 1];
+        }
         ds[--soLuong] = null;
         return true;
     }
@@ -96,13 +101,18 @@ public final class DanhSachHoaDon implements IQuanLyDanhSach<HoaDon> {
     @Override
     public HoaDon timTheoMa(String ma) {
         int viTri = timViTri(ma);
-        return viTri < 0 ? null : ds[viTri].saoChep();
+        if (viTri < 0) {
+            return null;
+        }
+        return new HoaDon(ds[viTri]);
     }
 
     private int timViTri(String ma) {
-        String maChuan = KiemTra.ma(ma);
+        if (ma == null) {
+            return -1;
+        }
         for (int i = 0; i < soLuong; i++) {
-            if (ds[i].getMaHoaDon().equals(maChuan)) {
+            if (ds[i].getMaHoaDon().equalsIgnoreCase(ma.trim())) {
                 return i;
             }
         }
@@ -111,12 +121,13 @@ public final class DanhSachHoaDon implements IQuanLyDanhSach<HoaDon> {
 
     @Override
     public HoaDon[] timKiem(String tuKhoa) {
+        String khoa = tuKhoa == null ? "" : tuKhoa.trim().toLowerCase(Locale.ROOT);
         HoaDon[] ketQua = new HoaDon[soLuong];
         int soKetQua = 0;
         for (int i = 0; i < soLuong; i++) {
-            if (KiemTra.chua(ds[i].getMaHoaDon(), tuKhoa)
-                    || KiemTra.chua(ds[i].getKhachHang().getMaKhachHang(), tuKhoa)) {
-                ketQua[soKetQua++] = ds[i].saoChep();
+            if (ds[i].getMaHoaDon().toLowerCase(Locale.ROOT).contains(khoa)
+                    || ds[i].getKhachHang().getMaKhachHang().toLowerCase(Locale.ROOT).contains(khoa)) {
+                ketQua[soKetQua++] = new HoaDon(ds[i]);
             }
         }
         return Arrays.copyOf(ketQua, soKetQua);
@@ -130,16 +141,14 @@ public final class DanhSachHoaDon implements IQuanLyDanhSach<HoaDon> {
         return tong;
     }
 
+    // Overload: cung ten ham, khac danh sach tham so (chuong 2).
     public BigDecimal thongKeTongTien(LocalDate tu, LocalDate den) {
-        KiemTra.khacNull(tu, "Tu ngay");
-        KiemTra.khacNull(den, "Den ngay");
-        if (tu.isAfter(den)) {
-            throw new IllegalArgumentException("Tu ngay phai <= den ngay.");
+        if (tu == null || den == null || tu.isAfter(den)) {
+            throw new IllegalArgumentException("Khoang ngay khong hop le.");
         }
         BigDecimal tong = BigDecimal.ZERO;
         for (int i = 0; i < soLuong; i++) {
-            LocalDate ngay = ds[i].getNgayLap();
-            if (!ngay.isBefore(tu) && !ngay.isAfter(den)) {
+            if (!ds[i].getNgayLap().isBefore(tu) && !ds[i].getNgayLap().isAfter(den)) {
                 tong = tong.add(ds[i].tinhTongTien());
             }
         }

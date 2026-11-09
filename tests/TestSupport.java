@@ -3,38 +3,24 @@ import java.time.LocalDate;
 import models.*;
 import services.*;
 
-final class TestSupport {
-    static int assertions;
+class TestSupport {
+    static int soKiemTra;
     static final LocalDate NGAY = LocalDate.of(2026, 11, 9);
 
-    static void check(boolean dieuKien) {
-        assertions++;
+    static void dung(boolean dieuKien) {
+        soKiemTra++;
         if (!dieuKien) {
-            throw new AssertionError("Check " + assertions + " failed");
+            throw new AssertionError("Sai o kiem tra thu " + soKiemTra);
         }
-    }
-
-    static void bang(Object kyVong, Object thucTe) {
-        check(java.util.Objects.equals(kyVong, thucTe));
     }
 
     static void tien(String kyVong, BigDecimal thucTe) {
-        check(new BigDecimal(kyVong).compareTo(thucTe) == 0);
-    }
-
-    static void loi(Runnable hanhDong) {
-        try {
-            hanhDong.run();
-        } catch (IllegalArgumentException e) {
-            assertions++;
-            return;
-        }
-        throw new AssertionError("Expected IllegalArgumentException");
+        dung(new BigDecimal(kyVong).compareTo(thucTe) == 0);
     }
 
     static QuanLyCuaHang cuaHang() {
         QuanLyCuaHang ql = new QuanLyCuaHang();
-        ql.themLoaiSP(new LoaiSP("L1", "Giay", ""));
+        ql.themLoaiSP(new LoaiSP("L1", "The thao", ""));
         ql.themKhachHang(new KhachHang("KH1", "Khach", "0901234567", "HCM"));
         ql.themNhanVien(new NhanVien("NV1", "Nhan vien", "0901234568", "Sang"));
         ql.themNhaCungCap(new NhaCungCap("NCC1", "Nha cung cap", "0901234569", "HCM"));
@@ -44,8 +30,8 @@ final class TestSupport {
     }
 
     static GiayTheThao giay(String ma) {
-        return new GiayTheThao(ma, "Giày chạy bộ", "Nike", new BigDecimal("100.10"),
-                new LoaiSP("L1", "Giay", ""), 42.5, "Den", "Vai", "Cao su");
+        return new GiayTheThao(ma, "Giay chay bo", "Nike", new BigDecimal("100.10"),
+                new LoaiSP("L1", "The thao", ""), 42.5, "Den", "Vai", "Cao su");
     }
 
     static HoaDon hoaDon(QuanLyCuaHang ql, String ma, String maSP, int soLuong) {

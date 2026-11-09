@@ -2,21 +2,31 @@ package models;
 
 import java.math.BigDecimal;
 
-public final class QuanAoTheThao extends SanPham {
+public class QuanAoTheThao extends SanPham {
     private String kichCoQuanAo;
     private String mauSac;
     private String chatLieu;
 
     public QuanAoTheThao() {
         super();
+        kichCoQuanAo = "";
+        mauSac = "";
+        chatLieu = "";
     }
 
-    public QuanAoTheThao(String ma, String ten, String thuongHieu, BigDecimal giaBan,
-            LoaiSP loaiSP, String kichCoQuanAo, String mauSac, String chatLieu) {
-        super(ma, ten, thuongHieu, giaBan, loaiSP);
+    public QuanAoTheThao(String ma, String ten, String thuongHieu, BigDecimal gia,
+            LoaiSP loai, String kichCoQuanAo, String mauSac, String chatLieu) {
+        super(ma, ten, thuongHieu, gia, loai);
         setKichCoQuanAo(kichCoQuanAo);
         setMauSac(mauSac);
         setChatLieu(chatLieu);
+    }
+
+    public QuanAoTheThao(QuanAoTheThao cu) {
+        super(cu);
+        setKichCoQuanAo(cu.kichCoQuanAo);
+        setMauSac(cu.mauSac);
+        setChatLieu(cu.chatLieu);
     }
 
     public String getKichCoQuanAo() {
@@ -24,7 +34,8 @@ public final class QuanAoTheThao extends SanPham {
     }
 
     public void setKichCoQuanAo(String kichCoQuanAo) {
-        this.kichCoQuanAo = KiemTra.batBuoc(kichCoQuanAo, "Kich co quan ao");
+        kiemTraChuoi(kichCoQuanAo, "kichCoQuanAo");
+        this.kichCoQuanAo = kichCoQuanAo.trim();
     }
 
     public String getMauSac() {
@@ -32,7 +43,8 @@ public final class QuanAoTheThao extends SanPham {
     }
 
     public void setMauSac(String mauSac) {
-        this.mauSac = KiemTra.batBuoc(mauSac, "Mau sac");
+        kiemTraChuoi(mauSac, "mauSac");
+        this.mauSac = mauSac.trim();
     }
 
     public String getChatLieu() {
@@ -40,13 +52,27 @@ public final class QuanAoTheThao extends SanPham {
     }
 
     public void setChatLieu(String chatLieu) {
-        this.chatLieu = chatLieu == null ? "" : chatLieu.trim();
+        if (chatLieu == null) {
+            chatLieu = "";
+        }
+        this.chatLieu = chatLieu.trim();
     }
 
     @Override
-    public QuanAoTheThao saoChep() {
-        return giuTonKho(new QuanAoTheThao(getMaSanPham(), getTenSanPham(), getThuongHieu(),
-                getGiaBan(), getLoaiSP(), kichCoQuanAo, mauSac, chatLieu));
+    public void capNhatThongTin(SanPham moi) {
+        if (!(moi instanceof QuanAoTheThao)) {
+            throw new IllegalArgumentException("Khong duoc doi lop san pham.");
+        }
+        QuanAoTheThao hopLe = new QuanAoTheThao((QuanAoTheThao) moi);
+        super.capNhatThongTin(hopLe);
+        this.kichCoQuanAo = hopLe.kichCoQuanAo;
+        this.mauSac = hopLe.mauSac;
+        this.chatLieu = hopLe.chatLieu;
+    }
+
+    @Override
+    public void kiemTraHopLe() {
+        new QuanAoTheThao(this);
     }
 
     @Override

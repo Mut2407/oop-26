@@ -2,12 +2,13 @@ package models;
 
 import java.math.BigDecimal;
 
-public final class ChiTietPhieuNhap {
+public class ChiTietPhieuNhap {
     private SanPham sanPham;
     private int soLuong;
-    private BigDecimal donGiaNhap = BigDecimal.ZERO;
+    private BigDecimal donGiaNhap;
 
     public ChiTietPhieuNhap() {
+        donGiaNhap = BigDecimal.ZERO;
     }
 
     public ChiTietPhieuNhap(SanPham sanPham, int soLuong, BigDecimal donGiaNhap) {
@@ -16,12 +17,20 @@ public final class ChiTietPhieuNhap {
         setDonGiaNhap(donGiaNhap);
     }
 
+    public ChiTietPhieuNhap(ChiTietPhieuNhap cu) {
+        this(cu.sanPham, cu.soLuong, cu.donGiaNhap);
+    }
+
     public SanPham getSanPham() {
-        return sanPham == null ? null : sanPham.saoChep();
+        return sanPham;
     }
 
     public void setSanPham(SanPham sanPham) {
-        this.sanPham = KiemTra.khacNull(sanPham, "San pham").saoChep();
+        if (sanPham == null) {
+            throw new IllegalArgumentException("San pham khong duoc null.");
+        }
+        sanPham.kiemTraHopLe();
+        this.sanPham = sanPham;
     }
 
     public int getSoLuong() {
@@ -29,7 +38,10 @@ public final class ChiTietPhieuNhap {
     }
 
     public void setSoLuong(int soLuong) {
-        this.soLuong = KiemTra.soDuong(soLuong);
+        if (soLuong <= 0) {
+            throw new IllegalArgumentException("So luong phai > 0.");
+        }
+        this.soLuong = soLuong;
     }
 
     public BigDecimal getDonGiaNhap() {
@@ -37,14 +49,13 @@ public final class ChiTietPhieuNhap {
     }
 
     public void setDonGiaNhap(BigDecimal donGiaNhap) {
-        this.donGiaNhap = KiemTra.tien(donGiaNhap);
+        if (donGiaNhap == null || donGiaNhap.signum() < 0) {
+            throw new IllegalArgumentException("Don gia phai >= 0.");
+        }
+        this.donGiaNhap = donGiaNhap;
     }
 
     public BigDecimal tinhThanhTien() {
         return donGiaNhap.multiply(BigDecimal.valueOf(soLuong));
-    }
-
-    public ChiTietPhieuNhap saoChep() {
-        return new ChiTietPhieuNhap(sanPham, soLuong, donGiaNhap);
     }
 }

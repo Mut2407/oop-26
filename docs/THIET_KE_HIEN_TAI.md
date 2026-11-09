@@ -1,116 +1,126 @@
-# Thiết kế Sport Store hiện tại
+# Hướng dẫn đọc và bảo vệ đồ án theo các chương đã học
 
-Phiên bản này triển khai yêu cầu gốc tối thiểu 15 class và phương án 23 class + interface trong các tài liệu nguồn. Các lớp hỗ trợ giao diện, kiểm tra, đọc định dạng cũ được tách thêm để mỗi lớp có trách nhiệm rõ ràng. Không dùng số class làm mục tiêu để gộp tất cả vào một lớp quản lý khổng lồ.
+Bản này triển khai theo `To_Chuc_Do_An.txt`, `To_Chuc_UML.txt`, `To_Chuc_Class_Sport_Store.txt`, `Yeu_Cau_Do_An.txt` và yêu cầu gốc trong `yeucau_doan_OOP.docx`. Mục tiêu là tự đọc, gõ lại và giải thích được code ở trình độ sinh viên năm 2.
 
-## Các lớp
+## Đối chiếu bài giảng
 
-| Nhóm | Class | Trách nhiệm |
+| Nguồn học | Kiến thức trong nguồn | Áp dụng trong code |
 | --- | --- | --- |
-| Thực thể (12) | `SanPham`, `GiayTheThao`, `QuanAoTheThao`, `DungCuTheThao`, `LoaiSP`, `KhachHang`, `NhanVien`, `NhaCungCap`, `HoaDon`, `ChiTietHoaDon`, `PhieuNhap`, `ChiTietPhieuNhap` | Lưu trạng thái một đối tượng, kiểm tra giá trị, tính tiền và thao tác chi tiết |
-| Danh sách (7) | `DanhSachSanPham`, `DanhSachLoaiSP`, `DanhSachKhachHang`, `DanhSachNhanVien`, `DanhSachNhaCungCap`, `DanhSachHoaDon`, `DanhSachPhieuNhap` | Mỗi lớp giữ `ds` kiểu mảng và `soLuong`; CRUD, tìm kiếm; hai danh sách chứng từ có thống kê |
-| Điều phối/hỗ trợ chính (4) | `QuanLyCuaHang`, `Kho`, `LuuTruFileText`, `Main` | Điều kiện liên kết, giao dịch tồn, đọc/ghi, khởi chạy |
-| Hỗ trợ bổ sung (4) | `KiemTra`, `FileText`, `BoMaSanPham`, `NhapDuLieuCu` | Kiểm tra dùng chung, escape/atomic file, tuần tự hóa lớp con, nhập dữ liệu cũ |
-| Giao diện (5) | `NhapLieuConsole`, `MenuDanhSach`, `MenuCuaHang`, `NhapSanPham`, `NhapChungTu` | Nhập liệu, điều hướng, menu dùng chung và soạn từng loại đối tượng |
-| Interface (1) | `IQuanLyDanhSach<T>` | Thống nhất `them`, `sua`, `xoa`, `timTheoMa`, `timKiem`, `getTatCa`, `getSoLuong` |
+| Chương 1, slide 6–9 | Thuộc tính, phương thức, đóng gói, kế thừa, đa hình | Tách một đối tượng thực thể với mảng danh sách và lớp quản lý |
+| Chương 2, slide 13–19 | Constructor mặc định/có tham số/sao chép, `this`, get/set | Constructor các thực thể; `new HoaDon(cu)` và `new ChiTietHoaDon(cu)` khi sửa |
+| Chương 2, slide 22–28 | Thuộc tính/hàm static, overload | `SanPham.SUC_CHUA_BAN_DAU`, `main`, hàm kiểm tra static; hai hàm `thongKeTongTien` |
+| Chương 2, slide 30–39 | Mảng đối tượng, `Arrays.copyOf`, lớp danh sách, lớp quản lý và menu | Mảng `ds`, `soLuong`, thêm/sửa/xóa/tìm, menu `switch-case` trong `QuanLyCuaHang` |
+| Chương 3, slide 8–15 | `extends`, `super`, phạm vi truy xuất | Ba lớp sản phẩm gọi constructor và hàm của `SanPham` |
+| Chương 3, slide 19–24 | Tham chiếu, chuyển kiểu, has-a, mảng | SP có một loại, chứng từ có đối tác và chi tiết; chuyển kiểu khi đọc/ghi đúng lớp con |
+| Chương 4, slide 7–15 | Override, mảng đa hình, `instanceof` | Gọi `hienThiThongTin()` qua `SanPham[]`; kiểm tra kiểu tại nhập liệu/ghi file |
+| Chương 4, slide 22–25 | Abstract class/method | `SanPham` và các hàm `hienThiThongTin`, `kiemTraHopLe` |
+| Chương 5, trang 8, 13–15 | Interface, tham chiếu interface, generic type `T` | Bảy danh sách implements `IQuanLyDanhSach<T>`; ví dụ dùng interface ở phần dưới |
+| BinaryFile, trang 3–4, 8–11 | Mở/đọc hoặc ghi/đóng, stream, `try/catch/finally` | `LuuTruFileText` dùng luồng file, đóng trong `finally`; ghi text theo yêu cầu đồ án |
+| File tổ chức class, mục 3 và 9 | `BigDecimal`, `LocalDate` | Tiền tính bằng `add`/`multiply`, ngày đọc bằng `parse` và so sánh khoảng ngày |
 
-Tổng: **32 class và 1 interface** trong `src/`. Constructor không tham số của thực thể tạo bản chưa hoàn chỉnh; danh sách từ chối lưu khi thiếu dữ liệu bắt buộc. Đối tượng thực tế được tạo bằng constructor có tham số. Lớp có phụ thuộc bắt buộc như `Kho` nhận danh sách qua constructor; không tạo một kho rời không liên kết.
+`BigDecimal` và `LocalDate` là thư viện để thực hiện yêu cầu cụ thể trong file tổ chức, không phải một kiến trúc mới. Bài giảng BinaryFile mô tả file nhị phân, còn đề yêu cầu file text; phần dùng lại là các bước làm việc với luồng và cách đóng file.
 
-## Tách trách nhiệm
+## Đúng 23 class + 1 interface
 
-```mermaid
-flowchart TD
-    UI["Menu và nhập liệu"] --> QL["QuanLyCuaHang"]
-    QL --> DS["Bảy danh sách dùng mảng"]
-    QL --> KHO["Kho: kiểm tra chênh lệch"]
-    KHO --> SP["DanhSachSanPham: áp dụng tồn"]
-    UI --> FILE["LuuTruFileText: snapshot"]
-    FILE --> QL
+| Nhóm | Class |
+| --- | --- |
+| Thực thể, 12 class | SanPham, GiayTheThao, QuanAoTheThao, DungCuTheThao, LoaiSP, KhachHang, NhanVien, NhaCungCap, HoaDon, ChiTietHoaDon, PhieuNhap, ChiTietPhieuNhap |
+| Danh sách, 7 class | DanhSachSanPham, DanhSachLoaiSP, DanhSachKhachHang, DanhSachNhanVien, DanhSachNhaCungCap, DanhSachHoaDon, DanhSachPhieuNhap |
+| Quản lý/hỗ trợ, 4 class | QuanLyCuaHang, Kho, LuuTruFileText, Main |
+| Interface | IQuanLyDanhSach<T> |
+
+Không có lớp `KiemTra`, menu generic, bộ mã sản phẩm hoặc bộ nhập định dạng cũ riêng như bản trước. Các việc kiểm tra giá trị thuộc thực thể, mã trùng thuộc danh sách, liên kết thuộc lớp quản lý. Các thao tác file nằm trong `LuuTruFileText`.
+
+Các constructor mặc định tạo đối tượng chưa nhập đủ dữ liệu. Constructor có tham số kiểm tra và gán dữ liệu. Constructor sao chép thể hiện đúng cách được dạy ở chương 2 và chương 3.
+
+## Thứ tự đọc code
+
+1. `LoaiSP`, `KhachHang`, `NhanVien`, `NhaCungCap`: thuộc tính, constructor, get/set.
+2. `SanPham` và ba lớp con: hiểu `super`, phần chung/phần riêng, override.
+3. `DanhSachLoaiSP` hoặc `DanhSachKhachHang`: hiểu `ds.length` khác `soLuong`; `timViTri`, kiểm tra mã, mở rộng và dồn mảng.
+4. `ChiTietHoaDon` và `HoaDon`: một dòng tính thành tiền, nhiều dòng tính tổng tiền.
+5. `Kho`: tính chênh lệch, kiểm tra trước rồi mới cập nhật.
+6. `QuanLyCuaHang`: theo một hàm như `themHoaDon` rồi xem hàm nhập/menu gọi nó.
+7. `LuuTruFileText`: đọc từng file theo thứ tự liên kết, sau đó xem ghi file.
+8. `Main`: tạo lớp quản lý và gọi `chay`, không chứa toàn bộ chương trình.
+
+`QuanLyCuaHang` dài vì giữ đầy đủ menu và nhập liệu của bảy nhóm như tài liệu yêu cầu. Mỗi nhóm có hàm riêng, gọi trực tiếp. `LuuTruFileText` cũng chia hàm đọc/ghi từng nhóm. Clean Code ở đây là tên dễ hiểu và hàm có nhiệm vụ rõ ràng; không dùng một hàm tổng quát khó giải thích để giảm số dòng.
+
+## Mảng và interface
+
+Ví dụ sử dụng qua kiểu interface, đúng chương 5:
+
+```java
+IQuanLyDanhSach<KhachHang> ds = new DanhSachKhachHang();
+ds.them(new KhachHang("KH01", "Nguyen Van An", "0901234567", "TP.HCM"));
+KhachHang kh = ds.timTheoMa("KH01");
+System.out.println(kh.hienThiThongTin());
 ```
 
-Thực thể không biết menu hoặc đường dẫn file. Danh sách không tự cập nhật Kho và không tự ghi file sau từng setter. `MenuDanhSach<T>` thực sự sử dụng interface để đọc dữ liệu; các callback ghi gọi qua `QuanLyCuaHang` để giữ kiểm tra tham chiếu. Getter của facade trả bản sao danh sách; không thể lấy danh sách để bán hàng mà bỏ qua kho.
+`T` được thay bằng `KhachHang`, `SanPham`, `HoaDon`... Interface chỉ quy định các tên hàm, không viết menu hay xử lý Kho. Bảy lớp tự cài phần thân hàm theo kiểu của mình. Hàm `nhapSanPham` dùng một biến kiểu interface trỏ đến `DanhSachSanPham` để tra cứu. Bài kiểm tra các danh sách cũng gọi thông qua interface.
 
-## Sản phẩm và đa hình
+Thêm vào mảng: kiểm tra đối tượng và mã → mở rộng nếu đầy → gán vào `ds[soLuong]` → tăng `soLuong`. Xóa: tìm vị trí → dịch các phần tử sau sang trái → giảm số lượng và bỏ tham chiếu cuối. Tìm kiếm: duyệt mảng, đưa kết quả phù hợp vào mảng tạm và trả phần đã sử dụng.
 
-```mermaid
-classDiagram
-    SanPham <|-- GiayTheThao
-    SanPham <|-- QuanAoTheThao
-    SanPham <|-- DungCuTheThao
-    SanPham "*" --> "1" LoaiSP
-    class SanPham {
-        <<abstract>>
-        -String maSanPham
-        -String tenSanPham
-        -String thuongHieu
-        -BigDecimal giaBan
-        -int soLuongTon
-        +saoChep() SanPham
-        +hienThiThongTin() String
-    }
+## Tham chiếu và sao chép
+
+Mỗi sản phẩm trỏ đến một `LoaiSP` trong danh sách. Hóa đơn trỏ đến khách/nhân viên; chi tiết trỏ đến sản phẩm. Khi sửa loại hoặc người, danh sách cập nhật chính đối tượng cũ, nên những nơi tham chiếu nó thấy thông tin mới.
+
+`getTatCa()` trả mảng mới, không trả thẳng mảng nội bộ. Mảng của thực thể thông thường chứa cùng tham chiếu đối tượng; đây là sao chép mảng, không phải sao chép sâu cả hệ thống. Quy ước sử dụng là menu thay đổi dữ liệu thông qua `QuanLyCuaHang` để kiểm tra các liên kết.
+
+Chứng từ cần cách riêng vì phải giữ bản cũ trước khi tính chênh lệch. Constructor `HoaDon(HoaDon cu)` tạo mảng chi tiết mới và sao chép từng dòng. Vì thế sửa số lượng trên bản đang soạn không thay số lượng của bản đang lưu. Đối tượng sản phẩm được tham chiếu chung, nhưng đơn giá lịch sử là thuộc tính riêng của dòng chi tiết.
+
+## Hai vòng lặp trong Kho
+
+Ví dụ tồn 10, thêm hóa đơn bán 3:
+
+- Số cũ 0, số mới 3, chênh lệch `0 - 3 = -3`.
+- Tồn sau `10 + (-3) = 7`.
+
+Sửa hóa đơn đó thành bán 5, tồn hiện tại 7:
+
+- Chênh lệch `3 - 5 = -2`.
+- Tồn sau `7 + (-2) = 5`.
+
+| Chứng từ | Công thức chênh lệch |
+| --- | --- |
+| Hóa đơn | Số lượng cũ − số lượng mới |
+| Phiếu nhập | Số lượng mới − số lượng cũ |
+
+Với thao tác thêm, bản cũ là `null` nên số cũ bằng 0. Với thao tác xóa, bản mới là `null` nên số mới bằng 0. Duyệt mọi sản phẩm để tính cả mã chỉ xuất hiện ở một bản.
+
+Vòng 1 tính tồn sau và kiểm tra tất cả. Nếu có một SP không đủ hàng thì báo lỗi khi chưa SP nào bị đổi tồn. Vòng 2 mới cập nhật tồn. Lớp quản lý đã kiểm tra mã, liên kết, chi tiết trước khi gọi Kho; sau đó thêm/sửa/xóa chứng từ trong danh sách. Không tạo một bộ danh sách mới cho toàn hệ thống mỗi lần bán hàng.
+
+## Đọc và ghi text
+
+Ví dụ file hóa đơn:
+
+```text
+HOA_DON
+HD01|2026-11-09|KH01|NV01
 ```
 
-Kích cỡ giày là `double > 0`; kích cỡ quần áo là chuỗi. Màu sắc/chất liệu nằm ở hai lớp giày và quần áo; môn thể thao/vật liệu/khối lượng nằm ở dụng cụ. Mỗi mã SP là một biến thể hàng hóa cụ thể. Duyệt `SanPham[]` gọi `hienThiThongTin()` và `saoChep()` qua lớp cơ sở để thể hiện đa hình. Kiểm tra kiểu chỉ dùng tại nhập liệu/tuần tự hóa để tạo đúng lớp con; Kho không rẽ nhánh theo loại giày/quần áo/dụng cụ.
+Ví dụ file chi tiết:
 
-## Quy tắc chứng từ và tồn
+```text
+CHI_TIET_HOA_DON
+HD01|SP01|2|500000
+```
 
-| Thao tác | Hóa đơn | Phiếu nhập |
-| --- | --- | --- |
-| Thêm | `0 - số mới` | `số mới - 0` |
-| Sửa | `số cũ - số mới` | `số mới - số cũ` |
-| Xóa | `số cũ - 0` | `0 - số cũ` |
+Lưu mã để đọc lại và tra đúng đối tượng, không lưu địa chỉ bộ nhớ. Đọc loại và đối tác trước, tiếp theo SP, đầu chứng từ, cuối cùng chi tiết. Đọc chứng từ chỉ khôi phục dữ liệu, không gọi hàm cộng/trừ Kho. Nếu đọc lỗi, bộ dữ liệu mới bị bỏ và không ghi đè bằng bộ rỗng.
 
-Với từng mã SP, `tồn sau = tồn hiện tại + chênh lệch`. Một phía không có mã đó được xem là số lượng 0.
+Ghi cả bộ vào thư mục tạm trước. Khi ghi đủ thì sao lưu file cũ và chép bộ mới. Nếu có lỗi sao chép, dùng các file sao lưu để phục hồi. Đó là các thao tác `FileInputStream`, `FileOutputStream`, mảng tên file và vòng lặp. Khi chương trình bị tắt đột ngột giữa lúc chép file, người dùng có thể phục hồi từ thư mục sao lưu; đồ án không giải quyết nhiều người ghi đồng thời.
 
-1. Chuẩn hóa mã, kiểm tra đối tác/nhân viên/sản phẩm tồn tại; chứng từ mới phải có chi tiết.
-2. Dựng bản sao danh sách chứng từ mới, kiểm tra mã trùng và mã không đổi.
-3. Kho tính chênh lệch trên tất cả dòng cũ/mới bằng `long`, kiểm tra không âm và không vượt `int`.
-4. Danh sách SP dựng đầy đủ mảng có tồn mới rồi mới thay tham chiếu mảng.
-5. Gán danh sách chứng từ mới. Sau thời điểm cập nhật tồn không còn bước kiểm tra nghiệp vụ có thể thất bại.
+## Giới hạn vừa với phạm vi đồ án
 
-Thiếu hàng tại dòng sau không làm dòng trước bị trừ tồn. Sửa/xóa phiếu nhập bị từ chối nếu làm âm tồn. Không dùng tổng tiền bán trừ tổng tiền nhập làm lợi nhuận.
+- Console một tiến trình, không web/database/đăng nhập/phân quyền.
+- Chứng từ mới có hiệu lực khi lưu vào danh sách; không thêm luồng phê duyệt.
+- Chỉ kiểm tra tồn hiện tại, không dựng lại tồn theo từng ngày trong quá khứ.
+- Thống kê tổng tiền bán và nhập; không gọi phần chênh hai số đó là lợi nhuận.
+- Tìm kiếm dựa trên `equalsIgnoreCase`/`toLowerCase`/`contains`; không có xử lý bỏ dấu phức tạp.
+- Bản snapshot cũ không tự chuyển đổi; nếu phát hiện thì báo để giữ dữ liệu, không âm thầm bỏ qua.
 
-Đối tượng đầu vào/đầu ra và dòng chi tiết đều được sao chép để việc sửa một bản đang soạn không làm mất bản cũ. Liên kết nghiệp vụ được xác định bằng mã; khi nhận chứng từ, facade tra lại dữ liệu hiện hành và tạo lại liên kết. Các bản sao nằm trong chứng từ không dùng để cập nhật dữ liệu gốc. Hiển thị và tìm chứng từ dùng mã đối tác/mã SP; thay đổi tên trong danh mục chính không ảnh hưởng phép tính lịch sử.
+## Kiểm tra đã thực hiện
 
-## File text
+Bốn chương trình test chạy không cần thư viện ngoài. Các tình huống gồm mở rộng mảng từ sức chứa 0, xóa đầu/giữa/cuối, mã trùng, đổi mã, CRUD, đa hình, bản sao chứng từ, thiếu hàng nhiều dòng, sửa đổi tập SP, hủy nhập làm âm tồn, tràn số, chặn xóa liên kết, giá lịch sử, thống kê theo ngày, ghi/đọc lại Unicode và đúng lớp con, kiểm tra liên kết, không cập nhật tồn lần nữa, file sai ngày/thiếu bộ file, lỗi ghi và thao tác menu qua tiến trình Java thật.
 
-`SPORT_STORE_V2` là tiêu đề. Các loại dòng:
-
-| Nhãn | Các cột sau nhãn |
-| --- | --- |
-| `LOAI` | mã loại, tên, mô tả |
-| `KH` | mã khách, tên, điện thoại, địa chỉ |
-| `NV` | mã nhân viên, tên, điện thoại, ca |
-| `NCC` | mã NCC, tên, điện thoại, địa chỉ |
-| `SP` | kiểu lớp con, mã, tên, thương hiệu, giá bán, tồn, mã loại, thuộc tính riêng |
-| `HD` / `PN` | mã chứng từ, ngày, mã đối tác, mã nhân viên |
-| `CTHD` / `CTPN` | mã chứng từ, mã SP, số lượng, đơn giá lịch sử |
-
-Dòng SP có phần riêng: giày = kích cỡ/màu/chất liệu/đế; quần áo = cỡ/màu/chất liệu; dụng cụ = môn/vật liệu/khối lượng kg. Tab phân cột; `\\`, `\t`, `\n`, `\r` biểu diễn ký tự đặc biệt. Tiền là chuỗi thập phân; ngày ISO `yyyy-MM-dd`.
-
-Đọc theo nhiều lượt: loại/người → sản phẩm → đầu chứng từ → chi tiết. Mọi dữ liệu được dựng vào cửa hàng mới; nếu lỗi thì không trả về một cửa hàng nạp nửa chừng. Khôi phục tồn đã lưu, không gọi giao dịch Kho. Dùng một file để thay nguyên tử đồng thời cả kho và chứng từ; đây là lựa chọn triển khai thay cho phương án gợi ý 9 file trong tài liệu hướng dẫn.
-
-Định dạng cũ chỉ hỗ trợ đúng các header và bản nháp rỗng đang có trong repo. Không đoán định dạng khác. Các file cũ vẫn giữ nguyên byte; snapshot V2 chỉ chứa các thuộc tính của model hiện tại. Có lỗi khởi động thì không chạy menu và không lưu đè. Không hỗ trợ nhiều tiến trình cùng sửa chung một thư mục dữ liệu.
-
-## Đối chiếu tiêu chí chấm điểm
-
-| Tiêu chí | Vị trí thực hiện |
-| --- | --- |
-| Ít nhất 15 class | 32 class trong `src/` |
-| Constructor | Thực thể/danh sách có không tham số và có tham số; lớp hạ tầng nhận phụ thuộc hoặc có constructor tiện ích private |
-| Kế thừa | Ba lớp sản phẩm kế thừa `SanPham` |
-| Sử dụng đa hình | Hiển thị/sao chép từ mảng `SanPham[]` |
-| Lớp mảng đối tượng | `ds` và `soLuong` trong cả bảy danh sách |
-| Đọc ghi text | `LuuTruFileText`, `FileText`, `BoMaSanPham` |
-| Static | Hằng `KiemTra.SUC_CHUA_MAC_DINH`, hàm kiểm tra static, các hằng định dạng file |
-| Abstract | `SanPham`, `saoChep`, `hienThiThongTin` |
-| Interface | Bảy danh sách implements `IQuanLyDanhSach<T>`; menu đọc qua interface |
-| Nhập n/thêm k, xuất, sửa/xóa | Menu 10, menu CRUD và các thao tác mảng |
-| Tìm chính xác/gần đúng/nhiều khóa | Mã, mã/tên, loại, khoảng giá; chứng từ theo mã/mã đối tác |
-| Thống kê tổng tiền | Hai danh sách chứng từ, overload toàn bộ/khoảng ngày |
-| Main ngắn, hàm có trách nhiệm riêng | `main` 9 dòng; tách nhập liệu, lưu file, kiểm tra, kho |
-
-Các hàm hướng tới ngắn và một nhiệm vụ; một số vòng lặp/switch đọc dữ liệu dài hơn 10 dòng để giữ luồng dễ đọc. Không ghép nhiều câu lệnh vào một dòng để lách tiêu chí.
-
-## Kiểm chứng
-
-`bash test.sh` biên dịch toàn bộ `src/` và `tests/` với `-Xlint:all`, chạy bốn chương trình test (263 assertions trong lần kiểm tra tại JDK 17). Các kịch bản gồm thêm/xóa đầu-giữa-cuối, mở rộng mảng từ sức chứa 0, mã trùng/đổi mã, CRUD bảy nhóm, bản sao sâu, chi tiết, giá lịch sử, khoảng ngày, đổi tập sản phẩm khi sửa, thiếu hàng nhiều dòng, âm tồn khi hủy nhập, tràn số, chặn xóa liên kết, chuyển dữ liệu cũ, Unicode/escape, file hỏng và chạy console bằng tiến trình thật. Các test launcher PowerShell cần chạy trên Windows hoặc máy có PowerShell; môi trường kiểm tra hiện tại chỉ chạy các tiến trình Java và shell Bash.
+Code sản phẩm và test đều được biên dịch kiểm tra ở mức Java 8 trên JDK 17. Các test tiến trình console chỉ là hỗ trợ kiểm tra tự động, không phải chức năng nghiệp vụ cần trình bày trong đồ án.

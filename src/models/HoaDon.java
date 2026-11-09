@@ -3,26 +3,39 @@ package models;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Locale;
 
-/** Chứng từ đang soạn; chỉ QuanLyCuaHang ghi nhận vào sổ và cập nhật Kho. */
-public final class HoaDon {
+public class HoaDon {
     private final String maHoaDon;
     private LocalDate ngayLap;
     private KhachHang khachHang;
     private NhanVien nhanVien;
-    private ChiTietHoaDon[] chiTiet = new ChiTietHoaDon[KiemTra.SUC_CHUA_MAC_DINH];
+    private ChiTietHoaDon[] chiTiet;
     private int soLuongChiTiet;
 
     public HoaDon() {
         maHoaDon = "";
         ngayLap = LocalDate.now();
+        chiTiet = new ChiTietHoaDon[SanPham.SUC_CHUA_BAN_DAU];
     }
 
-    public HoaDon(String ma, LocalDate ngayLap, KhachHang khachHang, NhanVien nhanVien) {
-        this.maHoaDon = KiemTra.ma(ma);
-        setNgayLap(ngayLap);
-        setKhachHang(khachHang);
+    public HoaDon(String ma, LocalDate ngay, KhachHang doiTac, NhanVien nhanVien) {
+        if (ma == null || !ma.trim().matches("[A-Za-z0-9_-]+")) {
+            throw new IllegalArgumentException("Ma chung tu khong hop le.");
+        }
+        maHoaDon = ma.trim().toUpperCase(Locale.ROOT);
+        setNgayLap(ngay);
+        setKhachHang(doiTac);
         setNhanVien(nhanVien);
+        chiTiet = new ChiTietHoaDon[SanPham.SUC_CHUA_BAN_DAU];
+    }
+
+    // Sao chep tung dong de sua ban moi khong lam mat du lieu ban cu.
+    public HoaDon(HoaDon cu) {
+        this(cu.maHoaDon, cu.ngayLap, cu.khachHang, cu.nhanVien);
+        for (int i = 0; i < cu.soLuongChiTiet; i++) {
+            themChiTiet(cu.chiTiet[i]);
+        }
     }
 
     public String getMaHoaDon() {
@@ -33,24 +46,35 @@ public final class HoaDon {
         return ngayLap;
     }
 
-    public void setNgayLap(LocalDate ngayLap) {
-        this.ngayLap = KiemTra.khacNull(ngayLap, "Ngay lap");
+    public void setNgayLap(LocalDate ngay) {
+        if (ngay == null) {
+            throw new IllegalArgumentException("Ngay lap khong duoc null.");
+        }
+        ngayLap = ngay;
     }
 
     public KhachHang getKhachHang() {
-        return khachHang == null ? null : khachHang.saoChep();
+        return khachHang;
     }
 
-    public void setKhachHang(KhachHang khachHang) {
-        this.khachHang = KiemTra.khacNull(khachHang, "KhachHang").saoChep();
+    public void setKhachHang(KhachHang doiTac) {
+        if (doiTac == null) {
+            throw new IllegalArgumentException("KhachHang khong duoc null.");
+        }
+        doiTac.kiemTraHopLe();
+        khachHang = doiTac;
     }
 
     public NhanVien getNhanVien() {
-        return nhanVien == null ? null : nhanVien.saoChep();
+        return nhanVien;
     }
 
     public void setNhanVien(NhanVien nhanVien) {
-        this.nhanVien = KiemTra.khacNull(nhanVien, "Nhan vien").saoChep();
+        if (nhanVien == null) {
+            throw new IllegalArgumentException("Nhan vien khong duoc null.");
+        }
+        nhanVien.kiemTraHopLe();
+        this.nhanVien = nhanVien;
     }
 
     public int getSoLuongChiTiet() {
@@ -60,18 +84,21 @@ public final class HoaDon {
     public ChiTietHoaDon[] getChiTiet() {
         ChiTietHoaDon[] ketQua = new ChiTietHoaDon[soLuongChiTiet];
         for (int i = 0; i < soLuongChiTiet; i++) {
-            ketQua[i] = chiTiet[i].saoChep();
+            ketQua[i] = new ChiTietHoaDon(chiTiet[i]);
         }
         return ketQua;
     }
 
     public void themChiTiet(ChiTietHoaDon moi) {
-        ChiTietHoaDon hopLe = KiemTra.khacNull(moi, "Chi tiet").saoChep();
+        if (moi == null) {
+            throw new IllegalArgumentException("Chi tiet khong duoc null.");
+        }
+        ChiTietHoaDon hopLe = new ChiTietHoaDon(moi);
         if (timViTri(hopLe.getSanPham().getMaSanPham()) >= 0) {
-            throw new IllegalArgumentException("San pham da co trong chung tu; hay sua dong cu.");
+            throw new IllegalArgumentException("San pham da co trong chung tu.");
         }
         if (soLuongChiTiet == chiTiet.length) {
-            chiTiet = Arrays.copyOf(chiTiet, Math.max(1, chiTiet.length * 2));
+            chiTiet = Arrays.copyOf(chiTiet, chiTiet.length + SanPham.SUC_CHUA_BAN_DAU);
         }
         chiTiet[soLuongChiTiet++] = hopLe;
     }
@@ -81,9 +108,12 @@ public final class HoaDon {
         if (viTri < 0) {
             return false;
         }
-        ChiTietHoaDon hopLe = KiemTra.khacNull(moi, "Chi tiet").saoChep();
-        if (!KiemTra.ma(maSP).equals(hopLe.getSanPham().getMaSanPham())) {
-            throw new IllegalArgumentException("Khong duoc doi ma san pham cua dong chi tiet.");
+        if (moi == null) {
+            throw new IllegalArgumentException("Chi tiet khong duoc null.");
+        }
+        ChiTietHoaDon hopLe = new ChiTietHoaDon(moi);
+        if (!maSP.trim().equalsIgnoreCase(hopLe.getSanPham().getMaSanPham())) {
+            throw new IllegalArgumentException("Khong duoc doi ma san pham cua dong.");
         }
         chiTiet[viTri] = hopLe;
         return true;
@@ -94,19 +124,27 @@ public final class HoaDon {
         if (viTri < 0) {
             return false;
         }
-        System.arraycopy(chiTiet, viTri + 1, chiTiet, viTri, soLuongChiTiet - viTri - 1);
+        for (int i = viTri; i < soLuongChiTiet - 1; i++) {
+            chiTiet[i] = chiTiet[i + 1];
+        }
         chiTiet[--soLuongChiTiet] = null;
         return true;
     }
 
     public ChiTietHoaDon timChiTiet(String maSP) {
         int viTri = timViTri(maSP);
-        return viTri < 0 ? null : chiTiet[viTri].saoChep();
+        if (viTri < 0) {
+            return null;
+        }
+        return new ChiTietHoaDon(chiTiet[viTri]);
     }
 
     private int timViTri(String maSP) {
+        if (maSP == null) {
+            return -1;
+        }
         for (int i = 0; i < soLuongChiTiet; i++) {
-            if (chiTiet[i].getSanPham().getMaSanPham().equals(KiemTra.ma(maSP))) {
+            if (chiTiet[i].getSanPham().getMaSanPham().equalsIgnoreCase(maSP.trim())) {
                 return i;
             }
         }
@@ -114,24 +152,21 @@ public final class HoaDon {
     }
 
     public BigDecimal tinhTongTien() {
-        BigDecimal tongTien = BigDecimal.ZERO;
+        BigDecimal tong = BigDecimal.ZERO;
         for (int i = 0; i < soLuongChiTiet; i++) {
-            tongTien = tongTien.add(chiTiet[i].tinhThanhTien());
+            tong = tong.add(chiTiet[i].tinhThanhTien());
         }
-        return tongTien;
+        return tong;
     }
 
-    public HoaDon saoChep() {
-        HoaDon banSao = new HoaDon(maHoaDon, ngayLap, khachHang, nhanVien);
-        for (ChiTietHoaDon dong : getChiTiet()) {
-            banSao.themChiTiet(dong);
-        }
-        return banSao;
+    public void kiemTraHopLe() {
+        new HoaDon(this);
     }
 
     public String hienThiThongTin() {
-        return maHoaDon + " | " + ngayLap + " | " + (khachHang == null ? "" : khachHang.getMaKhachHang())
-                + " | " + (nhanVien == null ? "" : nhanVien.getMaNhanVien()) + " | Tong: " + tinhTongTien().toPlainString()
-                + (soLuongChiTiet == 0 ? " (ban nhap cu chua co chi tiet)" : "");
+        return maHoaDon + " | " + ngayLap + " | "
+                + (khachHang == null ? "" : khachHang.getMaKhachHang()) + " | "
+                + (nhanVien == null ? "" : nhanVien.getMaNhanVien())
+                + " | Tong: " + tinhTongTien().toPlainString();
     }
 }
