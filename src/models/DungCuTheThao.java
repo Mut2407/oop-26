@@ -8,24 +8,17 @@ public class DungCuTheThao extends SanPham {
     private double khoiLuongKg;
 
     public DungCuTheThao() {
-        super();
         monTheThao = "";
         vatLieu = "";
+        khoiLuongKg = 0;
     }
 
-    public DungCuTheThao(String ma, String ten, String thuongHieu, BigDecimal gia,
-            LoaiSP loai, String monTheThao, String vatLieu, double khoiLuongKg) {
-        super(ma, ten, thuongHieu, gia, loai);
+    public DungCuTheThao(String maSanPham, String tenSanPham, String thuongHieu,
+            BigDecimal giaBan, LoaiSP loaiSP, String monTheThao, String vatLieu, double khoiLuongKg) {
+        super(maSanPham, tenSanPham, thuongHieu, giaBan, loaiSP);
         setMonTheThao(monTheThao);
         setVatLieu(vatLieu);
         setKhoiLuongKg(khoiLuongKg);
-    }
-
-    public DungCuTheThao(DungCuTheThao cu) {
-        super(cu);
-        setMonTheThao(cu.monTheThao);
-        setVatLieu(cu.vatLieu);
-        setKhoiLuongKg(cu.khoiLuongKg);
     }
 
     public String getMonTheThao() {
@@ -33,8 +26,8 @@ public class DungCuTheThao extends SanPham {
     }
 
     public void setMonTheThao(String monTheThao) {
-        kiemTraChuoi(monTheThao, "monTheThao");
-        this.monTheThao = monTheThao.trim();
+        kiemTraChuoi(monTheThao);
+        this.monTheThao = monTheThao;
     }
 
     public String getVatLieu() {
@@ -42,8 +35,8 @@ public class DungCuTheThao extends SanPham {
     }
 
     public void setVatLieu(String vatLieu) {
-        kiemTraChuoi(vatLieu, "vatLieu");
-        this.vatLieu = vatLieu.trim();
+        kiemTraChuoi(vatLieu);
+        this.vatLieu = vatLieu;
     }
 
     public double getKhoiLuongKg() {
@@ -51,31 +44,36 @@ public class DungCuTheThao extends SanPham {
     }
 
     public void setKhoiLuongKg(double khoiLuongKg) {
-        if (!Double.isFinite(khoiLuongKg) || khoiLuongKg <= 0) {
-            throw new IllegalArgumentException("khoiLuongKg phai > 0.");
-        }
+        if (!Double.isFinite(khoiLuongKg) || khoiLuongKg <= 0)
+            throw new IllegalArgumentException("Kich co/khoi luong phai > 0.");
         this.khoiLuongKg = khoiLuongKg;
     }
 
     @Override
-    public void capNhatThongTin(SanPham moi) {
-        if (!(moi instanceof DungCuTheThao)) {
-            throw new IllegalArgumentException("Khong duoc doi lop san pham.");
-        }
-        DungCuTheThao hopLe = new DungCuTheThao((DungCuTheThao) moi);
-        super.capNhatThongTin(hopLe);
-        this.monTheThao = hopLe.monTheThao;
-        this.vatLieu = hopLe.vatLieu;
-        this.khoiLuongKg = hopLe.khoiLuongKg;
+    public boolean kiemTraHopLe() {
+        return super.kiemTraHopLe() && !monTheThao.isEmpty() && !vatLieu.isEmpty() && khoiLuongKg > 0;
     }
 
     @Override
-    public void kiemTraHopLe() {
-        new DungCuTheThao(this);
+    public void capNhatTu(SanPham moi) {
+        super.capNhatTu(moi);
+        DungCuTheThao sp = (DungCuTheThao) moi;
+        setMonTheThao(sp.getMonTheThao());
+        setVatLieu(sp.getVatLieu());
+        setKhoiLuongKg(sp.getKhoiLuongKg());
     }
 
     @Override
     public String hienThiThongTin() {
-        return thongTinChung() + " | DungCuTheThao | " + monTheThao + " | " + vatLieu + " | " + khoiLuongKg;
+        return "DungCuTheThao | " + thongTinChung()
+                + " | " + monTheThao + " | " + vatLieu + " | " + khoiLuongKg;
     }
+
+    private static void kiemTraChuoi(String giaTri) {
+        if (giaTri == null || giaTri.trim().isEmpty())
+            throw new IllegalArgumentException("Thong tin khong duoc rong.");
+        if (giaTri.contains("|") || giaTri.contains("\n") || giaTri.contains("\r"))
+            throw new IllegalArgumentException("Khong nhap dau | hoac xuong dong.");
+    }
+
 }

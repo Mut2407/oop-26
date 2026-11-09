@@ -26,10 +26,8 @@ public class ChiTietPhieuNhap {
     }
 
     public void setSanPham(SanPham sanPham) {
-        if (sanPham == null) {
-            throw new IllegalArgumentException("San pham khong duoc null.");
-        }
-        sanPham.kiemTraHopLe();
+        if (sanPham == null || !sanPham.kiemTraHopLe())
+            throw new IllegalArgumentException("SP khong hop le.");
         this.sanPham = sanPham;
     }
 
@@ -38,9 +36,8 @@ public class ChiTietPhieuNhap {
     }
 
     public void setSoLuong(int soLuong) {
-        if (soLuong <= 0) {
+        if (soLuong <= 0)
             throw new IllegalArgumentException("So luong phai > 0.");
-        }
         this.soLuong = soLuong;
     }
 
@@ -49,13 +46,22 @@ public class ChiTietPhieuNhap {
     }
 
     public void setDonGiaNhap(BigDecimal donGiaNhap) {
-        if (donGiaNhap == null || donGiaNhap.signum() < 0) {
+        if (donGiaNhap == null || donGiaNhap.signum() < 0)
             throw new IllegalArgumentException("Don gia phai >= 0.");
-        }
         this.donGiaNhap = donGiaNhap;
+    }
+
+    public boolean kiemTraHopLe() {
+        return sanPham != null && sanPham.kiemTraHopLe() && soLuong > 0;
     }
 
     public BigDecimal tinhThanhTien() {
         return donGiaNhap.multiply(BigDecimal.valueOf(soLuong));
     }
+
+    public String hienThiThongTin() {
+        return sanPham.getMaSanPham() + " | SL: " + soLuong
+                + " | Don gia: " + donGiaNhap.toPlainString() + " | Thanh tien: " + tinhThanhTien().toPlainString();
+    }
+
 }

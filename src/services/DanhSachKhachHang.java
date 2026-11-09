@@ -1,129 +1,122 @@
 package services;
 
+import models.*;
 import java.util.Arrays;
-import java.util.Locale;
-import models.KhachHang;
-import models.SanPham;
 
 public class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang> {
     private KhachHang[] ds;
     private int soLuong;
+    private static final int SUC_CHUA_MAC_DINH = 10;
 
     public DanhSachKhachHang() {
-        this(SanPham.SUC_CHUA_BAN_DAU);
+        this(SUC_CHUA_MAC_DINH);
     }
 
     public DanhSachKhachHang(int sucChua) {
-        if (sucChua < 0) {
-            throw new IllegalArgumentException("Suc chua phai >= 0.");
-        }
+        if (sucChua <= 0)
+            throw new IllegalArgumentException("Suc chua phai > 0.");
         ds = new KhachHang[sucChua];
-        soLuong = 0;
     }
 
-    public DanhSachKhachHang(KhachHang[] banDau) {
-        this(banDau.length);
-        for (int i = 0; i < banDau.length; i++) {
-            if (!them(banDau[i])) {
-                throw new IllegalArgumentException("Ma trung trong mang ban dau.");
-            }
-        }
-    }
-
-    @Override
     public int getSoLuong() {
         return soLuong;
     }
 
-    @Override
     public KhachHang[] getTatCa() {
-        return Arrays.copyOf(ds, soLuong);
+        KhachHang[] kq = new KhachHang[soLuong];
+        for (int i = 0; i < soLuong; i++)
+            kq[i] = ds[i];
+        return kq;
+    }
+
+    private int timViTri(String ma) {
+        if (ma == null)
+            return -1;
+        for (int i = 0; i < soLuong; i++)
+            if (ds[i].getMaKhachHang().equalsIgnoreCase(ma.trim()))
+                return i;
+        return -1;
+    }
+
+    public boolean kiemTraMaDuyNhat(String ma) {
+        return timViTri(ma) < 0;
+    }
+
+    public KhachHang timTheoMa(String ma) {
+        int viTri = timViTri(ma);
+        if (viTri < 0)
+            return null;
+        return ds[viTri];
+    }
+
+    private void moRongMang() {
+        ds = Arrays.copyOf(ds, ds.length + SUC_CHUA_MAC_DINH);
     }
 
     @Override
     public boolean them(KhachHang doiTuong) {
-        if (doiTuong == null) {
+        if (doiTuong == null || !doiTuong.kiemTraHopLe())
             return false;
-        }
-        doiTuong.kiemTraHopLe();
-        if (!kiemTraMaDuyNhat(doiTuong.getMaKhachHang())) {
+        if (!kiemTraMaDuyNhat(doiTuong.getMaKhachHang()))
             return false;
-        }
-        moRongMang();
-        ds[soLuong] = doiTuong;
-        soLuong++;
+        if (soLuong == ds.length)
+            moRongMang();
+        ds[soLuong++] = doiTuong;
         return true;
     }
 
-    private boolean kiemTraMaDuyNhat(String ma) {
-        return timViTri(ma) == -1;
-    }
-
-    private void moRongMang() {
-        if (soLuong == ds.length) {
-            ds = Arrays.copyOf(ds, ds.length + SanPham.SUC_CHUA_BAN_DAU);
-        }
+    public int themNhieu(KhachHang[] cacDoiTuong) {
+        int daThem = 0;
+        for (int i = 0; i < cacDoiTuong.length; i++)
+            if (them(cacDoiTuong[i]))
+                daThem++;
+        return daThem;
     }
 
     @Override
     public boolean sua(String ma, KhachHang moi) {
         int viTri = timViTri(ma);
-        if (viTri < 0 || moi == null) {
+        if (viTri < 0 || moi == null || !moi.kiemTraHopLe())
             return false;
-        }
-        moi.kiemTraHopLe();
-        if (!ds[viTri].getMaKhachHang().equals(moi.getMaKhachHang())) {
+        if (!ds[viTri].getMaKhachHang().equalsIgnoreCase(moi.getMaKhachHang()))
             return false;
-        }
-        ds[viTri].capNhatThongTin(moi);
+        ds[viTri].capNhatTu(moi);
         return true;
     }
 
     @Override
     public boolean xoa(String ma) {
         int viTri = timViTri(ma);
-        if (viTri < 0) {
+        if (viTri < 0)
             return false;
-        }
-        for (int i = viTri; i < soLuong - 1; i++) {
+        for (int i = viTri; i < soLuong - 1; i++)
             ds[i] = ds[i + 1];
-        }
         ds[--soLuong] = null;
         return true;
     }
 
     @Override
-    public KhachHang timTheoMa(String ma) {
-        int viTri = timViTri(ma);
-        if (viTri < 0) {
-            return null;
-        }
-        return ds[viTri];
-    }
-
-    private int timViTri(String ma) {
-        if (ma == null) {
-            return -1;
-        }
-        for (int i = 0; i < soLuong; i++) {
-            if (ds[i].getMaKhachHang().equalsIgnoreCase(ma.trim())) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    @Override
     public KhachHang[] timKiem(String tuKhoa) {
-        String khoa = tuKhoa == null ? "" : tuKhoa.trim().toLowerCase(Locale.ROOT);
-        KhachHang[] ketQua = new KhachHang[soLuong];
-        int soKetQua = 0;
-        for (int i = 0; i < soLuong; i++) {
-            if (ds[i].getMaKhachHang().toLowerCase(Locale.ROOT).contains(khoa)
-                    || ds[i].getHoTen().toLowerCase(Locale.ROOT).contains(khoa)) {
-                ketQua[soKetQua++] = ds[i];
-            }
-        }
-        return Arrays.copyOf(ketQua, soKetQua);
+        String key = tuKhoa == null ? "" : tuKhoa.trim().toLowerCase();
+        KhachHang[] kq = new KhachHang[soLuong];
+        int dem = 0;
+        for (int i = 0; i < soLuong; i++)
+            if (phuHop(ds[i], key))
+                kq[dem++] = ds[i];
+        return Arrays.copyOf(kq, dem);
     }
+
+    private boolean phuHop(KhachHang x, String key) {
+        return x.getMaKhachHang().toLowerCase().contains(key)
+                || x.getHoTen().toLowerCase().contains(key)
+                || x.getSoDienThoai().contains(key);
+    }
+
+    public void hienThiDanhSach() {
+        for (int i = 0; i < soLuong; i++)
+            System.out.println(ds[i].hienThiThongTin());
+        if (soLuong == 0)
+            System.out.println("Danh sach rong.");
+    }
+
 }

@@ -9,27 +9,19 @@ public class GiayTheThao extends SanPham {
     private String loaiDeGiay;
 
     public GiayTheThao() {
-        super();
+        kichCoGiay = 0;
         mauSac = "";
         chatLieu = "";
         loaiDeGiay = "";
     }
 
-    public GiayTheThao(String ma, String ten, String thuongHieu, BigDecimal gia,
-            LoaiSP loai, double kichCoGiay, String mauSac, String chatLieu, String loaiDeGiay) {
-        super(ma, ten, thuongHieu, gia, loai);
+    public GiayTheThao(String maSanPham, String tenSanPham, String thuongHieu,
+            BigDecimal giaBan, LoaiSP loaiSP, double kichCoGiay, String mauSac, String chatLieu, String loaiDeGiay) {
+        super(maSanPham, tenSanPham, thuongHieu, giaBan, loaiSP);
         setKichCoGiay(kichCoGiay);
         setMauSac(mauSac);
         setChatLieu(chatLieu);
         setLoaiDeGiay(loaiDeGiay);
-    }
-
-    public GiayTheThao(GiayTheThao cu) {
-        super(cu);
-        setKichCoGiay(cu.kichCoGiay);
-        setMauSac(cu.mauSac);
-        setChatLieu(cu.chatLieu);
-        setLoaiDeGiay(cu.loaiDeGiay);
     }
 
     public double getKichCoGiay() {
@@ -37,9 +29,8 @@ public class GiayTheThao extends SanPham {
     }
 
     public void setKichCoGiay(double kichCoGiay) {
-        if (!Double.isFinite(kichCoGiay) || kichCoGiay <= 0) {
-            throw new IllegalArgumentException("kichCoGiay phai > 0.");
-        }
+        if (!Double.isFinite(kichCoGiay) || kichCoGiay <= 0)
+            throw new IllegalArgumentException("Kich co/khoi luong phai > 0.");
         this.kichCoGiay = kichCoGiay;
     }
 
@@ -48,8 +39,8 @@ public class GiayTheThao extends SanPham {
     }
 
     public void setMauSac(String mauSac) {
-        kiemTraChuoi(mauSac, "mauSac");
-        this.mauSac = mauSac.trim();
+        kiemTraChuoi(mauSac);
+        this.mauSac = mauSac;
     }
 
     public String getChatLieu() {
@@ -57,10 +48,8 @@ public class GiayTheThao extends SanPham {
     }
 
     public void setChatLieu(String chatLieu) {
-        if (chatLieu == null) {
-            chatLieu = "";
-        }
-        this.chatLieu = chatLieu.trim();
+        kiemTraChuoi(chatLieu);
+        this.chatLieu = chatLieu;
     }
 
     public String getLoaiDeGiay() {
@@ -68,30 +57,36 @@ public class GiayTheThao extends SanPham {
     }
 
     public void setLoaiDeGiay(String loaiDeGiay) {
-        kiemTraChuoi(loaiDeGiay, "loaiDeGiay");
-        this.loaiDeGiay = loaiDeGiay.trim();
+        kiemTraChuoi(loaiDeGiay);
+        this.loaiDeGiay = loaiDeGiay;
     }
 
     @Override
-    public void capNhatThongTin(SanPham moi) {
-        if (!(moi instanceof GiayTheThao)) {
-            throw new IllegalArgumentException("Khong duoc doi lop san pham.");
-        }
-        GiayTheThao hopLe = new GiayTheThao((GiayTheThao) moi);
-        super.capNhatThongTin(hopLe);
-        this.kichCoGiay = hopLe.kichCoGiay;
-        this.mauSac = hopLe.mauSac;
-        this.chatLieu = hopLe.chatLieu;
-        this.loaiDeGiay = hopLe.loaiDeGiay;
+    public boolean kiemTraHopLe() {
+        return super.kiemTraHopLe() && kichCoGiay > 0 && !mauSac.isEmpty() && !chatLieu.isEmpty() && !loaiDeGiay.isEmpty();
     }
 
     @Override
-    public void kiemTraHopLe() {
-        new GiayTheThao(this);
+    public void capNhatTu(SanPham moi) {
+        super.capNhatTu(moi);
+        GiayTheThao sp = (GiayTheThao) moi;
+        setKichCoGiay(sp.getKichCoGiay());
+        setMauSac(sp.getMauSac());
+        setChatLieu(sp.getChatLieu());
+        setLoaiDeGiay(sp.getLoaiDeGiay());
     }
 
     @Override
     public String hienThiThongTin() {
-        return thongTinChung() + " | GiayTheThao | " + kichCoGiay + " | " + mauSac + " | " + chatLieu + " | " + loaiDeGiay;
+        return "GiayTheThao | " + thongTinChung()
+                + " | " + kichCoGiay + " | " + mauSac + " | " + chatLieu + " | " + loaiDeGiay;
     }
+
+    private static void kiemTraChuoi(String giaTri) {
+        if (giaTri == null || giaTri.trim().isEmpty())
+            throw new IllegalArgumentException("Thong tin khong duoc rong.");
+        if (giaTri.contains("|") || giaTri.contains("\n") || giaTri.contains("\r"))
+            throw new IllegalArgumentException("Khong nhap dau | hoac xuong dong.");
+    }
+
 }
