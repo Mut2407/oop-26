@@ -4,8 +4,8 @@
 package models;
 
 import java.math.BigDecimal;
-import models.DanhMuc;
-import models.SanPham;
+//import models.DanhMuc;
+//import models.SanPham;
 
 public class DungCuTheThao
 extends SanPham {
