@@ -6,13 +6,16 @@ public class KhachHang {
     private String soDienThoai;
     private String diaChi;
 
+
+    //không tham số
     public KhachHang() {
         maKhachHang = "";
         hoTen = "";
         soDienThoai = "";
         diaChi = "";
-    }
+        }
 
+    //có tham số
     public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String diaChi) {
         kiemTraChuoi(maKhachHang);
         this.maKhachHang = maKhachHang.trim();

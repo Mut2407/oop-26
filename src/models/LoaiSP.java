@@ -5,12 +5,14 @@ public class LoaiSP {
     private String tenLoaiSP;
     private String moTa;
 
+    //không tham số
     public LoaiSP() {
         maLoaiSP = "";
         tenLoaiSP = "";
         moTa = "";
     }
-
+    
+    //có tham số
     public LoaiSP(String maLoaiSP, String tenLoaiSP, String moTa) {
         kiemTraChuoi(maLoaiSP);
         this.maLoaiSP = maLoaiSP.trim();

@@ -6,10 +6,11 @@ import services.DanhSachSanPham;
 public class Kho {
     private DanhSachSanPham danhSachSanPham;
 
+    //không tham số
     public Kho() {
 
     }
-
+    //có tham số
     public Kho(DanhSachSanPham danhSachSanPham) {
         setDanhSachSanPham(danhSachSanPham);
     }

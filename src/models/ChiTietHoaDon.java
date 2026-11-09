@@ -7,10 +7,12 @@ public class ChiTietHoaDon {
     private int soLuong;
     private BigDecimal donGiaBan;
 
+    //không tham số
     public ChiTietHoaDon() {
         donGiaBan = BigDecimal.ZERO;
     }
 
+    //có tham số
     public ChiTietHoaDon(SanPham sanPham, int soLuong, BigDecimal donGiaBan) {
         setSanPham(sanPham);
         setSoLuong(soLuong);

@@ -12,12 +12,14 @@ public class PhieuNhap {
     private ChiTietPhieuNhap[] chiTiet;
     private int soLuongChiTiet;
 
+    //không tham số
     public PhieuNhap() {
         maPhieuNhap = "";
         ngayLap = LocalDate.now();
         chiTiet = new ChiTietPhieuNhap[5];
     }
 
+    //có tham số
     public PhieuNhap(String maPhieuNhap, LocalDate ngayLap, NhaCungCap nhaCungCap, NhanVien nhanVien) {
         this();
         kiemTraChuoi(maPhieuNhap);

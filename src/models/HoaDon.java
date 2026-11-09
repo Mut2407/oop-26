@@ -12,12 +12,14 @@ public class HoaDon {
     private ChiTietHoaDon[] chiTiet;
     private int soLuongChiTiet;
 
+    //không tham số
     public HoaDon() {
         maHoaDon = "";
         ngayLap = LocalDate.now();
         chiTiet = new ChiTietHoaDon[5];
     }
 
+    //có tham số
     public HoaDon(String maHoaDon, LocalDate ngayLap, KhachHang khachHang, NhanVien nhanVien) {
         this();
         kiemTraChuoi(maHoaDon);

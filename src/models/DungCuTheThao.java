@@ -7,12 +7,15 @@ public class DungCuTheThao extends SanPham {
     private String vatLieu;
     private double khoiLuongKg;
 
+
+    //không tham số
     public DungCuTheThao() {
         monTheThao = "";
         vatLieu = "";
         khoiLuongKg = 0;
     }
 
+    //có tham số
     public DungCuTheThao(String maSanPham, String tenSanPham, String thuongHieu,
             BigDecimal giaBan, LoaiSP loaiSP, String monTheThao, String vatLieu, double khoiLuongKg) {
         super(maSanPham, tenSanPham, thuongHieu, giaBan, loaiSP);

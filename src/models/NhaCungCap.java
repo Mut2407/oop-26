@@ -6,6 +6,7 @@ public class NhaCungCap {
     private String soDienThoai;
     private String diaChi;
 
+    //không tham số
     public NhaCungCap() {
         maNhaCungCap = "";
         tenNhaCungCap = "";
@@ -13,6 +14,7 @@ public class NhaCungCap {
         diaChi = "";
     }
 
+    //có tham số
     public NhaCungCap(String maNhaCungCap, String tenNhaCungCap, String soDienThoai, String diaChi) {
         kiemTraChuoi(maNhaCungCap);
         this.maNhaCungCap = maNhaCungCap.trim();

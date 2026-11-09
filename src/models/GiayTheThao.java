@@ -8,6 +8,7 @@ public class GiayTheThao extends SanPham {
     private String chatLieu;
     private String loaiDeGiay;
 
+    //không tham số
     public GiayTheThao() {
         kichCoGiay = 0;
         mauSac = "";
@@ -15,6 +16,7 @@ public class GiayTheThao extends SanPham {
         loaiDeGiay = "";
     }
 
+    //có tham số
     public GiayTheThao(String maSanPham, String tenSanPham, String thuongHieu,
             BigDecimal giaBan, LoaiSP loaiSP, double kichCoGiay, String mauSac, String chatLieu, String loaiDeGiay) {
         super(maSanPham, tenSanPham, thuongHieu, giaBan, loaiSP);
