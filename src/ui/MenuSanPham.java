@@ -46,7 +46,7 @@ public final class MenuSanPham {
                     case "2": {
                         String ma = nhap.nhapBatBuoc("Ma can sua: ");
                         if (ma == null) return;
-                        SanPham cu = danhSachSanPham.timTheoMa(ma);
+                        SanPham cu = danhSachSanPham.CheckMaTrung(ma);
                         if (cu == null) { System.out.println("Khong tim thay."); break; }
                         SanPham moi = nhapSanPham(cu.getMaSanPham(), danhSachSanPham);
                         if (moi == null) return;
@@ -66,7 +66,7 @@ public final class MenuSanPham {
                     case "4": {
                         String khoa = nhap.docDong("Ma hoac ten (Enter de xem tat ca): ");
                         if (khoa == null) return;
-                        hienThiSanPham(khoa.isEmpty() ? danhSachSanPham.getDanhSach() : danhSachSanPham.timGanDung(khoa));
+                        hienThiSanPham(khoa.isEmpty() ? danhSachSanPham.getDanhSach() : danhSachSanPham.TimKiemTheoMaHoacTen(khoa));
                         break;
                     }
                     case "5": System.out.println(VanBanConsole.khongDau(danhSachSanPham.thongKeTonKho())); break;
@@ -103,7 +103,7 @@ public final class MenuSanPham {
                     System.out.println("Ma chi gom chu, so, dau _ hoac -.");
                     continue;
                 }
-                if (danhSachSanPham.timTheoMa(string3) == null) break;
+                if (danhSachSanPham.CheckMaTrung(string3) == null) break;
                 System.out.println("Ma san pham da ton tai. Nhap ma khac.");
             }
         }

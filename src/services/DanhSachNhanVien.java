@@ -128,12 +128,12 @@ public final class DanhSachNhanVien {
         return true;
     }
 
-    public NhanVien timTheoMa(String string) {
+    public NhanVien CheckMaTrung(String string) {
         int n = this.chiSoTheoMa(string);
         return n < 0 ? null : DanhSachNhanVien.saoChep(this.danhSach[n]);
     }
 
-    public NhanVien[] timGanDung(String tuKhoa) {
+    public NhanVien[] TimKiemTheoMaHoacTen(String tuKhoa) {
         if (tuKhoa == null || tuKhoa.isBlank()) {
             throw new IllegalArgumentException("Tu khoa khong duoc rong.");
         }

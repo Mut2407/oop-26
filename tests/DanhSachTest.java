@@ -15,22 +15,22 @@ public class DanhSachTest {
         DanhSachSanPham sanPham = new DanhSachSanPham(new SanPham[0]);
         SanPham giay = new GiayTheThao("SP1", "Giay chay", "Nike", new BigDecimal("100"), 2, "Den", null, DuLieu.timDanhMuc("GIAY"), "42", "Cao su");
         sanPham.them(giay);
-        check(sanPham.timTheoMa("sp1") != giay);
-        check(sanPham.timTheoMa("sp1").getMaSanPham().equals("SP1"));
-        check(sanPham.timGanDung("chay").size() == 1);
+        check(sanPham.CheckMaTrung("sp1") != giay);
+        check(sanPham.CheckMaTrung("sp1").getMaSanPham().equals("SP1"));
+        check(sanPham.TimKiemTheoMaHoacTen("chay").size() == 1);
         expectError(() -> sanPham.them(giay));
         expectError(() -> sanPham.them(new GiayTheThao("SP2", "Giay", "Nike", new BigDecimal("-1"), 1, "Den", null, DuLieu.timDanhMuc("GIAY"), "42", "De")));
         check(sanPham.suaTheoMa("SP1", new QuanAoTheThao("SP1", "Ao", "Adidas", new BigDecimal("50"), 3, null, null, DuLieu.timDanhMuc("AO"), "M")));
-        check(sanPham.timTheoMa("SP1") instanceof QuanAoTheThao);
+        check(sanPham.CheckMaTrung("SP1") instanceof QuanAoTheThao);
         check(sanPham.xoaTheoMa("SP1") && sanPham.getDanhSach().isEmpty());
 
         DanhSachNhaCungCap nhaCungCap = new DanhSachNhaCungCap(new NhaCungCap[0]);
         nhaCungCap.them(new NhaCungCap("NCC1", "An Phat", "0902000001", "TP.HCM"));
-        check(nhaCungCap.timTheoMa("ncc1").getSoDienThoai().startsWith("0"));
+        check(nhaCungCap.CheckMaTrung("ncc1").getSoDienThoai().startsWith("0"));
         expectError(() -> nhaCungCap.them(new NhaCungCap("ncc1", "Khac", "0902000002", "TP.HCM")));
         expectError(() -> nhaCungCap.them(new NhaCungCap("NCC2", "Khac", "123", "TP.HCM")));
         check(nhaCungCap.suaTheoMa("NCC1", new NhaCungCap("NCC1", "Binh Minh", "0902000003", "Ha Noi")));
-        check(nhaCungCap.timGanDung("binh").size() == 1);
+        check(nhaCungCap.TimKiemTheoMaHoacTen("binh").size() == 1);
         check(nhaCungCap.xoaTheoMa("NCC1") && nhaCungCap.getDanhSach().isEmpty());
         kiemTraBaoVeDanhSach();
         kiemTraCrudKhachNhanVien();
@@ -45,38 +45,38 @@ public class DanhSachTest {
         expectError(() -> dauVao.giamTon(3));
         expectError(() -> dauVao.capNhatGiaBan(new BigDecimal("-1")));
         dauVao.tangTon(1);
-        check(ds.timTheoMa("S1").getSoLuongTon() == 2 && ds.timTheoMa("S1").getGiaBan().compareTo(new BigDecimal("100")) == 0);
+        check(ds.CheckMaTrung("S1").getSoLuongTon() == 2 && ds.CheckMaTrung("S1").getGiaBan().compareTo(new BigDecimal("100")) == 0);
         List<SanPham> banSao = ds.getDanhSach();
         banSao.get(0).tangTon(1);
-        expectError(() -> ds.timTheoMa("S1").giamTon(3));
-        expectError(() -> ds.timGanDung("Giay").get(0).capNhatGiaBan(new BigDecimal("-1")));
-        check(ds.timTheoMa("S1") != null && ds.timTheoMa("TRUNG") == null);
-        check(ds.timTheoMa("S1").getSoLuongTon() == 2 && ds.timTheoMa("S1").getGiaBan().compareTo(new BigDecimal("100")) == 0);
+        expectError(() -> ds.CheckMaTrung("S1").giamTon(3));
+        expectError(() -> ds.TimKiemTheoMaHoacTen("Giay").get(0).capNhatGiaBan(new BigDecimal("-1")));
+        check(ds.CheckMaTrung("S1") != null && ds.CheckMaTrung("TRUNG") == null);
+        check(ds.CheckMaTrung("S1").getSoLuongTon() == 2 && ds.CheckMaTrung("S1").getGiaBan().compareTo(new BigDecimal("100")) == 0);
         SanPham moi = new QuanAoTheThao("S2", "Ao", "Hang", new BigDecimal("50"), 1, null, null, DuLieu.timDanhMuc("AO"), "M");
         ds.them(moi);
         moi.tangTon(1);
-        check(ds.timTheoMa("S2") != null);
-        check(ds.timTheoMa("S2").getSoLuongTon() == 1);
+        check(ds.CheckMaTrung("S2") != null);
+        check(ds.CheckMaTrung("S2").getSoLuongTon() == 1);
         expectError(() -> ds.them(new QuanAoTheThao("S1", "Trung", "Hang", new BigDecimal("50"), 1, null, null, DuLieu.timDanhMuc("AO"), "M")));
         expectError(() -> ds.suaTheoMa("S1", new GiayTheThao("S1", "Loi", "Hang", new BigDecimal("-1"), 1, "Den", null, DuLieu.timDanhMuc("GIAY"), "42", "De")));
         SanPham sua = new QuanAoTheThao("S2", "Ao moi", "Hang", new BigDecimal("60"), 3, null, null, DuLieu.timDanhMuc("AO"), "L");
         check(ds.suaTheoMa("S2", sua));
         sua.tangTon(1);
-        check(ds.timTheoMa("S2").getSoLuongTon() == 3);
-        check(ds.xoaTheoMa("S2") && ds.timTheoMa("S2") == null);
+        check(ds.CheckMaTrung("S2").getSoLuongTon() == 3);
+        check(ds.xoaTheoMa("S2") && ds.CheckMaTrung("S2") == null);
 
         NhaCungCap ncc = new NhaCungCap("N1", "Nha cung cap", "0902000001", "Dia chi");
         DanhSachNhaCungCap nhaCungCap = new DanhSachNhaCungCap(new NhaCungCap[] { ncc });
         ncc.capNhatThongTin("Ten khac", "0902000002", "Dia chi khac");
-        nhaCungCap.timTheoMa("N1").capNhatThongTin("Ten khac", "0902000002", "Dia chi khac");
+        nhaCungCap.CheckMaTrung("N1").capNhatThongTin("Ten khac", "0902000002", "Dia chi khac");
         nhaCungCap.getDanhSach().get(0).capNhatThongTin("Ten khac", "0902000002", "Dia chi khac");
-        nhaCungCap.timGanDung("Nha").get(0).capNhatThongTin("Ten khac", "0902000002", "Dia chi khac");
-        check(nhaCungCap.timTheoMa("N1") != null && nhaCungCap.timTheoMa("N2") == null);
-        check(nhaCungCap.timTheoMa("N1").getSoDienThoai().equals("0902000001"));
+        nhaCungCap.TimKiemTheoMaHoacTen("Nha").get(0).capNhatThongTin("Ten khac", "0902000002", "Dia chi khac");
+        check(nhaCungCap.CheckMaTrung("N1") != null && nhaCungCap.CheckMaTrung("N2") == null);
+        check(nhaCungCap.CheckMaTrung("N1").getSoDienThoai().equals("0902000001"));
         NhaCungCap suaNcc = new NhaCungCap("N1", "Nha moi", "0902000002", "Dia chi");
         check(nhaCungCap.suaTheoMa("N1", suaNcc));
         suaNcc.capNhatThongTin("Ten khac", "0902000003", "Dia chi khac");
-        check(nhaCungCap.timTheoMa("N1").getTenNhaCungCap().equals("Nha moi"));
+        check(nhaCungCap.CheckMaTrung("N1").getTenNhaCungCap().equals("Nha moi"));
         check(nhaCungCap.xoaTheoMa("N1") && nhaCungCap.getDanhSach().isEmpty());
     }
 
@@ -84,18 +84,18 @@ public class DanhSachTest {
         DanhSachKhachHang kh = new DanhSachKhachHang();
         kh.them(new KhachHang("K1", "Khach", "0901000001", "Ha Noi"));
         kh.them(new KhachHang("K2", "Khach hai", "0901000002", "Hue"));
-        check(kh.timTheoMa("k1") != null && kh.timGanDung("hai").size() == 1);
+        check(kh.CheckMaTrung("k1") != null && kh.TimKiemTheoMaHoacTen("hai").size() == 1);
         check(kh.sua("K1", "Khach moi", "0901000003", "Ha Noi"));
-        check(kh.timTheoMa("K1").getHoTen().equals("Khach moi"));
+        check(kh.CheckMaTrung("K1").getHoTen().equals("Khach moi"));
         expectError(() -> kh.them(new KhachHang("K1", "Trung", "0901000004", "Hue")));
         check(kh.xoaTheoMa("K2") && kh.getSoLuong() == 1);
 
         DanhSachNhanVien nv = new DanhSachNhanVien();
         nv.them(new NhanVien("V1", "Nhan vien", "0901000001", "Sang"), "Ha Noi");
         nv.them(new NhanVien("V2", "Nhan vien hai", "0901000002", "Chieu"));
-        check(nv.timTheoMa("v1") != null && nv.timGanDung("hai").length == 1);
+        check(nv.CheckMaTrung("v1") != null && nv.TimKiemTheoMaHoacTen("hai").length == 1);
         check(nv.sua("V1", "Nhan vien moi", "Toi", "0901000003"));
-        check(nv.timTheoMa("V1").getCaLamViec().equals("Toi"));
+        check(nv.CheckMaTrung("V1").getCaLamViec().equals("Toi"));
         expectError(() -> nv.them(new NhanVien("V1", "Trung", "0901000004", "Sang"), "Hue"));
         check(nv.xoa("V2") && nv.getSoLuong() == 1);
     }
@@ -130,22 +130,22 @@ public class DanhSachTest {
             DanhSachSanPham docLai = new DanhSachSanPham(new SanPham[0]);
             docLai.docFile(tepSanPham.toString());
             check(docLai.getDanhSach().size() == 3);
-            check(docLai.timTheoMa("G1").getTenSanPham().equals("Giay\tchay"));
-            check(docLai.timTheoMa("G1").getGiaBan().equals(new BigDecimal("100.25")));
-            check(docLai.timTheoMa("G1").getDanhMuc() == DuLieu.timDanhMuc("GIAY"));
-            check(docLai.timTheoMa("G1").getChatLieu().equals("Vai"));
-            check(docLai.timTheoMa("D1") instanceof DungCuTheThao);
-            check(docLai.timTheoMa("A1") instanceof QuanAoTheThao);
+            check(docLai.CheckMaTrung("G1").getTenSanPham().equals("Giay\tchay"));
+            check(docLai.CheckMaTrung("G1").getGiaBan().equals(new BigDecimal("100.25")));
+            check(docLai.CheckMaTrung("G1").getDanhMuc() == DuLieu.timDanhMuc("GIAY"));
+            check(docLai.CheckMaTrung("G1").getChatLieu().equals("Vai"));
+            check(docLai.CheckMaTrung("D1") instanceof DungCuTheThao);
+            check(docLai.CheckMaTrung("A1") instanceof QuanAoTheThao);
             docLai.xoaTheoMa("G1");
             docLai.ghiFile(tepSanPham.toString());
             sanPham.docFile(tepSanPham.toString());
-            check(sanPham.timTheoMa("G1") == null);
+            check(sanPham.CheckMaTrung("G1") == null);
             Files.writeString(tepSanPham,
                     "SAN_PHAM_V1\nGIAY\tG2\tGiay cu\t100.0\tNike\t2\tGIAY\t42.0\tDen\tCao su\n",
                     StandardCharsets.UTF_8);
             sanPham.docFile(tepSanPham.toString());
-            check(sanPham.timTheoMa("G2") instanceof GiayTheThao);
-            check(((GiayTheThao) sanPham.timTheoMa("G2")).getKichCoGiay().equals("42.0"));
+            check(sanPham.CheckMaTrung("G2") instanceof GiayTheThao);
+            check(((GiayTheThao) sanPham.CheckMaTrung("G2")).getKichCoGiay().equals("42.0"));
             Files.writeString(tepSanPham,
                     "SAN_PHAM_V1\nDUNG_CU\tD2\tVot cu\t50.0\tYonex\t1\tDC\tCau long\tCarbon\t0.1\n",
                     StandardCharsets.UTF_8);
@@ -159,7 +159,7 @@ public class DanhSachTest {
             sanPham.docFile(tepSanPham.toString());
             sanPham.ghiFile(tepSanPham.toString());
             check(Files.readAllLines(tepSanPham).get(1).split("\t", -1)[10].equals("Cau long"));
-            check(sanPham.timTheoMa("D3").getGiaBan().equals(new BigDecimal("50.25")));
+            check(sanPham.CheckMaTrung("D3").getGiaBan().equals(new BigDecimal("50.25")));
             Files.writeString(tepSanPham,
                     "SAN_PHAM_V1\nGIAY\tG3\tKhong ro\t10\tNike\t1\tCHUA_CO\t42\tDen\tDe\n",
                     StandardCharsets.UTF_8);
@@ -168,7 +168,7 @@ public class DanhSachTest {
                 throw new AssertionError("Ma danh muc chua anh xa phai bi tu choi");
             } catch (IOException e) {
                 check(e.getMessage().contains("CHUA_CO"));
-                check(sanPham.timTheoMa("D3") != null);
+                check(sanPham.CheckMaTrung("D3") != null);
             }
 
             DanhSachNhaCungCap ncc = new DanhSachNhaCungCap(new NhaCungCap[] {
@@ -179,13 +179,13 @@ public class DanhSachTest {
                     "maNhaCungCap\ttenNhaCungCap\tsoDienThoai\tdiaChi"));
             ncc.xoaTheoMa("N1");
             ncc.docFile(tepNhaCungCap.toString());
-            check(ncc.timTheoMa("N1").getTenNhaCungCap().equals("An\nPhat"));
+            check(ncc.CheckMaTrung("N1").getTenNhaCungCap().equals("An\nPhat"));
             Files.writeString(tepNhaCungCap, "NHA_CUNG_CAP_V1\nN2\tLoi\t123\tDia chi\n", StandardCharsets.UTF_8);
             try {
                 ncc.docFile(tepNhaCungCap.toString());
                 throw new AssertionError("File loi phai bi tu choi");
             } catch (IOException e) {
-                check(ncc.timTheoMa("N1") != null);
+                check(ncc.CheckMaTrung("N1") != null);
             }
             DanhSachKhachHang kh = new DanhSachKhachHang(new KhachHang[0]);
             Files.writeString(tepKhachHang,
@@ -194,7 +194,7 @@ public class DanhSachTest {
             kh.docFile(tepKhachHang.toString());
             kh.ghiFile(tepKhachHang.toString());
             check(Files.readAllLines(tepKhachHang).get(0).startsWith("maKhachHang\t"));
-            check(kh.timTheoMa("KH1").getSoDienThoai().equals("0901234567"));
+            check(kh.CheckMaTrung("KH1").getSoDienThoai().equals("0901234567"));
 
             DanhSachNhanVien nv = new DanhSachNhanVien();
             nv.them(new NhanVien("NV1", "Nhan vien", "0901000001", "Sang"), "Ha Noi");

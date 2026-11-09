@@ -105,13 +105,13 @@ implements IQuanLyDanhSach<SanPham> {
     }
 
     @Override
-    public SanPham timTheoMa(String string) {
+    public SanPham CheckMaTrung(String string) {
         int n = this.chiSo(string);
         return n < 0 ? null : DanhSachSanPham.saoChep(this.ds[n]);
     }
 
     @Override
-    public List<SanPham> timGanDung(String string) {
+    public List<SanPham> TimKiemTheoMaHoacTen(String string) {
         if (string == null || string.isBlank()) {
             throw new IllegalArgumentException("Tu khoa khong duoc rong.");
         }

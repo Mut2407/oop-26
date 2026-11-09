@@ -40,7 +40,7 @@ public final class MenuNhaCungCap {
                     case "2": {
                         String ma = nhap.nhapBatBuoc("Ma can sua: ");
                         if (ma == null) return;
-                        NhaCungCap cu = danhSachNhaCungCap.timTheoMa(ma);
+                        NhaCungCap cu = danhSachNhaCungCap.CheckMaTrung(ma);
                         if (cu == null) { System.out.println("Khong tim thay."); break; }
                         NhaCungCap moi = nhapNhaCungCap(cu.getMaNhaCungCap(), danhSachNhaCungCap);
                         if (moi == null) return;
@@ -60,7 +60,7 @@ public final class MenuNhaCungCap {
                     case "4": {
                         String khoa = nhap.docDong("Ma hoac ten (Enter de xem tat ca): ");
                         if (khoa == null) return;
-                        hienThiNhaCungCap(khoa.isEmpty() ? danhSachNhaCungCap.getTatCa() : danhSachNhaCungCap.timGanDung(khoa));
+                        hienThiNhaCungCap(khoa.isEmpty() ? danhSachNhaCungCap.getTatCa() : danhSachNhaCungCap.TimKiemTheoMaHoacTen(khoa));
                         break;
                     }
                     default: System.out.println("Lua chon khong hop le!");
@@ -86,7 +86,7 @@ public final class MenuNhaCungCap {
                     System.out.println("Ma chi gom chu, so, dau _ hoac -.");
                     continue;
                 }
-                if (danhSachNhaCungCap.timTheoMa(string3) == null) break;
+                if (danhSachNhaCungCap.CheckMaTrung(string3) == null) break;
                 System.out.println("Ma nha cung cap da ton tai. Nhap ma khac.");
             }
         }

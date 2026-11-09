@@ -45,7 +45,7 @@ public final class MenuKhachHang {
                         String khoa = nhap.docDong("Ma hoac ten (Enter de xem tat ca): ");
                         if (khoa == null) return;
                         hienThiDanhSachKhachHang(khoa.isEmpty() ? danhSachKhachHang.getDanhSach()
-                                : danhSachKhachHang.timGanDung(khoa).toArray(new KhachHang[0]));
+                                : danhSachKhachHang.TimKiemTheoMaHoacTen(khoa).toArray(new KhachHang[0]));
                         break;
                     }
                     default: System.out.println("Lua chon khong hop le!");
@@ -81,7 +81,7 @@ public final class MenuKhachHang {
                 System.out.println("Ma chi gom chu, so, dau _ hoac -.");
                 continue;
             }
-            if (danhSachKhachHang.timTheoMa(string) == null) break;
+            if (danhSachKhachHang.CheckMaTrung(string) == null) break;
             System.out.println("Ma khach hang da ton tai! Vui long nhap ma khac.");
         }
         String string2 = nhap.nhapBatBuoc("Nhap ho ten: ");
@@ -104,7 +104,7 @@ public final class MenuKhachHang {
         if (string == null) {
             return false;
         }
-        KhachHang khachHang = danhSachKhachHang.timTheoMa(string);
+        KhachHang khachHang = danhSachKhachHang.CheckMaTrung(string);
         if (khachHang == null) {
             System.out.println("Khong tim thay khach hang!");
             return false;

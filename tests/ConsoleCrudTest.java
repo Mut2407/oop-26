@@ -48,16 +48,16 @@ public class ConsoleCrudTest {
                 check(output.contains(expected), "Missing result: " + expected);
             }
             check(!output.contains("CHUA LUU DUOC"), output);
-            check(store.docKhachHang("khachhang.txt").timTheoMa("KTEST").getHoTen().equals("Khách mới"), "Customer save");
-            check(store.docNhanVien("nhanvien.txt").timTheoMa("NVTEST").getCaLamViec().equals("Chiều"), "Employee save");
+            check(store.docKhachHang("khachhang.txt").CheckMaTrung("KTEST").getHoTen().equals("Khách mới"), "Customer save");
+            check(store.docNhanVien("nhanvien.txt").CheckMaTrung("NVTEST").getCaLamViec().equals("Chiều"), "Employee save");
             check(store.docNhanVien("nhanvien.txt").getDiaChiCuTheoMa().equals(diaChiCu), "Old addresses changed");
             output = ConsoleTestSupport.run(dir, ConsoleTestSupport.lines(
                     "3", "4", "KTEST", "3", "KTEST", "0", "4", "4", "NVTEST", "3", "NVTEST", "0",
                     "5", "4", "NCCTEST", "3", "NCCTEST", "0", "0"), 0);
             check(output.contains("Khach moi") && output.contains("Nhan vien moi"), "Reopen did not restore edits");
-            check(store.docKhachHang("khachhang.txt").timTheoMa("KTEST") == null, "Customer delete");
-            check(store.docNhanVien("nhanvien.txt").timTheoMa("NVTEST") == null, "Employee delete");
-            check(store.docNhaCungCap("nhacungcap.txt").timTheoMa("NCCTEST") == null, "Supplier delete");
+            check(store.docKhachHang("khachhang.txt").CheckMaTrung("KTEST") == null, "Customer delete");
+            check(store.docNhanVien("nhanvien.txt").CheckMaTrung("NVTEST") == null, "Employee delete");
+            check(store.docNhaCungCap("nhacungcap.txt").CheckMaTrung("NCCTEST") == null, "Supplier delete");
             byte[] before = Files.readAllBytes(data.resolve("sanpham.txt"));
             ConsoleTestSupport.run(dir, "1\n1\nPART\nNhap do\n", 0);
             check(java.util.Arrays.equals(before, Files.readAllBytes(data.resolve("sanpham.txt"))), "EOF saved a partial product");

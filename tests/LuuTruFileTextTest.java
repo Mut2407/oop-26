@@ -37,18 +37,18 @@ public class LuuTruFileTextTest {
             Files.writeString(tepSanPham, sanPhamCu, StandardCharsets.UTF_8);
             DanhSachSanPham ds = luuTru.docSanPham("sanpham.txt", DuLieu.getDanhMuc());
             check(ds.getSoLuong() == 2);
-            check(ds.timTheoMa("G1").getDanhMuc() == DuLieu.timDanhMuc("GIAY"));
-            check(ds.timTheoMa("G1").getGiaBan().equals(new BigDecimal("100.25")));
-            check(ds.timTheoMa("G1").getSoLuongTon() == 2);
-            check(((GiayTheThao) ds.timTheoMa("G1")).getKichCoGiay().equals("42.0"));
+            check(ds.CheckMaTrung("G1").getDanhMuc() == DuLieu.timDanhMuc("GIAY"));
+            check(ds.CheckMaTrung("G1").getGiaBan().equals(new BigDecimal("100.25")));
+            check(ds.CheckMaTrung("G1").getSoLuongTon() == 2);
+            check(((GiayTheThao) ds.CheckMaTrung("G1")).getKichCoGiay().equals("42.0"));
             luuTru.ghiSanPham("sanpham.txt", ds);
             check(Files.readString(thuMuc.resolve("sanpham.txt.bak")).equals(sanPhamCu));
             check(Files.readAllLines(tepSanPham).get(0).contains("mauSacChung"));
             check(Files.readAllLines(tepSanPham).get(2).split("\t", -1)[10].equals("Cau long"));
             DanhSachSanPham docLai = luuTru.docSanPham("sanpham.txt", DuLieu.getDanhMuc());
-            check(docLai.timTheoMa("D1").getSoLuongTon() == 4);
-            check(docLai.timTheoMa("D1").getGiaBan().equals(new BigDecimal("50.50")));
-            check(docLai.timTheoMa("D1").layLoaiSanPham().equals("DUNG_CU"));
+            check(docLai.CheckMaTrung("D1").getSoLuongTon() == 4);
+            check(docLai.CheckMaTrung("D1").getGiaBan().equals(new BigDecimal("50.50")));
+            check(docLai.CheckMaTrung("D1").layLoaiSanPham().equals("DUNG_CU"));
 
             String loiMoi = Files.readAllLines(tepSanPham).get(0) + "\n"
                     + "GIAY\tG2\tLoi\t10\tNike\t1\tKHONG_CO\t42\tDen\tDe\n";
@@ -74,10 +74,10 @@ public class LuuTruFileTextTest {
             String nccCu = "NHA_CUNG_CAP_V1\nN1\tAn Phat\t0902000001\tHa Noi\n";
             Files.writeString(tepNcc, nccCu, StandardCharsets.UTF_8);
             DanhSachNhaCungCap ncc = luuTru.docNhaCungCap("nhacungcap.txt");
-            check(ncc.timTheoMa("N1").getSoDienThoai().equals("0902000001"));
+            check(ncc.CheckMaTrung("N1").getSoDienThoai().equals("0902000001"));
             luuTru.ghiNhaCungCap("nhacungcap.txt", ncc);
             check(Files.readString(thuMuc.resolve("nhacungcap.txt.bak")).equals(nccCu));
-            check(luuTru.docNhaCungCap("nhacungcap.txt").timTheoMa("N1").getDiaChi().equals("Ha Noi"));
+            check(luuTru.docNhaCungCap("nhacungcap.txt").CheckMaTrung("N1").getDiaChi().equals("Ha Noi"));
         } finally {
             for (String ten : List.of("danhmuc.txt", "sanpham.txt", "sanpham.txt.bak",
                     "nhacungcap.txt", "nhacungcap.txt.bak"))

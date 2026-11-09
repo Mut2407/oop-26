@@ -30,11 +30,11 @@ public class AnhXaDanhMucTest {
             byte[] truoc = Files.readAllBytes(tep);
             DanhSachSanPham ds = new DanhSachSanPham(new SanPham[0]);
             ds.docFile(tep.toString());
-            check(ds.timTheoMa("G1").getDanhMuc() == ds.timTheoMa("G2").getDanhMuc());
-            check(ds.timTheoMa("G1").getDanhMuc() == giay && ds.timTheoMa("D1").getDanhMuc() == dc);
-            check(ds.timTheoMa("G1").getGiaBan().equals(new BigDecimal("100.25")));
-            check(ds.timTheoMa("D1").getSoLuongTon() == 4);
-            check(ds.timTheoMa("D1").layLoaiSanPham().equals("DUNG_CU"));
+            check(ds.CheckMaTrung("G1").getDanhMuc() == ds.CheckMaTrung("G2").getDanhMuc());
+            check(ds.CheckMaTrung("G1").getDanhMuc() == giay && ds.CheckMaTrung("D1").getDanhMuc() == dc);
+            check(ds.CheckMaTrung("G1").getGiaBan().equals(new BigDecimal("100.25")));
+            check(ds.CheckMaTrung("D1").getSoLuongTon() == 4);
+            check(ds.CheckMaTrung("D1").layLoaiSanPham().equals("DUNG_CU"));
             check(Arrays.equals(truoc, Files.readAllBytes(tep)));
 
             Files.writeString(tep, "SAN_PHAM_V1\n"
@@ -46,7 +46,7 @@ public class AnhXaDanhMucTest {
                 throw new AssertionError("Phai bao ma chua anh xa");
             } catch (IOException e) {
                 check(e.getMessage().contains("Dong 2") && e.getMessage().contains("CHUA_CO"));
-                check(ds.timTheoMa("G1") != null);
+                check(ds.CheckMaTrung("G1") != null);
                 check(Arrays.equals(loi, Files.readAllBytes(tep)));
             }
         } finally {

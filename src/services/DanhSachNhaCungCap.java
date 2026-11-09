@@ -77,13 +77,13 @@ implements IQuanLyDanhSach<NhaCungCap> {
     }
 
     @Override
-    public NhaCungCap timTheoMa(String string) {
+    public NhaCungCap CheckMaTrung(String string) {
         int n = this.chiSo(string);
         return n < 0 ? null : DanhSachNhaCungCap.saoChep(this.ds.get(n));
     }
 
     @Override
-    public List<NhaCungCap> timGanDung(String string) {
+    public List<NhaCungCap> TimKiemTheoMaHoacTen(String string) {
         if (string == null || string.isBlank()) {
             throw new IllegalArgumentException("Tu khoa khong duoc rong.");
         }

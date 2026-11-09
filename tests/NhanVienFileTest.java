@@ -22,12 +22,12 @@ public class NhanVienFileTest {
             store.ghiNhanVien("nv.txt", ds);
             check(Files.readString(dir.resolve("nv.txt.bak")).equals(cu));
             DanhSachNhanVien moLai = store.docNhanVien("nv.txt");
-            check(moLai.timTheoMa("NV1").getHoTen().equals("Tên mới"));
+            check(moLai.CheckMaTrung("NV1").getHoTen().equals("Tên mới"));
             check(diaChi.equals(moLai.getDiaChiCu("NV1")) && moLai.getDiaChiCu("NV2") == null);
             store.ghiNhanVien("copy.txt", moLai);
             check(store.docNhanVien("copy.txt").getDiaChiCu("NV1").equals(diaChi));
             String truoc = Files.readString(file);
-            DanhSachNhanVien thieu = new DanhSachNhanVien(new NhanVien[]{moLai.timTheoMa("NV1")});
+            DanhSachNhanVien thieu = new DanhSachNhanVien(new NhanVien[]{moLai.CheckMaTrung("NV1")});
             loi(() -> store.ghiNhanVien("nv.txt", thieu));
             check(Files.readString(file).equals(truoc));
             moLai.xoa("NV1");

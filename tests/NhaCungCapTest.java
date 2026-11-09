@@ -25,21 +25,21 @@ public class NhaCungCapTest {
         IQuanLyDanhSach<NhaCungCap> quanLy = new DanhSachNhaCungCap();
         DanhSachNhaCungCap ds = (DanhSachNhaCungCap) quanLy;
         check(quanLy.them(ncc));
-        check(quanLy.timTheoMa("n1").getSoDienThoai().equals("0902000002"));
-        check(quanLy.timGanDung("ten moi").size() == 1);
-        check(quanLy.timGanDung("n1").size() == 1);
+        check(quanLy.CheckMaTrung("n1").getSoDienThoai().equals("0902000002"));
+        check(quanLy.TimKiemTheoMaHoacTen("ten moi").size() == 1);
+        check(quanLy.TimKiemTheoMaHoacTen("n1").size() == 1);
         expectError(() -> quanLy.them(new NhaCungCap("n1", "Trung", "0902000003", "Hue")));
         ncc.capNhatThongTin("Ngoài danh sách", "0902000003", "Hue");
-        check(quanLy.timTheoMa("N1").getTenNhaCungCap().equals("Tên mới"));
-        NhaCungCap banSao = quanLy.timTheoMa("N1");
+        check(quanLy.CheckMaTrung("N1").getTenNhaCungCap().equals("Tên mới"));
+        NhaCungCap banSao = quanLy.CheckMaTrung("N1");
         banSao.capNhatThongTin("Bản sao", "0902000004", "Hue");
         ds.getTatCa().get(0).capNhatThongTin("Bản sao", "0902000004", "Hue");
         expectUnsupported(() -> ds.getTatCa().clear());
-        check(quanLy.timTheoMa("N1").getTenNhaCungCap().equals("Tên mới"));
+        check(quanLy.CheckMaTrung("N1").getTenNhaCungCap().equals("Tên mới"));
         expectError(() -> quanLy.suaTheoMa("N1", new NhaCungCap("N2", "Sai ma", "0902000005", "Hue")));
         check(quanLy.suaTheoMa("N1", new NhaCungCap("N1", "Nhà cung cấp mới", "0902000005", "Huế")));
         check(!quanLy.suaTheoMa("KHONG_CO", ncc));
-        check(quanLy.timGanDung("nha cung cap").size() == 1);
+        check(quanLy.TimKiemTheoMaHoacTen("nha cung cap").size() == 1);
 
         Path tep = Files.createTempFile("ncc-test-", ".txt");
         try {
@@ -49,11 +49,11 @@ public class NhaCungCapTest {
             check(dong.get(1).split("\t", -1)[2].equals("0902000005"));
             DanhSachNhaCungCap docLai = new DanhSachNhaCungCap();
             docLai.docFile(tep.toString());
-            check(docLai.timTheoMa("N1").getDiaChi().equals("Huế"));
+            check(docLai.CheckMaTrung("N1").getDiaChi().equals("Huế"));
             Files.writeString(tep, "NHA_CUNG_CAP_V1\nN3\tTen cu\t0902000006\tDia chi cu\n",
                     StandardCharsets.UTF_8);
             docLai.docFile(tep.toString());
-            check(docLai.timTheoMa("N3").getSoDienThoai().equals("0902000006"));
+            check(docLai.CheckMaTrung("N3").getSoDienThoai().equals("0902000006"));
             Files.writeString(tep, "NHA_CUNG_CAP_V1\nN4\tLoi\t123\tDia chi\n",
                     StandardCharsets.UTF_8);
             try {
@@ -61,7 +61,7 @@ public class NhaCungCapTest {
                 throw new AssertionError("Phai tu choi file loi");
             } catch (IOException e) {
                 check(e.getMessage().contains("Dong 2"));
-                check(docLai.timTheoMa("N3") != null);
+                check(docLai.CheckMaTrung("N3") != null);
             }
         } finally {
             Files.deleteIfExists(tep);

@@ -71,7 +71,7 @@ public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang> {
     }
 
     public boolean sua(String ma, String ten, String sdt, String diaChi) {
-        KhachHang cu = timTheoMa(ma);
+        KhachHang cu = CheckMaTrung(ma);
         return cu != null && suaTheoMa(ma, new KhachHang(cu.getMaKhachHang(), ten, sdt, diaChi));
     }
 
@@ -85,13 +85,13 @@ public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang> {
         return true;
     }
 
-    public KhachHang timTheoMa(String ma) {
+    public KhachHang CheckMaTrung(String ma) {
         int index = chiSoTheoMa(ma);
         return index < 0 ? null : saoChep(ds.get(index));
     }
 
     @Override
-    public List<KhachHang> timGanDung(String tuKhoa) {
+    public List<KhachHang> TimKiemTheoMaHoacTen(String tuKhoa) {
         if (tuKhoa == null || tuKhoa.isBlank()) {
             throw new IllegalArgumentException("Tu khoa khong duoc rong.");
         }
