@@ -6,3 +6,4 @@
 -  void main không được viết quá 10 dòng. void main gọi đọc file, ghi file, menu chính.
 - 1 hàm trong khoảng 10 dòng code hoặc hơn. Đây là tiêu chí Clean Code (Nguyên lý Đơn Trách Nhiệm - Single Responsibility Principle). Giảng viên đưa ra yêu cầu này để tránh tình trạng viết "hàm khổng lồ" (God method)
 - Hàm kiểm tra duy nhất, hàm không tham số/có tham số 
+- Các chức năng cần luôn có trong class quản lý danh sách: Thêm, sửa, xóa, tìm kiếm và thống kê (chỉ thống kê tổng tiền của hóa đơn với phiếu nhập)

@@ -1,0 +1,560 @@
+HƯỚNG DẪN TRIỂN KHAI CÁC CLASS – SPORT STORE
+Đồ án Java: Quản lý cửa hàng dụng cụ thể thao
+
+Tài liệu dựa trên To-Chuc-UML.txt, To-Chuc-Do-An.txt và yêu cầu đồ án.
+Phạm vi: giải thích cách triển khai phương án 23 class + 1 interface đã thống nhất.
+Các tên hàm dưới đây là hướng dẫn triển khai; không phải mã Java hoàn chỉnh.
+Yêu cầu gốc là ít nhất 15 class. Con số 23 là lựa chọn thiết kế, không phải số bắt buộc.
+
+1. HIỂU BA NHÓM CLASS TRƯỚC KHI VIẾT CODE
+
+1.1. Class thực thể (class đơn / Model)
+Biểu diễn một đối tượng nghiệp vụ: một sản phẩm, một khách hàng, một hóa đơn.
+Lưu thông tin của đối tượng đó trong các thuộc tính private.
+Có constructor, getter/setter phù hợp, kiểm tra dữ liệu của chính đối tượng và
+các phép tính thuộc về đối tượng, như tính thành tiền hoặc tổng tiền hóa đơn.
+
+Ví dụ: một KhachHang lưu mã KH01, họ tên An, số điện thoại và địa chỉ.
+KhachHang không giữ toàn bộ khách hàng và không tự xóa mình khỏi danh sách.
+
+1.2. Class danh sách
+Biểu diễn tập hợp nhiều đối tượng cùng nhóm nghiệp vụ.
+Lưu một mảng đối tượng và số phần tử đang sử dụng.
+Thực hiện thêm, sửa, xóa, tìm kiếm; thống kê trên toàn danh sách khi cần.
+
+Ví dụ: DanhSachKhachHang chứa KhachHang[] ds và int soLuong.
+Hàm them(kh) đưa một đối tượng KhachHang vào mảng sau khi kiểm tra mã trùng.
+
+1.3. Class quản lý và hỗ trợ
+QuanLyCuaHang nhận lựa chọn, gọi danh sách và điều phối nghiệp vụ liên quan nhiều lớp.
+Kho kiểm tra và cập nhật tồn theo chứng từ.
+LuuTruFileText chuyển dữ liệu giữa bộ nhớ và file text.
+Main chỉ khởi chạy chương trình.
+
+Lưu ý về từ “lưu”:
+- Thuộc tính và mảng lưu trong RAM: mất khi chương trình tắt.
+- Ghi ra file text mới giúp dữ liệu còn lại cho lần chạy sau.
+- Thuộc tính tham chiếu như Kho.danhSachSanPham trỏ tới danh sách đang dùng;
+  không có nghĩa là tạo thêm một bản sao toàn bộ danh sách.
+
+2. TRONG MỘT CLASS CẦN VIẾT NHỮNG GÌ?
+
+Thứ tự trình bày thuận tiện:
+1) Khai báo package và import cần thiết.
+2) Khai báo class; thêm abstract, extends hoặc implements nếu phù hợp.
+3) Các thuộc tính private; hằng số dùng static final khi phù hợp.
+4) Constructor không tham số và constructor có tham số.
+5) Getter/setter cần thiết.
+6) Phương thức nghiệp vụ public.
+7) Các hàm hỗ trợ private: kiểm tra, tìm vị trí, mở rộng mảng...
+
+Constructor không tham số:
+- Khởi tạo đối tượng ở trạng thái ban đầu an toàn.
+- Mảng phải được khởi tạo; số lượng ban đầu bằng 0.
+- Đối tượng mới có thể chưa đủ dữ liệu nghiệp vụ; phải kiểm tra trước khi thêm.
+
+Constructor có tham số:
+- Nhận thông tin cần thiết để tạo đối tượng.
+- Dùng this.thuocTinh = thamSo để phân biệt thuộc tính với tham số cùng tên.
+- Lớp con gọi super(...) để khởi tạo phần thuộc tính được kế thừa.
+
+Getter và setter:
+- Getter đọc giá trị; setter thay đổi một giá trị có kiểm tra.
+- Không bắt buộc mọi thuộc tính đều có setter public.
+- Không cho sửa mã định danh sau khi đối tượng đã nằm trong danh sách.
+- Không có setTongTien(): tổng tiền được tính từ các dòng chi tiết.
+- Không có setSoLuongTon() tùy ý từ menu; tồn đi qua nghiệp vụ Kho.
+- Không trả mảng nội bộ để bên ngoài tự thêm/xóa phần tử.
+
+Constructor, setter và hàm kiểm tra nên tái sử dụng logic, tránh viết cùng một
+quy tắc kiểm tra nhiều lần. Tuy nhiên không gom mọi kiểm tra của hệ thống vào
+một hàm khổng lồ: mỗi loại quy tắc thuộc lớp có đủ dữ liệu để kiểm tra nó.
+
+3. NHÓM THỰC THỂ – 12 CLASS
+
+3.1. SanPham – abstract
+Vai trò: thông tin chung của tất cả sản phẩm.
+Lưu:
+- String maSanPham, tenSanPham, thuongHieu.
+- BigDecimal giaBan.
+- int soLuongTon.
+- LoaiSP loaiSP: tham chiếu đến loại của sản phẩm.
+Viết:
+- SanPham() và constructor nhận các thông tin chung.
+- Getter cho thông tin; setter hợp lệ cho tên, thương hiệu, giá và loại.
+- getSoLuongTon().
+- capNhatTon(int chenhLech): giới hạn truy cập; do Kho sử dụng theo quy ước.
+- abstract String hienThiThongTin().
+Kiểm tra: tên/mã không rỗng khi lưu; giá >= 0; loại tồn tại; tồn không âm.
+Không viết: themSanPham(), xoaSanPham(), tìm kiếm toàn bộ sản phẩm hoặc menu.
+Không tạo new SanPham(...) vì đây là lớp abstract.
+Tồn mới mặc định bằng 0; nhập hàng bằng Phiếu Nhập để tăng tồn.
+
+3.2. GiayTheThao extends SanPham
+Lưu thêm: double kichCoGiay; String mauSac, chatLieu, loaiDeGiay.
+Viết: hai constructor, get/set thuộc tính riêng, override hienThiThongTin().
+Constructor có tham số nhận thông tin chung và riêng, gọi super(...) trước.
+Kiểm tra: kích cỡ giày > 0; các thông tin bắt buộc không rỗng.
+Không khai báo lại maSanPham, giaBan, soLuongTon đã có ở lớp cha.
+
+3.3. QuanAoTheThao extends SanPham
+Lưu thêm: String kichCoQuanAo, mauSac, chatLieu.
+Viết: hai constructor, get/set, override hienThiThongTin().
+Kích cỡ có thể là S/M/L/XL; thống nhất tập giá trị hoặc quy tắc nhập.
+Không dùng kích cỡ giày để biểu diễn kích cỡ quần áo.
+
+3.4. DungCuTheThao extends SanPham
+Lưu thêm: String monTheThao, vatLieu; double khoiLuongKg.
+Viết: hai constructor, get/set, override hienThiThongTin().
+Kiểm tra: khối lượng > 0 khi nhập thông tin sản phẩm hoàn chỉnh.
+Ví dụ: vợt cầu lông, vật liệu carbon, khối lượng 0.085 kg.
+
+Quy ước chung cho ba lớp con:
+- Mỗi mã sản phẩm đại diện một biến thể cụ thể, chẳng hạn giày đen cỡ 42.
+- Đổi sang màu/cỡ khác có thể cần một mã sản phẩm khác để theo dõi tồn đúng.
+- mauSac/chatLieu có thể nằm ở cả hai lớp giày và quần áo. Việc cùng tên không
+  tự động buộc phải đưa lên SanPham; cân nhắc xem mọi sản phẩm có cần chúng không.
+- Trong phương án này, ba lớp con cùng được lưu trong SanPham[].
+- Khi duyệt mảng và gọi hienThiThongTin(), Java chạy phiên bản của lớp con.
+  Đó là sử dụng đa hình thực tế, không chỉ khai báo kế thừa trên sơ đồ.
+
+3.5. LoaiSP
+Lưu: String maLoaiSP, tenLoaiSP, moTa.
+Viết: hai constructor, getter/setter phù hợp, hienThiThongTin().
+Ví dụ: L01 – Giày chạy bộ.
+Đây là dữ liệu phân loại có thể quản lý. Nó khác với lớp Java GiayTheThao.
+Không lưu thêm mảng sản phẩm trong LoaiSP: tìm sản phẩm theo loại ở DanhSachSanPham.
+Trùng mã loại được kiểm tra ở DanhSachLoaiSP, không ở một LoaiSP riêng lẻ.
+
+3.6. KhachHang
+Lưu: String maKhachHang, hoTen, soDienThoai, diaChi.
+Viết: hai constructor, get/set, hienThiThongTin().
+Kiểm tra: họ tên không rỗng; số điện thoại theo quy tắc định trước.
+Số điện thoại dùng String để giữ số 0 đầu, không dùng int.
+Không lưu thêm tongTienDaMua vì có thể tính từ các hóa đơn liên quan.
+
+3.7. NhanVien
+Lưu: String maNhanVien, hoTen, soDienThoai, caLamViec.
+Viết: hai constructor, get/set, hienThiThongTin().
+Vai trò: xác định ai lập hóa đơn hoặc phiếu nhập.
+Không cần thêm tài khoản, mật khẩu, phân quyền nếu đồ án không triển khai các chức năng đó.
+
+3.8. NhaCungCap
+Lưu: String maNhaCungCap, tenNhaCungCap, soDienThoai, diaChi.
+Viết: hai constructor, get/set, hienThiThongTin().
+Vai trò: xác định bên cung cấp hàng trong phiếu nhập.
+Không tự quản lý toàn bộ phiếu nhập của nhà cung cấp ngay trong thực thể này.
+
+3.9. HoaDon
+Lưu:
+- String maHoaDon; LocalDate ngayLap.
+- KhachHang khachHang; NhanVien nhanVien.
+- ChiTietHoaDon[] chiTiet; int soLuongChiTiet.
+Viết:
+- Hai constructor; khởi tạo mảng chi tiết ngay khi tạo hóa đơn.
+- Getter thông tin; cập nhật ngày, khách, nhân viên khi hợp lệ.
+- themChiTiet(ChiTietHoaDon ct).
+- suaChiTiet(String maSP, ChiTietHoaDon moi).
+- xoaChiTiet(String maSP).
+- timChiTiet(String maSP).
+- tinhTongTien(): BigDecimal.
+- Hàm private tìm vị trí chi tiết và mở rộng mảng khi đầy.
+Quy tắc:
+- Tổng tiền bằng tổng tinhThanhTien() của các dòng trong hóa đơn.
+- Một mã SP có một dòng; khi thêm trùng thì từ chối hoặc gộp số lượng theo một
+  quy tắc thống nhất. Phương án đơn giản: từ chối, yêu cầu sửa dòng đã có.
+- Hóa đơn được tạo rỗng lúc nhập, nhưng khi lưu phải có ít nhất một dòng.
+- Thay đổi dòng chi tiết chỉ thay đổi bản hóa đơn đang soạn, chưa tự trừ kho.
+- Lưu/sửa hóa đơn vào hệ thống phải đi qua QuanLyCuaHang.
+Không viết: tìm tất cả hóa đơn của cửa hàng hoặc tính tổng doanh thu toàn cửa hàng.
+
+3.10. ChiTietHoaDon
+Lưu: SanPham sanPham; int soLuong; BigDecimal donGiaBan.
+Viết: hai constructor, get/set có kiểm tra, tinhThanhTien().
+Công thức: donGiaBan.multiply(BigDecimal.valueOf(soLuong)).
+Số lượng > 0, đơn giá >= 0 khi lưu.
+Đơn giá là giá tại thời điểm bán. Đổi giaBan của SanPham sau này không được làm
+đổi tiền của hóa đơn đã lập.
+Không lưu thêm thanhTien nếu luôn tính được từ số lượng và đơn giá.
+Không viết CRUD cho toàn cửa hàng trong lớp một dòng chi tiết.
+
+3.11. PhieuNhap
+Lưu:
+- String maPhieuNhap; LocalDate ngayLap.
+- NhaCungCap nhaCungCap; NhanVien nhanVien.
+- ChiTietPhieuNhap[] chiTiet; int soLuongChiTiet.
+Viết: hai constructor, get/set thông tin, themChiTiet(), suaChiTiet(),
+xoaChiTiet(), timChiTiet(), tinhTongTien(), tìm vị trí và mở rộng mảng.
+Quy tắc gần giống HoaDon, nhưng thể hiện hàng nhập từ nhà cung cấp.
+Không tự tăng kho khi vừa thêm một dòng vào bản phiếu đang soạn.
+Lưu/sửa phiếu nhập phải được QuanLyCuaHang điều phối với Kho.
+
+3.12. ChiTietPhieuNhap
+Lưu: SanPham sanPham; int soLuong; BigDecimal donGiaNhap.
+Viết: hai constructor, get/set có kiểm tra, tinhThanhTien().
+Công thức: số lượng nhập nhân đơn giá nhập.
+Không dùng giaBan của SanPham để tính tiền nhập; hai loại giá có ý nghĩa khác nhau.
+
+4. NHÓM DANH SÁCH – 7 CLASS
+
+4.1. Cấu trúc chung
+Ví dụ DanhSachKhachHang:
+    private KhachHang[] ds;
+    private int soLuong;
+
+ds.length là sức chứa, soLuong là số phần tử thực sự có dữ liệu.
+Ví dụ ds.length = 20 và soLuong = 3: chỉ duyệt phần tử 0, 1, 2.
+Không lấy ds.length làm số khách hàng hiện có.
+
+Constructor:
+- Không tham số: tạo mảng với sức chứa mặc định, soLuong = 0.
+- Có tham số int sucChua: kiểm tra sucChua > 0 rồi tạo mảng.
+
+Các hàm chung và nhiệm vụ:
+
+them(doiTuong): boolean
+- Kiểm tra khác null và thông tin hợp lệ.
+- Kiểm tra mã chưa tồn tại bằng kiemTraMaDuyNhat().
+- Nếu đầy thì gọi moRongMang().
+- Đặt đối tượng vào ds[soLuong], tăng soLuong, trả true.
+- Nếu bị từ chối thì trả false và không thay đổi danh sách.
+
+sua(String ma, doiTuongMoi): boolean
+- Tìm vị trí theo mã; không có thì trả false.
+- Kiểm tra dữ liệu mới hợp lệ, giữ nguyên mã định danh.
+- Cập nhật thông tin đối tượng tại vị trí đó.
+- Với sản phẩm/người/loại đã được tham chiếu, nên cập nhật đối tượng hiện có
+  thay vì thay bằng đối tượng mới, để các tham chiếu không bị trỏ vào bản cũ.
+- Sửa sản phẩm không được ghi đè soLuongTon bằng số nhập từ màn hình.
+
+xoa(String ma): boolean
+- Tìm vị trí; không có thì trả false.
+- Dịch các phần tử phía sau sang trái một ô.
+- Giảm soLuong và gán ô cuối vừa bỏ thành null.
+- Điều kiện liên quan chứng từ hoặc tồn phải được kiểm tra ở lớp quản lý trước.
+
+timTheoMa(String ma): đối tượng
+- Tìm chính xác mã; không có trả null.
+
+timKiem(String tuKhoa): mảng kết quả
+- Lọc theo mã hoặc tên phù hợp với từng thực thể.
+- Trả mảng rỗng khi không có kết quả; không trả null cho kết quả tập hợp.
+- Có thể dùng trim() và so sánh không phân biệt hoa/thường.
+- Hàm trả dữ liệu; việc in thông báo thuộc phần giao diện quản lý.
+
+getTatCa(): mảng kết quả
+- Trả đúng soLuong phần tử.
+- Trả bản sao mảng để tránh bên ngoài sửa cấu trúc mảng nội bộ.
+- Bản sao mảng vẫn có thể chứa cùng tham chiếu đối tượng; không được hiểu là
+  bản sao sâu. Chứng từ cần bản sao cả các dòng chi tiết trước khi sửa.
+
+Các hàm private dùng lại:
+- timViTri(String ma): trả vị trí hoặc -1.
+- kiemTraMaDuyNhat(String ma): sử dụng timViTri() để kiểm tra mã trùng.
+- moRongMang(): tạo mảng lớn hơn và sao chép các phần tử.
+
+Không viết trong các lớp danh sách:
+- Vòng lặp menu và đọc lựa chọn từ bàn phím.
+- Tự tạo Kho mới mỗi khi thêm một phần tử.
+- Tự đọc/ghi toàn bộ file sau từng phép gán thuộc tính.
+
+4.2. DanhSachSanPham
+Lưu: SanPham[] ds và int soLuong.
+Chức năng: CRUD/tìm kiếm chung; locTheoLoaiSP(maLoai); hienThiDanhSach().
+Một mảng chứa được cả GiayTheThao, QuanAoTheThao và DungCuTheThao.
+Khi hiển thị, gọi hienThiThongTin() qua tham chiếu SanPham để thể hiện đa hình.
+Không cần DanhSachGiayTheThao, DanhSachQuanAoTheThao, DanhSachDungCuTheThao.
+
+4.3. DanhSachLoaiSP
+Lưu: LoaiSP[] ds và int soLuong.
+Chức năng: thêm/sửa/xóa/tìm loại theo mã, tên.
+Trước khi xóa, QuanLyCuaHang kiểm tra không có sản phẩm đang dùng loại đó.
+
+4.4. DanhSachKhachHang
+Lưu: KhachHang[] ds và int soLuong.
+Chức năng: thêm/sửa/xóa/tìm theo mã, tên; có thể tìm thêm bằng số điện thoại.
+Trước khi xóa, lớp quản lý kiểm tra khách chưa được hóa đơn tham chiếu.
+
+4.5. DanhSachNhanVien
+Lưu: NhanVien[] ds và int soLuong.
+Chức năng: thêm/sửa/xóa/tìm theo mã, tên.
+Không cho xóa nhân viên đang được hóa đơn hoặc phiếu nhập tham chiếu.
+
+4.6. DanhSachNhaCungCap
+Lưu: NhaCungCap[] ds và int soLuong.
+Chức năng: thêm/sửa/xóa/tìm theo mã, tên; có thể tìm theo số điện thoại.
+Không cho xóa nhà cung cấp đang được phiếu nhập tham chiếu.
+
+4.7. DanhSachHoaDon
+Lưu: HoaDon[] ds và int soLuong.
+Chức năng:
+- them(), sua(), xoa(), timTheoMa(), timKiem().
+- Tìm kiếm theo mã hóa đơn hoặc mã khách hàng.
+- thongKeTongTien(): cộng tổng tiền của mọi hóa đơn đang lưu.
+- thongKeTongTien(LocalDate tu, LocalDate den): cộng hóa đơn trong khoảng ngày.
+Hai hàm thống kê cùng tên, khác tham số là một ví dụ nạp chồng (overload).
+Quy ước khoảng ngày bao gồm cả tu và den; tu > den thì báo dữ liệu không hợp lệ.
+Danh sách rỗng hoặc không có hóa đơn trong khoảng thì trả BigDecimal.ZERO.
+Không giữ một biến tongDoanhThu phải cập nhật thủ công mỗi lần sửa/xóa.
+Không tự cập nhật Kho; lớp quản lý điều phối phần này.
+
+4.8. DanhSachPhieuNhap
+Lưu: PhieuNhap[] ds và int soLuong.
+Chức năng: CRUD/tìm theo mã phiếu hoặc mã nhà cung cấp.
+thongKeTongTien() và thongKeTongTien(tu, den) cộng tổng tiền nhập tương ứng.
+Quy ước ngày và trường hợp rỗng giống DanhSachHoaDon.
+Tổng tiền nhập không phải doanh thu; tổng tiền bán trừ tổng tiền nhập trong
+một kỳ cũng chưa chắc là lợi nhuận vì còn tồn kho và các chi phí khác.
+
+5. NHÓM QUẢN LÝ VÀ HỖ TRỢ – 4 CLASS
+
+5.1. QuanLyCuaHang
+Vai trò: điều phối hoạt động của ứng dụng console.
+Lưu:
+- Một tham chiếu cho mỗi danh sách trong 7 danh sách.
+- Một Kho dùng chung với DanhSachSanPham.
+- Một LuuTruFileText.
+- Có thể giữ một Scanner dùng chung cho nhập liệu console.
+Không tạo thêm các mảng sản phẩm/khách hàng trùng với mảng trong lớp danh sách.
+
+Viết:
+- Constructor không tham số và constructor cấu hình thư mục dữ liệu.
+- chay(): đọc dữ liệu, chạy menu, lưu dữ liệu khi kết thúc hoặc theo lệnh lưu.
+- hienThiMenu(), xuLyLuaChon(), các hàm menu nhỏ theo từng nghiệp vụ.
+- Các hàm nhập thông tin: nhập sản phẩm, khách hàng, hóa đơn, phiếu nhập...
+- Thêm/sửa/xóa/tìm kiếm cho từng danh sách qua menu.
+- themHoaDon(), suaHoaDon(), xoaHoaDon().
+- themPhieuNhap(), suaPhieuNhap(), xoaPhieuNhap().
+- timKiemHoaDon(), timKiemPhieuNhap().
+- Hàm gọi thống kê tổng tiền của hai danh sách chứng từ và hiển thị kết quả.
+- Hàm kiểm tra đối tượng tồn tại và kiểm tra tham chiếu trước khi xóa.
+
+Phân biệt hai hàm có vẻ trùng nhau:
+- DanhSachHoaDon.them(hd): đưa hóa đơn vào mảng.
+- QuanLyCuaHang.themHoaDon(hd): kiểm tra khách/nhân viên/SP, tồn kho, mã trùng,
+  rồi phối hợp thêm vào mảng và trừ tồn.
+Đây là hai mức trách nhiệm khác nhau, không viết lại cùng một vòng lặp thêm mảng.
+
+Luồng menu sản phẩm:
+1) Đọc lựa chọn và thông tin từ người dùng.
+2) Tạo đúng đối tượng lớp con.
+3) Kiểm tra loại SP tồn tại.
+4) Gọi DanhSachSanPham.them(sp).
+5) Hiển thị thành công hoặc lỗi.
+
+Chú ý hàm quanLyDanhSach<T> tổng quát trong thiết kế:
+Interface chỉ thống nhất thao tác CRUD, không tự biết cách hỏi kích cỡ giày
+hay ngày lập phiếu. Có thể dùng menu riêng cho từng nhóm để dễ học và dễ code.
+Không ép mọi nghiệp vụ vào một hàm generic dài nhiều nhánh if/else.
+Menu chứng từ phải gọi các hàm điều phối Kho, không gọi thẳng CRUD của danh sách.
+
+5.2. Kho
+Vai trò: kiểm tra và cập nhật số lượng tồn theo hóa đơn/phiếu nhập.
+Lưu: tham chiếu đến DanhSachSanPham đang được QuanLyCuaHang sử dụng.
+Không lưu thêm một bộ soLuongTon thứ hai; tồn duy nhất ở SanPham.
+Constructor không tham số phải được gắn danh sách dùng chung trước khi sử dụng;
+constructor có tham số nhận ngay DanhSachSanPham để tránh dùng nhầm dữ liệu.
+
+Viết:
+- traCuuTon(String maSP).
+- capNhatTheoHoaDon(HoaDon cu, HoaDon moi).
+- capNhatTheoPhieuNhap(PhieuNhap cu, PhieuNhap moi).
+- Các hàm nhỏ tính chênh lệch, kiểm tra và áp dụng chênh lệch.
+Các hàm tính chênh lệch phải có tham số/kiểu cụ thể khi viết Java; không để
+ký hiệu rút gọn “cu, moi” không có kiểu như trong phác thảo.
+Nếu dùng int[] chenhLech, phải thống nhất chỉ số với danh sách SP trong suốt
+lần cập nhật; có thể kèm String[] maSP để ánh xạ rõ mã nào có chênh lệch nào.
+
+Quy tắc thao tác:
+- Thêm: cu = null, moi là chứng từ mới.
+- Sửa: cu là dữ liệu trước sửa, moi là bản sao đã sửa.
+- Xóa: cu là chứng từ hiện có, moi = null.
+- cu và moi đều null là yêu cầu không hợp lệ.
+
+Với hóa đơn, theo từng mã SP:
+    chenhLechTon = soLuongCu - soLuongMoi
+Với phiếu nhập, theo từng mã SP:
+    chenhLechTon = soLuongMoi - soLuongCu
+Mã không xuất hiện ở một phía được xem có số lượng bằng 0.
+    tonSau = tonHienTai + chenhLechTon
+
+Ví dụ độc lập, mỗi trường hợp bắt đầu từ tồn hiện tại bằng 10:
+- Thêm hóa đơn bán 3: tồn còn 7.
+- Sửa hóa đơn cũ từ bán 3 thành bán 5: trừ thêm 2, tồn còn 8.
+- Xóa hóa đơn bán 3: hoàn lại 3, tồn thành 13.
+- Thêm phiếu nhập 8: tồn thành 18.
+- Sửa phiếu nhập cũ từ 8 thành 6: trừ bớt 2, tồn còn 8.
+- Xóa phiếu nhập 8: tồn còn 2.
+Ví dụ bị từ chối: tồn hiện tại 4, xóa phiếu nhập 8 sẽ thành -4 nên không cho xóa.
+
+Thứ tự xử lý an toàn:
+1) Lớp quản lý kiểm tra mã, đối tác và toàn bộ dòng chi tiết.
+2) Kho tính chênh lệch của tất cả mã SP, kể cả SP chỉ có trong bản cũ.
+3) Kiểm tra tất cả tồn sau cập nhật đều >= 0.
+4) Chỉ khi mọi kiểm tra đạt mới thay đổi chứng từ và tồn.
+5) Nếu lỗi ở bước cập nhật thì phục hồi cả chứng từ và các tồn đã thay đổi.
+Không trừ xong dòng thứ nhất rồi mới phát hiện dòng thứ hai thiếu hàng.
+Không tự trừ kho khi đang nhập từng dòng và lại trừ thêm khi nhấn lưu.
+
+Phạm vi đơn giản của đồ án:
+- Chứng từ lưu thành công có hiệu lực ngay; chưa triển khai nhiều trạng thái duyệt.
+- Kiểm tra tồn là kiểm tra tồn hiện tại, không dựng lại lịch sử tồn từng ngày.
+- Đây là ứng dụng một tiến trình console, không giải quyết nhiều người bán đồng thời.
+
+5.3. LuuTruFileText
+Vai trò: đọc và ghi dữ liệu text; không xử lý menu và không bán/nhập hàng.
+Lưu: đường dẫn thư mục dữ liệu; hằng phân cách static final nếu dùng định dạng phân cách.
+Viết:
+- Constructor không tham số và có tham số thư mục.
+- docDuLieu(...), ghiDuLieu(...).
+- Các hàm riêng đọc/ghi sản phẩm, loại, người, hóa đơn và phiếu nhập.
+- Hàm hỗ trợ tách trường, ghép trường, chuyển kiểu, báo dòng dữ liệu lỗi.
+Các hàm đọc/ghi phải được chia nhỏ, không gom mọi loại dữ liệu vào một hàm dài.
+Nếu nhận QuanLyCuaHang làm tham số, cần phương thức truy cập/nạp danh sách có
+kiểm soát; không đổi toàn bộ thuộc tính của QuanLyCuaHang thành public.
+
+Gợi ý các file:
+- loaisp.txt, sanpham.txt, khachhang.txt, nhanvien.txt, nhacungcap.txt.
+- hoadon.txt, chitiethoadon.txt.
+- phieunhap.txt, chitietphieunhap.txt.
+Đây là 9 file dữ liệu; không cần tạo thêm 9 class để tương ứng từng file.
+
+Nội dung cần lưu:
+- Sản phẩm: nhãn lớp con GIAY/QUANAO/DUNGCU, thông tin chung và riêng, tồn hiện tại,
+  mã loại. Nhãn này giúp dựng lại đúng lớp con khi đọc.
+- Hóa đơn: mã, ngày, mã khách, mã nhân viên.
+- Chi tiết hóa đơn: mã hóa đơn, mã SP, số lượng, đơn giá bán lúc giao dịch.
+- Phiếu nhập: mã, ngày, mã nhà cung cấp, mã nhân viên.
+- Chi tiết phiếu nhập: mã phiếu, mã SP, số lượng, đơn giá nhập.
+- Các thực thể còn lại: lưu những thuộc tính đã liệt kê ở phần 3.
+Không ghi địa chỉ bộ nhớ của đối tượng; dùng mã để nối lại tham chiếu khi đọc.
+
+Thứ tự đọc:
+1) Loại sản phẩm, khách hàng, nhân viên, nhà cung cấp.
+2) Sản phẩm và liên kết đến loại.
+3) Hóa đơn/phiếu nhập và liên kết đến đối tác, nhân viên.
+4) Chi tiết và liên kết đến sản phẩm, chứng từ.
+Tồn đã được lưu trong sanpham.txt nên đọc lại chứng từ KHÔNG cộng/trừ Kho nữa.
+Luồng khôi phục từ file khác luồng tạo giao dịch mới từ menu.
+
+Quy ước file:
+- Dùng UTF-8; ngày dạng yyyy-MM-dd; tiền dùng chuỗi số, không chèn dấu phân cách nghìn.
+- Nếu dùng dấu | thì phải escape dấu | và xuống dòng trong dữ liệu, hoặc quy định
+  không chấp nhận chúng khi nhập và kiểm tra nhất quán.
+- File chưa tồn tại ở lần chạy đầu có thể hiểu là dữ liệu rỗng.
+- File sai định dạng/mã tham chiếu thiếu: báo rõ lỗi; không âm thầm ghi đè bằng dữ liệu rỗng.
+- Đọc vào bộ dữ liệu tạm, kiểm tra xong mới thay bộ đang dùng.
+- Ghi nhiều file cần tránh lưu nửa chừng: ghi vào bộ file tạm, kiểm tra hoàn tất rồi
+  thay bộ cũ; giữ bản sao phục hồi nếu thao tác thay thế thất bại.
+
+5.4. Main
+Vai trò: điểm vào của chương trình.
+Không giữ mảng sản phẩm, không chứa toàn bộ menu, không xử lý CRUD.
+Ví dụ phần khởi chạy:
+
+    public static void main(String[] args) {
+        QuanLyCuaHang quanLy = new QuanLyCuaHang();
+        quanLy.chay();
+    }
+
+Main là lớp khởi chạy nên không cần constructor có tham số chỉ để đủ hình thức.
+Có thể khai báo constructor không tham số theo yêu cầu tổ chức của lớp học.
+main() là phương thức static; không phải constructor.
+
+6. INTERFACE IQuanLyDanhSach<T>
+
+T là kiểu đối tượng mà danh sách quản lý, ví dụ SanPham hoặc KhachHang.
+Interface khai báo hợp đồng:
+    boolean them(T doiTuong);
+    boolean sua(String ma, T moi);
+    boolean xoa(String ma);
+    T[] timKiem(String tuKhoa);
+
+Ví dụ:
+    class DanhSachSanPham implements IQuanLyDanhSach<SanPham>
+    class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>
+
+Cả 7 lớp danh sách thực hiện interface với kiểu tương ứng.
+Interface không lưu mảng ds, không có constructor và không tự thực hiện nhập liệu.
+Các lớp danh sách cụ thể tự viết phần thân hàm.
+Việc sử dụng qua biến/ tham số kiểu interface thể hiện ứng dụng interface thực tế.
+Không thêm tham số Kho vào hợp đồng CRUD chung: các danh sách người/loại không cần nó.
+
+7. AI KIỂM TRA ĐIỀU GÌ?
+
+- Giá âm, số lượng không hợp lệ: thực thể kiểm tra giá trị của chính nó.
+- Mã SP trùng trong toàn danh sách: DanhSachSanPham.
+- Mã hóa đơn trùng: DanhSachHoaDon.
+- Mã SP trùng trong một hóa đơn: HoaDon.
+- Khách/nhân viên/nhà cung cấp có tồn tại: QuanLyCuaHang tra các danh sách.
+- Có đủ hàng để bán không: Kho.
+- Sản phẩm còn được hóa đơn/phiếu nhập tham chiếu không: QuanLyCuaHang.
+- Chuỗi đọc từ file có đổi được thành ngày/tiền/số lượng không: LuuTruFileText.
+
+Hai hàm cùng kiểm tra “mã” chưa chắc trùng nhiệm vụ: mã SP duy nhất toàn danh sách
+và mã SP duy nhất trong một hóa đơn là hai phạm vi kiểm tra khác nhau.
+
+8. VÍ DỤ PHỐI HỢP TOÀN BỘ CÁC NHÓM
+
+Tạo hóa đơn HD01 bán 2 đôi giày SP01, giá 500000 đồng/đôi, tồn ban đầu 10:
+1) Main tạo QuanLyCuaHang và gọi chay().
+2) QuanLyCuaHang lấy KH01, NV01 và SP01 từ các danh sách đang có.
+3) Tạo HoaDon HD01 và ChiTietHoaDon(SP01, 2, 500000).
+4) HoaDon.themChiTiet() đưa dòng vào mảng chi tiết của HD01.
+5) HoaDon.tinhTongTien() trả 1000000.
+6) QuanLyCuaHang kiểm tra mã HD01, dữ liệu, đối tác và chi tiết.
+7) Kho kiểm tra đủ hàng; lớp quản lý phối hợp lưu hóa đơn và giảm tồn thành 8.
+8) DanhSachHoaDon.thongKeTongTien() cộng cả HD01 khi thống kê.
+9) Khi lưu dữ liệu, LuuTruFileText ghi hóa đơn, chi tiết và tồn mới.
+
+Sửa HD01 thành bán 3 đôi:
+- Tạo bản sao HD01 và các dòng chi tiết; sửa số lượng trên bản sao thành 3.
+- Tồn hiện tại 8, chênh lệch 2 - 3 = -1, tồn sau cập nhật 7.
+- Tổng tiền mới 1500000.
+- Nếu sửa thất bại thì HD01 vẫn bán 2 đôi và tồn vẫn là 8.
+- Không sửa trực tiếp bản đang lưu rồi mới đi tìm “bản cũ” để tính chênh lệch.
+
+9. CLEAN CODE VÀ CÁCH KIỂM TRA ĐÃ LÀM ĐỦ
+
+Nguyên tắc viết:
+- Tên class là danh từ, PascalCase: DanhSachHoaDon.
+- Tên hàm là hành động, camelCase: tinhTongTien, timTheoMa.
+- Dùng thống nhất LoaiSP; không xen DanhMuc, Loai, LoaiSanPham.
+- Một hàm làm một việc; hướng tới khoảng 10 dòng, không ép đủ 10 dòng.
+- main không quá 10 dòng theo tài liệu tổ chức.
+- Không nén nhiều câu lệnh lên một dòng để lách giới hạn.
+- Trả kết quả từ hàm nghiệp vụ; lớp quản lý quyết định cách thông báo.
+- Tiền dùng BigDecimal; tạo từ chuỗi như new BigDecimal("500000"), tránh từ double.
+- So sánh số tiền bằng compareTo() khi cần so sánh giá trị số.
+- Overload là cùng tên khác danh sách tham số; override là lớp con cài lại hàm lớp cha.
+
+Danh sách tự kiểm tra khi hoàn thiện:
+[ ] Mỗi thực thể có thuộc tính private và constructor phù hợp.
+[ ] Ba lớp sản phẩm kế thừa SanPham và override hàm abstract.
+[ ] Có gọi hàm đa hình khi duyệt SanPham[].
+[ ] Bảy danh sách có mảng, soLuong, thêm/sửa/xóa/tìm kiếm.
+[ ] Mã trùng bị chặn; sửa không đổi mã định danh.
+[ ] Thêm khi mảng đầy vẫn hoạt động; xóa đầu/giữa/cuối không mất phần tử khác.
+[ ] Hai chứng từ có thao tác với chi tiết và tính tổng tiền.
+[ ] Hai danh sách chứng từ có thống kê toàn bộ và theo khoảng ngày.
+[ ] Thêm/sửa/xóa chứng từ cập nhật tồn đúng, không cập nhật hai lần.
+[ ] Thiếu hàng hoặc xóa phiếu nhập làm âm tồn thì cả chứng từ và tồn giữ nguyên.
+[ ] Từ chối xóa loại/người/sản phẩm vẫn đang được tham chiếu.
+[ ] Đọc/ghi text giữ đúng lớp con, liên kết và đơn giá lịch sử.
+[ ] Mở lại chương trình không cộng/trừ tồn lần thứ hai.
+[ ] Có sử dụng interface, thuộc tính static và phương thức static.
+[ ] main ngắn; các hàm được tách theo nhiệm vụ.
+
+10. THỨ TỰ TRIỂN KHAI GỢI Ý
+
+1) LoaiSP và ba lớp người: KhachHang, NhanVien, NhaCungCap.
+2) SanPham abstract và ba lớp con.
+3) Interface cùng năm danh sách sản phẩm/loại/người.
+4) Hai loại chi tiết, HoaDon và PhieuNhap.
+5) DanhSachHoaDon, DanhSachPhieuNhap và thống kê.
+6) Kho với các tình huống thêm/sửa/xóa và thiếu hàng.
+7) QuanLyCuaHang để kết nối nghiệp vụ, rồi Main để khởi chạy.
+8) LuuTruFileText và kiểm tra dữ liệu sau khi đóng/mở chương trình.
+
+Khi giải thích với giảng viên, với mỗi class hãy trả lời được bốn câu:
+“Class này đại diện cho gì? Lưu những gì? Làm những việc gì? Gọi hoặc được gọi bởi ai?”

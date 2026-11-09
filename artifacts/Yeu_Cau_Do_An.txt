@@ -1,0 +1,64 @@
+================================================================================
+          ĐÁNH GIÁ KỸ THUẬT ĐỒ ÁN LẬP TRÌNH HƯỚNG ĐỐI TƯỢNG (OOP)
+================================================================================
+
+PHẦN I. BƯỚC 1: ĐÁNH GIÁ KỸ THUẬT THIẾT KẾ CÁC CLASS TRUNG TÂM VÀ KẾ THỪA
+--------------------------------------------------------------------------------
+1. Cấu trúc kế thừa (Inheritance Hierarchy):
+   - Xây dựng Abstract Class (Lớp cơ sở trừu tượng) làm khung mẫu tổng quát cho
+     đối tượng trung tâm của hệ thống.
+   - Định nghĩa 2 Subclasses (Lớp con) kế thừa từ lớp cơ sở, mở 
+     rộng các thuộc tính đặc thù và ghi đè (override) các phương thức trừu tượng.
+
+2. Cài đặt Đa hình (Polymorphism):
+   - Khai báo các phương thức ảo / trừu tượng ở lớp cơ sở (ví dụ: tinhChiPhi(),
+     hienThiThongTin()).
+   - Thực thi chi tiết hành vi tại các lớp con, đảm bảo gọi phương thức động 
+     thông qua con trỏ hoặc tham chiếu lớp cơ sở ở thời điểm thực thi (runtime).
+
+3. Thiết kế các Class liên quan:
+   - Xây dựng các lớp phụ trợ nghiệp vụ (như KhachHang, HoaDon, NhanVien, Date) 
+     để kết nối dữ liệu với lớp trung tâm.
+   - Áp dụng nguyên lý đóng gói (Encapsulation) với thuộc tính private/protected 
+     và các phương thức Getter/Setter tương ứng.
+
+4. Vẽ Sơ đồ lớp (UML Class Diagram):
+   - Biểu diễn rõ ràng các mối quan hệ: Kế thừa (Generalization), Phụ thuộc 
+     (Dependency), Kết hợp/Thành phần (Aggregation/Composition).
+   - Đảm bảo quy mô toàn hệ thống đạt tối thiểu 15 classes hợp lệ.
+
+
+PHẦN II. BƯỚC 2: ĐÁNH GIÁ KỸ THUẬT THIẾT KẾ CLASS DANH SÁCH & CHỨC NĂNG NGHIỆP VỤ
+--------------------------------------------------------------------------------
+1. Quản lý Mảng đối tượng (Array of Objects):
+   - Triển khai lớp quản lý mảng chứa các con trỏ/đối tượng thuộc kiểu lớp cơ sở 
+     để đạt tính đa hình cho toàn bộ danh sách.
+   - Quản lý bộ nhớ động hiệu quả (cấp phát, giải phóng bộ nhớ, mở rộng hoặc 
+     thu nhỏ kích thước mảng khi thêm/xóa phần tử).
+
+2. Nhập / Xuất dữ liệu ban đầu:
+   - Hàm nhập n phần tử ban đầu: Cho phép lựa chọn khởi tạo từng loại đối 
+     tượng con cụ thể.
+   - Hàm xuất: Duyệt danh sách và kích hoạt phương thức hiển thị đa hình 
+     tương ứng của từng đối tượng.
+
+3. Chức năng Thêm / Sửa / Xóa (CRUD):
+   - Thêm: Hỗ trợ thêm 1 phần tử hoặc thêm k phần tử vào danh sách.
+   - Sửa / Xóa: Tìm kiếm phần tử theo mã định danh (ID/Primary Key), tiến hành 
+     cập nhật thông tin hoặc giải phóng bộ nhớ và dồn mảng.
+
+4. Chức năng Tìm kiếm (Search):
+   - Hỗ trợ tìm kiếm theo nhiều khóa/tiêu chí khác nhau (Mã, Tên, Loại, Khoảng giá).
+   - Cho phép tìm kiếm chính xác (Exact Matching) và tìm kiếm gần đúng (Partial 
+     Matching / Substring Search).
+
+5. Chức năng Thống kê (Analytics):
+   - Duyệt danh sách để tổng hợp dữ liệu theo nhiều tiêu chí (Tổng doanh thu, 
+     số lượng theo từng phân loại, giá trị lớn nhất-max, giá trị nhỏ nhất-min, 
+     giá trị trung bình avg).
+
+6. Ứng dụng Đa hình trong Lớp Danh sách:
+   - Mọi thao tác quản lý, tính toán, duyệt danh sách đều gọi thông qua con trỏ 
+     lớp cơ sở, tránh việc kiểm tra loại lớp con một cách thủ công.
+
+================================================================================
