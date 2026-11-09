@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,11 +19,9 @@ import models.QuanAoTheThao;
 import models.SanPham;
 import services.FileText;
 import services.IQuanLyDanhSach;
-import services.LuuTruFile;
 
 public class DanhSachSanPham
-implements IQuanLyDanhSach<SanPham>,
-LuuTruFile {
+implements IQuanLyDanhSach<SanPham> {
     private static final String TIEU_DE_CU = "SAN_PHAM_V1";
     private static final String TIEU_DE = "kieu\tmaSanPham\ttenSanPham\tgiaBan\tthuongHieu\tsoLuongTon\tmaLoai\tkichCoGiay\tmauSac\tloaiDeGiay\tmonTheThao\tvatLieu\tkhoiLuongKg\tkichCoQuanAo";
     private static final String TIEU_DE_MOI = "kieu\tmaSanPham\ttenSanPham\tgiaBan\tthuongHieu\tsoLuongTon\tmaLoai\tkichCoGiay\tmauSac\tloaiDeGiay\tmonTheThao\tvatLieu\tkhoiLuongKg\tkichCoQuanAo\tmauSacChung\tchatLieuChung";
@@ -48,26 +45,17 @@ LuuTruFile {
         return this.soLuong;
     }
 
-    public void nhapBanDau(SanPham[] sanPhamArray) {
+    private void nhapBanDau(SanPham[] sanPhamArray) {
         if (sanPhamArray == null) {
             throw new IllegalArgumentException("Danh sach ban dau khong hop le.");
         }
         DanhSachSanPham danhSachSanPham = new DanhSachSanPham(sanPhamArray.length);
-        danhSachSanPham.themNhieu(sanPhamArray);
+        for (SanPham sanPham : sanPhamArray) {
+            danhSachSanPham.them(sanPham);
+        }
         this.ds = danhSachSanPham.ds;
         this.soLuong = danhSachSanPham.soLuong;
         this.monTheThaoCu.keySet().removeIf(string -> danhSachSanPham.chiSo((String)string) < 0);
-    }
-
-    public String xuatDanhSach() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < this.soLuong; ++i) {
-            if (i > 0) {
-                stringBuilder.append("\n------------------------------\n");
-            }
-            stringBuilder.append(this.ds[i].hienThiThongTin());
-        }
-        return stringBuilder.toString();
     }
 
     public List<SanPham> getDanhSach() {
@@ -91,22 +79,6 @@ LuuTruFile {
         return true;
     }
 
-    public int themNhieu(SanPham[] sanPhamArray) {
-        if (sanPhamArray == null) {
-            throw new IllegalArgumentException("Danh sach them khong hop le.");
-        }
-        DanhSachSanPham danhSachSanPham = new DanhSachSanPham(Math.max(this.ds.length, this.soLuong));
-        System.arraycopy(this.ds, 0, danhSachSanPham.ds, 0, this.soLuong);
-        danhSachSanPham.soLuong = this.soLuong;
-        for (SanPham sanPham : sanPhamArray) {
-            danhSachSanPham.them(sanPham);
-        }
-        this.ds = danhSachSanPham.ds;
-        this.soLuong = danhSachSanPham.soLuong;
-        return sanPhamArray.length;
-    }
-
-    @Override
     public boolean suaTheoMa(String string, SanPham sanPham) {
         int n = this.chiSo(string);
         if (n < 0) {
@@ -152,74 +124,18 @@ LuuTruFile {
         return List.copyOf(arrayList);
     }
 
-    public List<SanPham> locTheoLoai(String string) {
-        return this.locTheoDanhMuc(string);
+    public String thongKeTonKho() {
+        StringBuilder ketQua = new StringBuilder();
+        long tongSoLuong = 0;
+        for (int i = 0; i < soLuong; i++) {
+            SanPham sp = ds[i];
+            ketQua.append(sp.getMaSanPham()).append(" - ").append(sp.getTenSanPham())
+                    .append(": ").append(sp.getSoLuongTon()).append("\n");
+            tongSoLuong += sp.getSoLuongTon();
+        }
+        return ketQua + "Tong so mat hang: " + soLuong + "\nTong so luong ton: " + tongSoLuong;
     }
 
-    public List<SanPham> locTheoDanhMuc(String string) {
-        if (string == null || string.isBlank()) {
-            throw new IllegalArgumentException("Ma danh muc khong duoc rong.");
-        }
-        ArrayList<SanPham> arrayList = new ArrayList<SanPham>();
-        for (int i = 0; i < this.soLuong; ++i) {
-            if (!this.ds[i].getDanhMuc().getMaDanhMuc().equalsIgnoreCase(string.trim())) continue;
-            arrayList.add(DanhSachSanPham.saoChep(this.ds[i]));
-        }
-        return List.copyOf(arrayList);
-    }
-
-    public List<SanPham> locTheoKhoangGia(BigDecimal bigDecimal, BigDecimal bigDecimal2) {
-        if (bigDecimal == null || bigDecimal2 == null || bigDecimal.signum() < 0 || bigDecimal.compareTo(bigDecimal2) > 0) {
-            throw new IllegalArgumentException("Khoang gia khong hop le.");
-        }
-        ArrayList<SanPham> arrayList = new ArrayList<SanPham>();
-        for (int i = 0; i < this.soLuong; ++i) {
-            if (this.ds[i].getGiaBan().compareTo(bigDecimal) < 0 || this.ds[i].getGiaBan().compareTo(bigDecimal2) > 0) continue;
-            arrayList.add(DanhSachSanPham.saoChep(this.ds[i]));
-        }
-        return List.copyOf(arrayList);
-    }
-
-    public Map<String, Integer> thongKeTheoDanhMuc() {
-        LinkedHashMap<String, Integer> linkedHashMap = new LinkedHashMap<String, Integer>();
-        for (int i = 0; i < this.soLuong; ++i) {
-            String string = this.ds[i].getDanhMuc().getMaDanhMuc();
-            linkedHashMap.merge(string, 1, Integer::sum);
-        }
-        return Map.copyOf(linkedHashMap);
-    }
-
-    public List<SanPham> lietKeSapHetHang(int n) {
-        if (n < 0) {
-            throw new IllegalArgumentException("Nguong khong duoc am.");
-        }
-        ArrayList<SanPham> arrayList = new ArrayList<SanPham>();
-        for (int i = 0; i < this.soLuong; ++i) {
-            if (this.ds[i].getSoLuongTon() > n) continue;
-            arrayList.add(DanhSachSanPham.saoChep(this.ds[i]));
-        }
-        return List.copyOf(arrayList);
-    }
-
-    public boolean tangTonTheoMa(String string, int n) {
-        int n2 = this.chiSo(string);
-        if (n2 < 0) {
-            return false;
-        }
-        this.ds[n2].tangTon(n);
-        return true;
-    }
-
-    public boolean giamTonTheoMa(String string, int n) {
-        int n2 = this.chiSo(string);
-        if (n2 < 0) {
-            return false;
-        }
-        this.ds[n2].giamTon(n);
-        return true;
-    }
-
-    @Override
     public void ghiFile(String string) throws IOException {
         ArrayList<String> arrayList = new ArrayList<String>();
         arrayList.add(TIEU_DE_MOI);
@@ -247,7 +163,6 @@ LuuTruFile {
         FileText.ghi(string, arrayList);
     }
 
-    @Override
     public void docFile(String string) throws IOException {
         DanhSachSanPham danhSachSanPham = new DanhSachSanPham(0);
         List<String[]> list = FileText.doc(string, TIEU_DE_MOI, TIEU_DE, TIEU_DE_CU);
@@ -349,4 +264,3 @@ LuuTruFile {
         return string.isBlank() ? null : string;
     }
 }
-

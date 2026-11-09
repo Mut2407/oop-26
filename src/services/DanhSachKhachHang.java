@@ -2,13 +2,11 @@ package services;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import models.KhachHang;
 
-public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>, LuuTruFile {
+public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang> {
     private static final String TIEU_DE_CU = "KHACH_HANG_V1";
     private static final String TIEU_DE_FILE = "maKhachHang\thoTen\tsoDienThoai\tdiaChi";
     private final List<KhachHang> ds = new ArrayList<>();
@@ -58,18 +56,6 @@ public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>, LuuT
         return true;
     }
 
-    public void themNhieu(KhachHang[] khachHang) {
-        if (khachHang == null) {
-            throw new IllegalArgumentException("Danh sach khong duoc null.");
-        }
-        DanhSachKhachHang moi = new DanhSachKhachHang(getDanhSach());
-        for (KhachHang kh : khachHang) {
-            moi.them(kh);
-        }
-        thayBang(moi);
-    }
-
-    @Override
     public boolean suaTheoMa(String ma, KhachHang khMoi) {
         int index = chiSoTheoMa(ma);
         if (index < 0) {
@@ -99,11 +85,6 @@ public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>, LuuT
         return true;
     }
 
-    public boolean xoa(String ma) {
-        return xoaTheoMa(ma);
-    }
-
-    @Override
     public KhachHang timTheoMa(String ma) {
         int index = chiSoTheoMa(ma);
         return index < 0 ? null : saoChep(ds.get(index));
@@ -125,54 +106,6 @@ public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>, LuuT
     }
 
     /** Exact phone match; partial phone matching remains available through timKiem. */
-    public List<KhachHang> timTheoSoDienThoai(String sdt) {
-        if (!soDienThoaiHopLe(sdt)) {
-            throw new IllegalArgumentException("So dien thoai phai co 9-15 chu so, co the bat dau bang +.");
-        }
-        List<KhachHang> result = new ArrayList<>();
-        for (KhachHang kh : ds) {
-            if (kh.getSoDienThoai().equals(sdt.trim())) {
-                result.add(saoChep(kh));
-            }
-        }
-        return List.copyOf(result);
-    }
-
-    public KhachHang[] timKiem(String ma, String ten, String sdt, String diaChi, boolean chinhXac) {
-        List<KhachHang> result = new ArrayList<>();
-        for (KhachHang kh : ds) {
-            if (khop(kh.getMaKhachHang(), ma, chinhXac) && khop(kh.getHoTen(), ten, chinhXac)
-                    && khop(kh.getSoDienThoai(), sdt, chinhXac) && khop(kh.getDiaChi(), diaChi, chinhXac)) {
-                result.add(saoChep(kh));
-            }
-        }
-        return result.toArray(new KhachHang[0]);
-    }
-
-    public String thongKe() {
-        return "Tong so khach hang: " + ds.size() + "\nTheo dia chi:\n" + thongKeTheoNhom(true)
-                + "Theo dau so dien thoai (3 chu so dau, bo dau +):\n" + thongKeTheoNhom(false);
-    }
-
-    private String thongKeTheoNhom(boolean diaChi) {
-        Map<String, Integer> dem = new LinkedHashMap<>();
-        Map<String, String> tenNhom = new LinkedHashMap<>();
-        for (KhachHang kh : ds) {
-            String value = diaChi ? kh.getDiaChi() : kh.getSoDienThoai().replace("+", "").substring(0, 3);
-            String key = value.toLowerCase(Locale.ROOT);
-            tenNhom.putIfAbsent(key, value);
-            dem.merge(key, 1, Integer::sum);
-        }
-        if (dem.isEmpty()) {
-            return "  Chua co du lieu.\n";
-        }
-        StringBuilder result = new StringBuilder();
-        dem.forEach((key, count) -> result.append("  ").append(tenNhom.get(key))
-                .append(": ").append(count).append(" khach hang\n"));
-        return result.toString();
-    }
-
-    @Override
     public void ghiFile(String path) throws IOException {
         if (java.nio.file.Files.exists(java.nio.file.Path.of(path))) {
             new DanhSachKhachHang().docFile(path);
@@ -185,7 +118,6 @@ public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>, LuuT
         FileText.ghi(path, lines);
     }
 
-    @Override
     public void docFile(String path) throws IOException {
         DanhSachKhachHang moi = new DanhSachKhachHang();
         List<String[]> rows = FileText.doc(path, TIEU_DE_FILE, TIEU_DE_CU);
@@ -238,13 +170,5 @@ public final class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang>, LuuT
         return VanBanConsole.khongDau(text).toLowerCase(Locale.ROOT);
     }
 
-    private static boolean khop(String value, String filter, boolean exact) {
-        if (filter == null || filter.isBlank()) {
-            return true;
-        }
-        String a = chuanHoa(value);
-        String b = chuanHoa(filter.trim());
-        return exact ? a.equals(b) : a.contains(b);
-    }
-}
 
+}

@@ -17,7 +17,6 @@ public class DanhSachTest {
         sanPham.them(giay);
         check(sanPham.timTheoMa("sp1") != giay);
         check(sanPham.timTheoMa("sp1").getMaSanPham().equals("SP1"));
-        check(sanPham.locTheoLoai("giay").size() == 1);
         check(sanPham.timGanDung("chay").size() == 1);
         expectError(() -> sanPham.them(giay));
         expectError(() -> sanPham.them(new GiayTheThao("SP2", "Giay", "Nike", new BigDecimal("-1"), 1, "Den", null, DuLieu.timDanhMuc("GIAY"), "42", "De")));
@@ -84,18 +83,18 @@ public class DanhSachTest {
     private static void kiemTraCrudKhachNhanVien() {
         DanhSachKhachHang kh = new DanhSachKhachHang();
         kh.them(new KhachHang("K1", "Khach", "0901000001", "Ha Noi"));
-        kh.themNhieu(new KhachHang[] { new KhachHang("K2", "Khach hai", "0901000002", "Hue") });
-        check(kh.timTheoMa("k1") != null && kh.timKiem(null, "hai", null, null, false).length == 1);
+        kh.them(new KhachHang("K2", "Khach hai", "0901000002", "Hue"));
+        check(kh.timTheoMa("k1") != null && kh.timGanDung("hai").size() == 1);
         check(kh.sua("K1", "Khach moi", "0901000003", "Ha Noi"));
         check(kh.timTheoMa("K1").getHoTen().equals("Khach moi"));
         expectError(() -> kh.them(new KhachHang("K1", "Trung", "0901000004", "Hue")));
-        check(kh.xoa("K2") && kh.getSoLuong() == 1);
+        check(kh.xoaTheoMa("K2") && kh.getSoLuong() == 1);
 
         DanhSachNhanVien nv = new DanhSachNhanVien();
         nv.them(new NhanVien("V1", "Nhan vien", "0901000001", "Sang"), "Ha Noi");
-        nv.themNhieu(new NhanVien[] { new NhanVien("V2", "Nhan vien hai", "0901000002", "Chieu") });
-        check(nv.timTheoMa("v1") != null && nv.timKiem(null, "hai", null, null, null, false).length == 1);
-        check(nv.sua("V1", "Nhan vien moi", "Toi", "0901000003", "Ha Noi"));
+        nv.them(new NhanVien("V2", "Nhan vien hai", "0901000002", "Chieu"));
+        check(nv.timTheoMa("v1") != null && nv.timGanDung("hai").length == 1);
+        check(nv.sua("V1", "Nhan vien moi", "Toi", "0901000003"));
         check(nv.timTheoMa("V1").getCaLamViec().equals("Toi"));
         expectError(() -> nv.them(new NhanVien("V1", "Trung", "0901000004", "Sang"), "Hue"));
         check(nv.xoa("V2") && nv.getSoLuong() == 1);

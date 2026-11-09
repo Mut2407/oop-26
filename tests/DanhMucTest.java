@@ -1,6 +1,5 @@
 import models.DanhMuc;
 import models.DuLieu;
-import models.LoaiSanPham;
 
 public class DanhMucTest {
     public static void main(String[] args) {
@@ -20,14 +19,8 @@ public class DanhMucTest {
         expectError(() -> danhMuc.capNhatThongTin("", "Sai"));
         check(danhMuc.getTenDanhMuc().equals("Giay moi"));
 
-        LoaiSanPham cu = new LoaiSanPham("DC", "Dung cu", "");
-        DuLieu.dangKyDanhMuc(cu);
-        check(DuLieu.timDanhMuc("dc") == cu && cu.getMaLoai().equals("DC"));
-        cu.setTenLoai("Dung cu moi");
-        cu.setMoTa("Mo ta");
-        check(cu.getTenDanhMuc().equals("Dung cu moi") && cu.getMoTa().equals("Mo ta"));
-        expectError(() -> cu.setMaLoai("GIAY"));
-        check(DuLieu.timDanhMuc("DC") == cu);
+        check(DuLieu.xoaDanhMuc("giay") && DuLieu.timDanhMuc("GIAY") == null);
+        check(!DuLieu.xoaDanhMuc("NONE"));
         System.out.println("DanhMucTest OK");
     }
 

@@ -11,18 +11,14 @@ import services.DanhSachSanPham;
 
 public class AnhXaDanhMucTest {
     public static void main(String[] args) throws IOException {
-        DuLieu.khoiTaoDanhMuc();
+        DuLieu.dangKyDanhMuc(new DanhMuc("DC", "Dụng cụ thể thao", ""));
+        DuLieu.dangKyDanhMuc(new DanhMuc("GIAY", "Giày thể thao", ""));
         DanhMuc dc = DuLieu.timDanhMuc("dc");
         DanhMuc giay = DuLieu.timDanhMuc("GiAy");
         check(dc != null && dc.getTenDanhMuc().equals("Dụng cụ thể thao"));
         check(giay != null && giay.getTenDanhMuc().equals("Giày thể thao"));
         check(DuLieu.getDanhMuc().size() == 2 && DuLieu.timDanhMuc("AO") == null);
         expectError(() -> DuLieu.dangKyDanhMuc(new DanhMuc("dC", "Trung", "")));
-
-        SanPham[] mau = DuLieu.taoDanhSachSanPham();
-        check(mau[0].getDanhMuc() == mau[1].getDanhMuc());
-        check(mau[2].getDanhMuc() == mau[3].getDanhMuc());
-        check(mau[0].getDanhMuc() == giay && mau[2].getDanhMuc() == dc);
 
         Path tep = Files.createTempFile("sanpham-cu-", ".txt");
         try {

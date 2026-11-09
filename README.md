@@ -1,164 +1,101 @@
 # Quản lý cửa hàng dụng cụ thể thao
 
-Ứng dụng Java thuần, chạy trên CMD/Console. Nguồn thiết kế chuẩn là
-[Sport_Store.drawio.xml](artifacts/Sport_Store.drawio.xml), trang **01 - Tổng quan (20 class)**.
+Ứng dụng Java OOP cơ bản chạy trên Console, dùng JDK 21 trở lên và file text UTF-8.
+Không cần database hoặc thư viện Java ngoài.
 
-Task 06.1–06.5 đã hoàn thành cho khách hàng và nhân viên. Xem
-[báo cáo Task 06](docs/BAO_CAO_TASK_06.md) để biết đối chiếu UML, tiến độ từng task,
-kết quả kiểm thử và các việc cần làm ở Task 07.
+## Chạy chương trình
 
-## Chạy ứng dụng
-
-Dùng **JDK 21 trở lên** (có module `jdk.compiler`). Đặt `JAVA_HOME` trỏ đến JDK,
-hoặc thêm `java` của JDK vào `PATH`. Java đi kèm extension của IDE chưa chắc đã được
-thêm vào `PATH` của terminal.
-
-Windows CMD/PowerShell:
+Mở terminal tại thư mục repository, chạy:
 
 ~~~powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1
 ~~~
 
-Chỉ giữ **run.ps1** làm script chạy ứng dụng. Script luôn biên dịch toàn bộ `src/`
-vào thư mục sạch `out/console`, sau đó mới chạy `Main` bằng cùng một JDK. Nếu biên dịch
-lỗi, script dừng và không chạy class cũ. Script tự chọn thư mục repository làm thư mục
-làm việc để đọc đúng `data/`; không phụ thuộc bộ nhớ đệm Java của IDE.
+Script biên dịch toàn bộ src/ vào out/console rồi chạy Main bằng cùng một JDK.
+Thêm -BuildOnly để chỉ biên dịch, hoặc -JavaHome để chỉ định JDK.
+Trong VS Code/Antigravity, dùng cấu hình Sport Store - Console trong Run and Debug.
 
-Nếu chưa cấu hình `JAVA_HOME`/`PATH`, có thể chỉ định đường dẫn JDK:
+## Chức năng
 
-~~~powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -JavaHome 'C:\Program Files\Java\jdk-21'
-~~~
+Menu chính: 1 sản phẩm, 2 danh mục, 3 khách hàng, 4 nhân viên, 5 nhà cung cấp, 0 thoát.
+Các menu con dùng chung các số:
 
-Để chỉ biên dịch, thêm `-BuildOnly`. Linux/macOS/cloud có PowerShell 7 dùng cùng script:
+| Mục | Chức năng |
+| --- | --- |
+| 1 | Thêm một đối tượng |
+| 2 | Sửa theo mã, giữ nguyên mã |
+| 3 | Xóa theo mã |
+| 4 | Tìm theo mã hoặc tên; Enter để xem toàn bộ danh sách |
+| 5 | Chỉ có ở sản phẩm: thống kê tồn kho |
+| 0 | Quay lại |
 
-~~~bash
-pwsh -NoProfile -File ./run.ps1
-~~~
+Thống kê tồn kho hiển thị mã, tên và số lượng tồn của từng sản phẩm, tổng số mặt hàng
+và tổng số lượng tồn. Không thống kê khách hàng, nhân viên hoặc nhà cung cấp.
+Danh mục đang được sản phẩm sử dụng không được xóa.
 
-Không cần database, server hoặc thư viện Java ngoài.
+Tìm kiếm không phân biệt hoa/thường và hỗ trợ tên tiếng Việt không dấu.
+Chương trình kiểm tra mã trùng, thông tin bắt buộc, số điện thoại, giá và tồn kho không âm.
+Không có nhập theo lô, lọc nhiều điều kiện, lọc giá, báo cáo doanh thu hoặc menu lưu/đọc thủ công.
+Các model chứng từ chưa được sử dụng đã được bỏ khỏi phạm vi hiện tại.
 
-### Chạy trong Antigravity IDE / VS Code
+## Dữ liệu
 
-Mở đúng thư mục repository chứa `src/`, `data/` và `run.ps1`. Trong **Run and Debug**,
-chọn **Sport Store - Console** rồi nhấn **F5**. Cấu hình dùng `run.ps1 -BuildOnly`
-trước khi chạy và lấy class từ `out/console`, với terminal tương tác để nhập menu.
+Chỉ dùng data/ ở gốc repository, gồm:
 
-Nếu gặp `Unresolved compilation problems` và báo thiếu `docKhachHang`, `docNhanVien`,
-`ghiKhachHang` hoặc `DanhSachNhanVien.getTatCa()`:
+- danhmuc.txt
+- sanpham.txt
+- khachhang.txt
+- nhanvien.txt
+- nhacungcap.txt
 
-1. Lưu các file đang sửa, rồi cập nhật toàn bộ source bằng `git pull --ff-only origin main`.
-   Nếu Git báo xung đột/thay đổi cục bộ, giữ lại các thay đổi đó và xử lý trước khi tiếp tục.
-   Không chỉ chép `Main.java` hoặc giải nén `src.zip` cũ đè lên source hiện tại.
-2. Mở Command Palette (`Ctrl+Shift+P`), chạy **Java: Clean Java Language Server Workspace**,
-   chọn khởi động lại và xóa cache workspace của Java khi IDE hỏi.
-3. Chạy cấu hình **Sport Store - Console** hoặc lệnh `powershell ... -File .\run.ps1` ở trên.
+Chương trình đọc các file hiện có khi khởi động và tự lưu sau mỗi lần thêm/sửa/xóa.
+Không có hàm tạo dữ liệu mẫu. Nếu thiếu file hoặc file sai định dạng, chương trình báo lỗi
+và dừng khởi động; hãy khôi phục file từ bản sao, không tạo lại dữ liệu tự động.
+Danh sách rỗng có header hợp lệ vẫn được giữ rỗng.
 
-Bốn phương thức này đã có trong source Task 06.4. Lỗi trên cho biết bản biên dịch của
-IDE không giải quyết được API; cần kiểm tra source đang mở và cache, không sửa chữ ký UML.
+Các cột cách nhau bằng Tab; điện thoại lưu bằng chuỗi để giữ số 0 đầu.
+FileText xử lý UTF-8, ký tự Tab/xuống dòng và ghi qua file tạm.
+Không ghi đè file hiện có bị lỗi. Khi chuyển định dạng cũ, LuuTruFileText giữ bản .bak.
+Nếu lưu thất bại, chương trình báo rõ thay đổi mới chỉ có trong bộ nhớ; cần xử lý nguyên nhân
+và lưu lại thay đổi trước khi thoát.
 
-## Menu
+Địa chỉ nhân viên trong file cũ được giữ riêng theo mã để không mất thông tin.
+Model NhanVien vẫn chỉ có mã, tên, điện thoại và ca làm việc; nhân viên mới không bị hỏi địa chỉ.
+API lưu trữ nhân viên nhận/trả trực tiếp DanhSachNhanVien, không chuyển qua List hoặc adapter.
+Chỉ chỉnh file dữ liệu bằng trình soạn thảo khi chương trình đã tắt.
 
-Menu chính: **1** sản phẩm, **2** danh mục, **3** khách hàng, **4** nhân viên,
-**5** nhà cung cấp; **0** thoát. Số mục cũ được giữ để tiếp tục dùng các thao tác quen thuộc.
-
-| Mục | Khách hàng | Nhân viên |
-| --- | --- | --- |
-| 1 | Xem danh sách | Xem danh sách |
-| 2 | Thêm một | Thêm một |
-| 3 | Sửa theo mã | Sửa tên/điện thoại/ca, giữ mã |
-| 4 | Xóa theo mã | Xóa theo mã |
-| 5 | Nhập n, có thông báo thay danh sách cũ | Nhập n, có thông báo thay danh sách cũ |
-| 6 | Thêm k | Thêm k |
-| 7 | Tìm nhiều tiêu chí, chính xác hoặc chứa từ khóa | Tìm nhiều tiêu chí, có bộ lọc địa chỉ chuyển tiếp |
-| 8 | Thống kê địa chỉ/đầu số điện thoại | Thống kê ca; địa chỉ cũ nếu đầy đủ |
-| 9 | Đọc lại file | Đọc lại file |
-| 10 | Lưu file | Lưu file |
-| 11 | Tìm chính xác theo mã | Tìm chính xác theo mã |
-| 12 | Tìm gần đúng theo mã/tên | Tìm gần đúng theo mã/tên |
-| 13 | Tìm chính xác số điện thoại | — |
-| 0 | Quay lại | Quay lại |
-
-Tìm tên tiếng Việt hỗ trợ hoa/thường và tìm không dấu. Mã trùng không phân biệt
-hoa/thường. Nhập lô được kiểm tra toàn bộ trước khi áp dụng. Nhập sai được báo lỗi;
-sửa/xóa không thành công, xem hoặc tìm kiếm không tự ghi file.
-
-Các mục hóa đơn, phiếu nhập, báo cáo doanh thu vẫn thông báo chưa triển khai,
-thuộc giai đoạn sau. Mục lưu/đọc chung ở menu chính đang phục vụ danh mục/sản phẩm/NCC;
-khách hàng và nhân viên có mục đọc/lưu trong menu riêng.
-
-## Dữ liệu và địa chỉ nhân viên cũ
-
-Dữ liệu gồm năm file UTF-8 trong data/: danhmuc.txt, sanpham.txt, khachhang.txt,
-nhanvien.txt, nhacungcap.txt. Repository có dữ liệu mẫu; khi sửa/chạy thử hãy dùng bản sao.
-Khi file không tồn tại, ứng dụng tạo mẫu. File rỗng danh sách nhưng có header hợp lệ
-được giữ rỗng, không tự thay bằng dữ liệu mẫu.
-
-Các cột phân cách bằng Tab. Điện thoại là chuỗi, giữ số 0 đầu. Ký tự Tab, xuống dòng
-và dấu gạch chéo ngược trong nội dung được escape bởi FileText.
-Chỉ chỉnh file khi đã tắt chương trình; giữ đúng header và số cột.
-
-Khách hàng vẫn đọc được KHACH_HANG_V1 và bảng 4 cột.
-Nhân viên đọc được bảng cũ theo thứ tự maNhanVien, hoTen, caLamViec, soDienThoai, diaChi,
-bảng 4 cột UML và bảng mới theo thứ tự:
+## Cấu trúc
 
 ~~~text
-maNhanVien    hoTen    soDienThoai    caLamViec    diaChiCu
+src/Main.java          Khởi động và menu chính; main() tối đa 10 dòng
+src/ui/                5 menu con và NhapLieuConsole dùng chung một Scanner
+src/models/            Danh mục, sản phẩm và các đối tượng đang quản lý
+src/services/          4 lớp danh sách, interface CRUD và các hàm đọc/ghi text
+data/                  Dữ liệu ban đầu và dữ liệu người dùng, ở gốc repository
+tests/                 Kiểm thử model, CRUD, tồn kho, lưu trữ, OOP và Console
+run.ps1                Script biên dịch/chạy ứng dụng
+test.sh                Script kiểm thử trên Linux/cloud
 ~~~
 
-Dấu phân cách trong ví dụ trên được trình bày bằng khoảng trắng; file thật dùng Tab.
-Cột diaChiCu là metadata lưu trữ, không phải thuộc tính của model NhanVien.
-Nhân viên mới không được hỏi địa chỉ. Địa chỉ cũ vẫn được giữ theo mã, hiển thị riêng,
-không lấy địa chỉ mẫu/địa chỉ từ file khác để điền vào phần còn thiếu.
-
-LuuTruFileText tạo và kiểm tra bản .bak trước khi chuyển định dạng khách hàng/nhân viên.
-Không ghi đè file lỗi hoặc bản sao lưu xung đột. File được ghi qua file tạm và thay thế
-nguyên khối khi hệ thống tệp hỗ trợ. Nếu lỗi lưu, chương trình thông báo dữ liệu còn
-trong bộ nhớ; dùng mục 10 để thử lại sau khi xử lý nguyên nhân.
-
-Với API Java, dùng DanhSachNhanVien.getTatCa() và DanhSachNhanVien.tuDanhSach(...)
-để chuyển giữa mảng và List có kèm metadata. List do docNhanVien() trả về cũng mang
-metadata; có thể lưu sang đường dẫn mới qua ghiNhanVien() mà vẫn giữ địa chỉ.
-Nếu caller dùng List thường để ghi vào file nhân viên hiện có, địa chỉ thiếu được lấy
-từ chính file đích hợp lệ theo mã. Khi xuất sang file mới, hãy giữ List có metadata,
-không tách chỉ các model rồi bỏ phần dữ liệu chuyển tiếp.
+DuLieu chỉ quản lý danh mục đã đọc từ file, không chứa bản ghi mẫu.
+DanhSachNhanVien và DanhSachSanPham dùng mảng đối tượng.
+IQuanLyDanhSach được dùng cho sản phẩm, khách hàng và nhà cung cấp.
+SanPham là abstract class; ba lớp sản phẩm con ghi đè các phương thức hiển thị và phân loại.
 
 ## Kiểm thử
 
-Linux/cloud:
+Trên Linux/cloud:
 
 ~~~bash
 bash test.sh
 ~~~
 
-Script biên dịch mới toàn bộ source/test vào thư mục tạm và chạy tất cả các chương trình
-*Test.java với assertions bật. Các kiểm thử ghi file vào thư mục tạm; kiểm thử Console
-khởi động tiến trình Main riêng, bao gồm lưu, thoát, mở lại và file lỗi.
+Các test biên dịch từ source mới, dùng thư mục tạm hoặc bản sao dữ liệu.
+ConsoleCrudTest kiểm tra CRUD, thoát/mở lại, tồn kho, xóa danh mục đang dùng,
+nhập dở, thiếu file, file lỗi và việc không tự sinh dữ liệu mẫu.
+NhanVienFileTest kiểm tra bảo toàn địa chỉ cũ, ký tự đặc biệt và lỗi đọc/ghi.
+OopTest kiểm tra các cấu trúc OOP và giới hạn số dòng main().
+ConsoleLauncherCheck là kiểm thử launcher PowerShell riêng.
 
-Script cũng chạy `ConsoleLauncherCheck` nếu có lệnh `pwsh`; nếu không có, phần kiểm tra
-PowerShell được thông báo bỏ qua riêng, không tính vào số chương trình Java đạt.
-Kiểm tra launcher dùng bản sao tạm có đường dẫn chứa dấu cách/tiếng Việt, mở các menu,
-loại class cũ, chặn khởi động khi source thiếu API và thử lại sau khi sửa source.
-
-Đã xác minh trên OpenJDK 21/Linux: **16/16 chương trình kiểm thử Java đạt**.
-Script `run.ps1` được kiểm tra riêng bằng PowerShell 7 trên Linux; chưa chạy trực tiếp
-trên Windows PowerShell 5.1 hoặc giao diện Antigravity IDE.
-
-## Cấu trúc
-
-~~~text
-src/Main.java          Menu Console
-src/models/            Các model nghiệp vụ
-src/services/          Danh sách, interface, file text và adapter metadata
-tests/                 Kiểm thử model, CRUD, lưu trữ, UML và Console
-data/                  Dữ liệu mẫu UTF-8
-artifacts/             Class Diagram nguồn
-images/                Ảnh sơ đồ
-docs/                  Tài liệu và báo cáo theo task
-~~~
-
-DanhSachKhachHang dùng List<KhachHang> và IQuanLyDanhSach<KhachHang>.
-DanhSachNhanVien giữ mảng NhanVien[]; NhanVien chỉ có mã, tên, điện thoại và ca.
-Mã khách hàng/nhân viên ổn định. Ràng buộc hóa đơn tham chiếu và xóa đối tượng đã có
-chứng từ sẽ được thiết kế ở Task 07.
-
+Các sơ đồ trong artifacts/, ảnh sơ đồ và báo cáo task cũ là tài liệu của thiết kế trước
+khi rút gọn; chưa được đồng bộ với phạm vi hiện tại.

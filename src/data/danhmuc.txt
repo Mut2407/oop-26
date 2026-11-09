@@ -1,3 +1,0 @@
-maDanhMuc	tenDanhMuc	moTa
-DC	Dụng cụ thể thao	
-GIAY	Giày thể thao	

@@ -12,10 +12,8 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import models.DanhMuc;
 import models.DuLieu;
 import models.NhanVien;
@@ -25,7 +23,6 @@ import services.DanhSachSanPham;
 import services.FileText;
 
 public class LuuTruFileText {
-    private static final char KY_TU_PHAN_CACH = '\t';
     private static final String TIEU_DE_DANH_MUC = "maDanhMuc\ttenDanhMuc\tmoTa";
     private final String thuMucDuLieu;
 
@@ -147,22 +144,18 @@ public class LuuTruFileText {
         return ds;
     }
 
-    public void ghiNhanVien(String path, List<NhanVien> ds) throws IOException {
-        DanhSachNhanVien incoming = DanhSachNhanVien.tuDanhSach(ds);
+    public void ghiNhanVien(String path, DanhSachNhanVien incoming) throws IOException {
+        if (incoming == null) throw new IllegalArgumentException("Danh sach nhan vien khong duoc null.");
         Path file = duongDan(path);
         if (Files.exists(file)) {
             DanhSachNhanVien old = new DanhSachNhanVien();
             old.docFile(file.toString());
-            Map<String, String> metadata = new LinkedHashMap<>(incoming.getDiaChiCuTheoMa());
             for (NhanVien nv : incoming.getDanhSach()) {
                 String ma = nv.getMaNhanVien();
                 if (old.getDiaChiCu(ma) != null && incoming.getDiaChiCu(ma) == null) {
-                    // The destination is an authoritative fallback for ordinary Lists.
-                    // Scope by file and stable ID; never infer from another file/global cache.
-                    metadata.put(ma.toUpperCase(Locale.ROOT), old.getDiaChiCu(ma));
+                    throw new IOException("Thieu dia chi cu cua nhan vien " + ma);
                 }
             }
-            incoming = new DanhSachNhanVien(incoming.getDanhSach(), metadata);
             if (laFileCu(file, DanhSachNhanVien.TIEU_DE, null)
                     || laFileCu(file, DanhSachNhanVien.TIEU_DE_UML, null)) {
                 saoLuuFileCu(file);
@@ -178,10 +171,10 @@ public class LuuTruFileText {
         FileText.ghi(file.toString(), lines);
     }
 
-    public List<NhanVien> docNhanVien(String path) throws IOException {
+    public DanhSachNhanVien docNhanVien(String path) throws IOException {
         DanhSachNhanVien ds = new DanhSachNhanVien();
         ds.docFile(duongDan(path).toString());
-        return ds.getTatCa();
+        return ds;
     }
 
     private Path duongDan(String string) {
@@ -219,4 +212,3 @@ public class LuuTruFileText {
         }
     }
 }
-

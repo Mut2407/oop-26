@@ -11,11 +11,9 @@ import java.util.Locale;
 import models.NhaCungCap;
 import services.FileText;
 import services.IQuanLyDanhSach;
-import services.LuuTruFile;
 
 public class DanhSachNhaCungCap
-implements IQuanLyDanhSach<NhaCungCap>,
-LuuTruFile {
+implements IQuanLyDanhSach<NhaCungCap> {
     private static final String TIEU_DE_CU = "NHA_CUNG_CAP_V1";
     private static final String TIEU_DE = "maNhaCungCap\ttenNhaCungCap\tsoDienThoai\tdiaChi";
     private final List<NhaCungCap> ds = new ArrayList<NhaCungCap>();
@@ -98,7 +96,6 @@ LuuTruFile {
         return List.copyOf(arrayList);
     }
 
-    @Override
     public void ghiFile(String string) throws IOException {
         ArrayList<String> arrayList = new ArrayList<String>();
         arrayList.add(TIEU_DE);
@@ -108,7 +105,6 @@ LuuTruFile {
         FileText.ghi(string, arrayList);
     }
 
-    @Override
     public void docFile(String string) throws IOException {
         DanhSachNhaCungCap danhSachNhaCungCap = new DanhSachNhaCungCap();
         List<String[]> list = FileText.doc(string, TIEU_DE, TIEU_DE_CU);
@@ -150,4 +146,3 @@ LuuTruFile {
         return Normalizer.normalize(string, Normalizer.Form.NFD).replaceAll("\\p{M}+", "").replace('\u0111', 'd').replace('\u0110', 'D').toLowerCase(Locale.ROOT);
     }
 }
-

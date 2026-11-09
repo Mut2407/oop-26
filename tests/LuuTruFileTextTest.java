@@ -9,7 +9,8 @@ import services.*;
 
 public class LuuTruFileTextTest {
     public static void main(String[] args) throws IOException {
-        DuLieu.khoiTaoDanhMuc();
+        DuLieu.dangKyDanhMuc(new DanhMuc("DC", "Dụng cụ thể thao", ""));
+        DuLieu.dangKyDanhMuc(new DanhMuc("GIAY", "Giày thể thao", ""));
         Path thuMuc = Files.createTempDirectory("luu-tru-oop-");
         Path tepDanhMuc = thuMuc.resolve("danhmuc.txt");
         Path tepSanPham = thuMuc.resolve("sanpham.txt");

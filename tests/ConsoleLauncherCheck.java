@@ -41,7 +41,7 @@ public class ConsoleLauncherCheck {
                     Files.setLastModifiedTime(source, FileTime.fromMillis(1000));
                 }
             }
-            output = run(powershell, project, "1\n1\n0\n2\n1\n0\n3\n1\n0\n4\n1\n0\n5\n1\n0\n0\n", true);
+            output = run(powershell, project, "1\n4\n\n0\n2\n4\n\n0\n3\n4\n\n0\n4\n4\n\n0\n5\n4\n\n0\n0\n", true);
             for (String menu : List.of("SAN PHAM", "DANH MUC", "KHACH HANG", "NHAN VIEN", "NHA CUNG CAP")) {
                 check(output.contains("QUAN LY " + menu), "Missing menu " + menu + "\n" + output);
             }
@@ -58,7 +58,7 @@ public class ConsoleLauncherCheck {
             check(!output.contains("Nhap lua chon"), "Launched stale Main after compilation failed\n" + output);
 
             Files.writeString(storage, valid);
-            output = run(powershell, project, "3\n1\n0\n4\n1\n0\n0\n", true);
+            output = run(powershell, project, "3\n4\n\n0\n4\n4\n\n0\n0\n", true);
             check(output.contains("KH01") && output.contains("NV01"), "Records missing after recovery\n" + output);
             check(!output.contains("Unresolved compilation") && !output.contains("Exception"), output);
             for (var entry : original.entrySet()) {
