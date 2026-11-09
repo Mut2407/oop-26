@@ -1,101 +1,74 @@
 # Quản lý cửa hàng dụng cụ thể thao
 
-Ứng dụng Java OOP cơ bản chạy trên Console, dùng JDK 21 trở lên và file text UTF-8.
-Không cần database hoặc thư viện Java ngoài.
+Ứng dụng Java console cho đồ án OOP, dùng JDK 17 trở lên, không cần database hoặc thư viện ngoài. Code áp dụng yêu cầu trong `artifacts/` và tài liệu tổ chức bạn đã gửi: thực thể, danh sách dùng mảng, lớp điều phối, kế thừa và đa hình.
 
-## Chạy chương trình
+## Chạy trên Windows
 
-Mở terminal tại thư mục repository, chạy:
+Mở terminal tại thư mục repository:
 
-~~~powershell
+```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1
-~~~
+```
 
-Script biên dịch toàn bộ src/ vào out/console rồi chạy Main bằng cùng một JDK.
-Thêm -BuildOnly để chỉ biên dịch, hoặc -JavaHome để chỉ định JDK.
-Trong VS Code/Antigravity, dùng cấu hình Sport Store - Console trong Run and Debug.
+Chỉ biên dịch: thêm `-BuildOnly`. Chỉ định JDK: thêm `-JavaHome 'C:\duong-dan\jdk-17'`. Có thể dùng cấu hình **Sport Store - Console** trong Run and Debug của VS Code.
+
+Trên Linux/macOS:
+
+```bash
+bash run.sh
+```
+
+`Main` nhận tùy chọn đường dẫn thư mục dữ liệu ở đối số đầu tiên, ví dụ `bash run.sh /tmp/sport-store-demo`. Khi thư mục chưa có dữ liệu, chương trình bắt đầu rỗng. Không tự sinh sản phẩm hoặc chứng từ mẫu.
 
 ## Chức năng
 
-Menu chính: 1 sản phẩm, 2 danh mục, 3 khách hàng, 4 nhân viên, 5 nhà cung cấp, 0 thoát.
-Các menu con dùng chung các số:
-
-| Mục | Chức năng |
+| Menu | Chức năng |
 | --- | --- |
-| 1 | Thêm một đối tượng |
-| 2 | Sửa theo mã, giữ nguyên mã |
-| 3 | Xóa theo mã |
-| 4 | Tìm theo mã hoặc tên; Enter để xem toàn bộ danh sách |
-| 5 | Chỉ có ở sản phẩm: thống kê tồn kho |
-| 0 | Quay lại |
+| 1–5 | CRUD và tìm kiếm sản phẩm, loại SP, khách hàng, nhân viên, nhà cung cấp |
+| 6–7 | CRUD hóa đơn, phiếu nhập; thêm/sửa/xóa từng dòng chi tiết |
+| 8 | Lưu toàn bộ dữ liệu |
+| 9 | Tổng tiền bán và tổng tiền nhập: toàn bộ hoặc theo khoảng ngày, gồm cả hai đầu |
+| 10 | Nhập n/thêm k sản phẩm trong một lô; lỗi một phần tử thì từ chối cả lô |
+| 11 | Lọc sản phẩm theo loại hoặc khoảng giá |
+| 0 | Lưu và thoát |
 
-Thống kê tồn kho hiển thị mã, tên và số lượng tồn của từng sản phẩm, tổng số mặt hàng
-và tổng số lượng tồn. Không thống kê khách hàng, nhân viên hoặc nhà cung cấp.
-Danh mục đang được sản phẩm sử dụng không được xóa.
+Menu CRUD: `1` thêm, `2` sửa, `3` xóa, `4` tìm gần đúng, `5` xem toàn bộ, `6` tìm đúng mã, `0` quay lại. Tìm gần đúng theo mã/tên; với chứng từ là mã chứng từ/mã đối tác. Hỗ trợ tìm tên tiếng Việt không dấu và không phân biệt hoa/thường.
 
-Tìm kiếm không phân biệt hoa/thường và hỗ trợ tên tiếng Việt không dấu.
-Chương trình kiểm tra mã trùng, thông tin bắt buộc, số điện thoại, giá và tồn kho không âm.
-Không có nhập theo lô, lọc nhiều điều kiện, lọc giá, báo cáo doanh thu hoặc menu lưu/đọc thủ công.
-Các model chứng từ chưa được sử dụng đã được bỏ khỏi phạm vi hiện tại.
+Ví dụ thao tác từ dữ liệu rỗng: tạo loại SP → tạo nhân viên/nhà cung cấp/khách → tạo sản phẩm (tồn 0) → lập phiếu nhập → lập hóa đơn. Khi soạn chứng từ, `0. Ghi sổ` kết thúc bản soạn và kiểm tra toàn bộ trước khi cập nhật kho.
 
-## Dữ liệu
+Mỗi thao tác hoàn tất được tự lưu. Nếu lỗi ghi file, chương trình thông báo rõ dữ liệu mới đang ở RAM; chọn **8. Lưu** để thử lại. Nếu đóng đầu vào (EOF) giữa thao tác, bản đang nhập bị bỏ và chỉ các thao tác đã hoàn tất được lưu. Nếu lần lưu cuối vẫn thất bại, chương trình trả mã lỗi 1.
 
-Chỉ dùng data/ ở gốc repository, gồm:
+## Quy tắc nghiệp vụ
 
-- danhmuc.txt
-- sanpham.txt
-- khachhang.txt
-- nhanvien.txt
-- nhacungcap.txt
+- Mã được trim và chuẩn hóa chữ hoa; không đổi mã khi sửa, không cho mã trùng.
+- Bảy danh sách dùng mảng đối tượng và `soLuong`, mở rộng khi đầy, dồn mảng khi xóa. Một `SanPham[]` chứa cả giày, quần áo, dụng cụ.
+- Sản phẩm mới có tồn bằng 0; tồn đi qua phiếu nhập/hóa đơn. Sửa sản phẩm không được đổi lớp con hoặc ghi đè tồn.
+- Thêm/sửa/xóa chứng từ tính chênh lệch theo từng mã SP. Kiểm tra toàn bộ trước khi thay đổi; thiếu hàng hoặc vượt `Integer.MAX_VALUE` thì giữ nguyên chứng từ và kho.
+- Không xóa dữ liệu còn được tham chiếu. Không xóa sản phẩm còn tồn. Chứng từ mới phải có ít nhất một dòng; một mã SP chỉ có một dòng trong mỗi chứng từ.
+- Tiền dùng `BigDecimal`; đơn giá nằm trong chi tiết và không thay đổi theo giá sản phẩm hiện tại. Tổng tiền luôn tính từ chi tiết.
+- Các getter trả bản sao sâu. Muốn sửa phải gọi `QuanLyCuaHang`; sửa kết quả tìm kiếm không tự đổi dữ liệu đang lưu.
+- Chứng từ có hiệu lực ngay khi ghi sổ; kiểm tra tồn hiện tại, không dựng lại tồn theo lịch sử ngày. Ứng dụng dành cho một tiến trình console.
 
-Chương trình đọc các file hiện có khi khởi động và tự lưu sau mỗi lần thêm/sửa/xóa.
-Không có hàm tạo dữ liệu mẫu. Nếu thiếu file hoặc file sai định dạng, chương trình báo lỗi
-và dừng khởi động; hãy khôi phục file từ bản sao, không tạo lại dữ liệu tự động.
-Danh sách rỗng có header hợp lệ vẫn được giữ rỗng.
+## Đọc/ghi và dữ liệu cũ
 
-Các cột cách nhau bằng Tab; điện thoại lưu bằng chuỗi để giữ số 0 đầu.
-FileText xử lý UTF-8, ký tự Tab/xuống dòng và ghi qua file tạm.
-Không ghi đè file hiện có bị lỗi. Khi chuyển định dạng cũ, LuuTruFileText giữ bản .bak.
-Nếu lưu thất bại, chương trình báo rõ thay đổi mới chỉ có trong bộ nhớ; cần xử lý nguyên nhân
-và lưu lại thay đổi trước khi thoát.
+Định dạng chính là **`data/sport-store.txt`**, text UTF-8, tiêu đề `SPORT_STORE_V2`. File chứa cả bảy nhóm dữ liệu, chi tiết và tồn hiện tại. Dùng một snapshot để tồn và chứng từ được ghi cùng nhau. File tạm nằm cùng thư mục, thay thế bằng atomic move; nếu hệ thống file không hỗ trợ thì báo lỗi và giữ file cũ. File `.bak` giữ snapshot trước lần ghi gần nhất.
 
-Địa chỉ nhân viên trong file cũ được giữ riêng theo mã để không mất thông tin.
-Model NhanVien vẫn chỉ có mã, tên, điện thoại và ca làm việc; nhân viên mới không bị hỏi địa chỉ.
-API lưu trữ nhân viên nhận/trả trực tiếp DanhSachNhanVien, không chuyển qua List hoặc adapter.
-Chỉ chỉnh file dữ liệu bằng trình soạn thảo khi chương trình đã tắt.
+Lần đầu chưa có snapshot, chương trình đọc các file `.txt` cũ đang có trong repo. Những file này được **giữ nguyên**, kể cả cột địa chỉ nhân viên cũ không thuộc model hiện tại. Sau lần lưu đầu, snapshot là nguồn dữ liệu chính. Không chỉnh các file cũ để cập nhật dữ liệu sau khi đã chuyển đổi.
 
-## Cấu trúc
+Hai chứng từ mẫu `CHO_XAC_NHAN` chưa có chi tiết được nhập dưới dạng **bản nháp cũ**, hiển thị rõ và tính 0 đồng. Có thể bổ sung chi tiết bằng chức năng Sửa hoặc xóa. Các định dạng V1 khác với dữ liệu hiện có sẽ báo lỗi để tránh chuyển đổi thiếu thông tin. Các sản phẩm giày cũ chưa có chất liệu vẫn giữ chuỗi rỗng, không tự bịa giá trị.
 
-~~~text
-src/Main.java          Khởi động và menu chính; main() tối đa 10 dòng
-src/ui/                5 menu con và NhapLieuConsole dùng chung một Scanner
-src/models/            Danh mục, sản phẩm và các đối tượng đang quản lý
-src/services/          4 lớp danh sách, interface CRUD và các hàm đọc/ghi text
-data/                  Dữ liệu ban đầu và dữ liệu người dùng, ở gốc repository
-tests/                 Kiểm thử model, CRUD, tồn kho, lưu trữ, OOP và Console
-run.ps1                Script biên dịch/chạy ứng dụng
-test.sh                Script kiểm thử trên Linux/cloud
-~~~
+Đọc file dựng lại đúng lớp con và liên kết theo mã, **không chạy lại cập nhật kho**. File hỏng, dòng trùng, thiếu liên kết, số/ngày không hợp lệ đều làm khởi động thất bại trước khi ghi. Báo lỗi có tên file và số dòng.
 
-DuLieu chỉ quản lý danh mục đã đọc từ file, không chứa bản ghi mẫu.
-DanhSachNhanVien và DanhSachSanPham dùng mảng đối tượng.
-IQuanLyDanhSach được dùng cho sản phẩm, khách hàng và nhà cung cấp.
-SanPham là abstract class; ba lớp sản phẩm con ghi đè các phương thức hiển thị và phân loại.
+## Cấu trúc và kiểm tra
 
-## Kiểm thử
+Có **23 lớp nghiệp vụ/khởi chạy theo thiết kế + 9 lớp hỗ trợ và giao diện = 32 class**, cùng **1 interface**. Chi tiết, sơ đồ và đối chiếu tiêu chí chấm điểm trong [docs/THIET_KE_HIEN_TAI.md](docs/THIET_KE_HIEN_TAI.md). UML trong `artifacts/Sport_Store.drawio.xml` được cập nhật theo code. Các báo cáo task/audit trước đây trong repo là tài liệu lịch sử; README và tài liệu thiết kế hiện tại mô tả phiên bản này.
 
-Trên Linux/cloud:
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\test.ps1
+```
 
-~~~bash
+```bash
 bash test.sh
-~~~
+```
 
-Các test biên dịch từ source mới, dùng thư mục tạm hoặc bản sao dữ liệu.
-ConsoleCrudTest kiểm tra CRUD, thoát/mở lại, tồn kho, xóa danh mục đang dùng,
-nhập dở, thiếu file, file lỗi và việc không tự sinh dữ liệu mẫu.
-NhanVienFileTest kiểm tra bảo toàn địa chỉ cũ, ký tự đặc biệt và lỗi đọc/ghi.
-OopTest kiểm tra các cấu trúc OOP và giới hạn số dòng main().
-ConsoleLauncherCheck là kiểm thử launcher PowerShell riêng.
-
-Các sơ đồ trong artifacts/, ảnh sơ đồ và báo cáo task cũ là tài liệu của thiết kế trước
-khi rút gọn; chưa được đồng bộ với phạm vi hiện tại.
+Bốn nhóm test kiểm tra CRUD/mảng/tìm kiếm, kho/chứng từ/thống kê, đọc ghi/chuyển đổi dữ liệu cũ, và chạy menu bằng tiến trình Java thật. Không sửa dữ liệu mẫu trong `data/`. Test mới thay thế các test gắn với API `DanhMuc`, trạng thái static toàn cục và các hàm ghi file riêng lẻ đã bỏ.

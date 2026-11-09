@@ -1,92 +1,70 @@
 package ui;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.DateTimeException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
-import services.DanhSachKhachHang;
+import java.util.function.Function;
+import models.KiemTra;
 
 public final class NhapLieuConsole {
-    private final Scanner sc;
+    private final Scanner scanner;
 
-    public NhapLieuConsole(Scanner sc) {
-        this.sc = sc;
+    public NhapLieuConsole(Scanner scanner) {
+        this.scanner = KiemTra.khacNull(scanner, "Scanner");
     }
 
-    public String docDong(String string) {
-        System.out.print(string);
-        return sc.hasNextLine() ? sc.nextLine().trim() : null;
-    }
-
-    public String nhapBatBuoc(String string) {
-        String string2;
-        while ((string2 = docDong(string)) != null && string2.isEmpty()) {
-            System.out.println("Thong tin khong duoc de trong!");
+    public String docDong(String loiNhac) {
+        System.out.print(loiNhac);
+        if (!scanner.hasNextLine()) {
+            throw new NoSuchElementException("Ket thuc nhap lieu.");
         }
-        return string2;
+        return scanner.nextLine().trim();
     }
 
-    public Integer nhapSoNguyen(String string, int n) {
-        String string2;
-        while ((string2 = docDong(string)) != null) {
+    public String batBuoc(String loiNhac) {
+        return docHopLe(loiNhac, giaTri -> KiemTra.batBuoc(giaTri, "Thong tin"));
+    }
+
+    public String ma(String loiNhac) {
+        return docHopLe(loiNhac, KiemTra::ma);
+    }
+
+    public String dienThoai() {
+        return docHopLe("So dien thoai: ", KiemTra::dienThoai);
+    }
+
+    public int soNguyen(String loiNhac, int nhoNhat) {
+        return docHopLe(loiNhac, giaTri -> {
+            int so = Integer.parseInt(giaTri);
+            if (so < nhoNhat) {
+                throw new IllegalArgumentException("So phai >= " + nhoNhat);
+            }
+            return so;
+        });
+    }
+
+    public double soDuong(String loiNhac) {
+        return docHopLe(loiNhac, giaTri -> KiemTra.soDuong(Double.parseDouble(giaTri)));
+    }
+
+    public BigDecimal tien(String loiNhac) {
+        return docHopLe(loiNhac, giaTri -> KiemTra.tien(new BigDecimal(giaTri)));
+    }
+
+    public LocalDate ngay(String loiNhac) {
+        return docHopLe(loiNhac, LocalDate::parse);
+    }
+
+    private <T> T docHopLe(String loiNhac, Function<String, T> chuyenDoi) {
+        while (true) {
+            String giaTri = docDong(loiNhac);
             try {
-                int n2 = Integer.parseInt(string2);
-                if (n2 >= n) {
-                    return n2;
-                }
+                return chuyenDoi.apply(giaTri);
+            } catch (IllegalArgumentException | DateTimeException e) {
+                System.out.println("Du lieu khong hop le: " + e.getMessage());
             }
-            catch (NumberFormatException numberFormatException) {
-                // empty catch block
-            }
-            System.out.println("Vui long nhap so nguyen >= " + n + ".");
         }
-        return null;
-    }
-
-    public String nhapSoDienThoai(String string, boolean bl) {
-        String string2;
-        while (!((string2 = docDong(string)) == null || bl && string2.isEmpty())) {
-            if (DanhSachKhachHang.soDienThoaiHopLe(string2)) {
-                return string2;
-            }
-            System.out.println("So dien thoai phai co 9-15 chu so, co the bat dau bang +.");
-        }
-        return string2;
-    }
-
-    public BigDecimal nhapGia() {
-        return nhapGia("Gia ban: ");
-    }
-
-    public BigDecimal nhapGia(String string) {
-        String string2;
-        while ((string2 = docDong(string)) != null) {
-            try {
-                BigDecimal bigDecimal = new BigDecimal(string2);
-                if (bigDecimal.signum() >= 0) {
-                    return bigDecimal;
-                }
-            }
-            catch (NumberFormatException numberFormatException) {
-                // empty catch block
-            }
-            System.out.println("Vui long nhap gia >= 0.");
-        }
-        return null;
-    }
-
-    public Double nhapSoThuc(String string, double d) {
-        String string2;
-        while ((string2 = docDong(string)) != null) {
-            try {
-                double d2 = Double.parseDouble(string2);
-                if (Double.isFinite(d2) && d2 >= d) {
-                    return d2;
-                }
-            }
-            catch (NumberFormatException numberFormatException) {
-                // empty catch block
-            }
-            System.out.println("Vui long nhap so >= " + d + ".");
-        }
-        return null;
     }
 }

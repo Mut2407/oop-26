@@ -1,49 +1,66 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package models;
 
 import java.math.BigDecimal;
-import models.DanhMuc;
-import models.SanPham;
 
-public class GiayTheThao
-extends SanPham {
-    private String kichCoGiay;
-    private final String loaiDeGiay;
+public final class GiayTheThao extends SanPham {
+    private double kichCoGiay;
+    private String mauSac;
+    private String chatLieu;
+    private String loaiDeGiay;
 
-    public GiayTheThao(String string, String string2, String string3, BigDecimal bigDecimal, int n, String string4, String string5, DanhMuc danhMuc, String string6, String string7) {
-        super(string, string2, string3, bigDecimal, n, string4, string5, danhMuc);
-        this.capNhatKichCo(string6);
-        if (string7 == null || string7.isBlank()) {
-            throw new IllegalArgumentException("Loai de giay khong duoc rong.");
-        }
-        this.loaiDeGiay = string7.trim();
+    public GiayTheThao() {
+        super();
     }
 
-    public String getKichCoGiay() {
-        return this.kichCoGiay;
+    public GiayTheThao(String ma, String ten, String thuongHieu, BigDecimal giaBan,
+            LoaiSP loaiSP, double kichCoGiay, String mauSac, String chatLieu, String loaiDeGiay) {
+        super(ma, ten, thuongHieu, giaBan, loaiSP);
+        setKichCoGiay(kichCoGiay);
+        setMauSac(mauSac);
+        setChatLieu(chatLieu);
+        setLoaiDeGiay(loaiDeGiay);
+    }
+
+    public double getKichCoGiay() {
+        return kichCoGiay;
+    }
+
+    public void setKichCoGiay(double kichCoGiay) {
+        this.kichCoGiay = KiemTra.soDuong(kichCoGiay);
+    }
+
+    public String getMauSac() {
+        return mauSac;
+    }
+
+    public void setMauSac(String mauSac) {
+        this.mauSac = KiemTra.batBuoc(mauSac, "Mau sac");
+    }
+
+    public String getChatLieu() {
+        return chatLieu;
+    }
+
+    public void setChatLieu(String chatLieu) {
+        this.chatLieu = chatLieu == null ? "" : chatLieu.trim();
     }
 
     public String getLoaiDeGiay() {
-        return this.loaiDeGiay;
+        return loaiDeGiay;
     }
 
-    public void capNhatKichCo(String string) {
-        if (string == null || string.isBlank()) {
-            throw new IllegalArgumentException("Kich co giay khong duoc rong.");
-        }
-        this.kichCoGiay = string.trim();
+    public void setLoaiDeGiay(String loaiDeGiay) {
+        this.loaiDeGiay = KiemTra.batBuoc(loaiDeGiay, "Loai de giay");
     }
 
     @Override
-    public String layLoaiSanPham() {
-        return "GIAY";
+    public GiayTheThao saoChep() {
+        return giuTonKho(new GiayTheThao(getMaSanPham(), getTenSanPham(), getThuongHieu(),
+                getGiaBan(), getLoaiSP(), kichCoGiay, mauSac, chatLieu, loaiDeGiay));
     }
 
     @Override
     public String hienThiThongTin() {
-        return super.toString() + "\nKich co giay: " + this.kichCoGiay + "\nLoai de giay: " + this.loaiDeGiay;
+        return thongTinChung() + " | GiayTheThao | " + kichCoGiay + " | " + mauSac + " | " + chatLieu + " | " + loaiDeGiay;
     }
 }
-

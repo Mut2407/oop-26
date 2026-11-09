@@ -1,56 +1,58 @@
 package models;
 
-public class KhachHang {
+public final class KhachHang {
     private final String maKhachHang;
     private String hoTen;
-    private String diaChi;
     private String soDienThoai;
+    private String diaChi;
 
-    public KhachHang(String ma, String ten, String sdt, String diaChi) {
-        if (ma == null || !ma.trim().matches("[A-Za-z0-9_-]+")) {
-            throw new IllegalArgumentException("Ma khach hang khong hop le.");
-        }
-        this.maKhachHang = ma.trim();
-        capNhatThongTin(ten, sdt, diaChi);
+    public KhachHang() {
+        this.maKhachHang = "";
+        this.hoTen = "";
+        this.soDienThoai = "";
+        this.diaChi = "";
+    }
+
+    public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String diaChi) {
+        this.maKhachHang = KiemTra.ma(maKhachHang);
+        this.hoTen = KiemTra.batBuoc(hoTen, "hoTen");
+        this.soDienThoai = KiemTra.dienThoai(soDienThoai);
+        this.diaChi = KiemTra.batBuoc(diaChi, "diaChi");
     }
 
     public String getMaKhachHang() {
-        return this.maKhachHang;
+        return maKhachHang;
     }
 
     public String getHoTen() {
-        return this.hoTen;
+        return hoTen;
     }
 
-    public String getDiaChi() {
-        return this.diaChi;
+    public void setHoTen(String hoTen) {
+        this.hoTen = KiemTra.batBuoc(hoTen, "hoTen");
     }
 
     public String getSoDienThoai() {
-        return this.soDienThoai;
+        return soDienThoai;
     }
 
-    public void capNhatThongTin(String ten, String sdt, String diaChi) {
-        if (ten == null || ten.isBlank() || diaChi == null || diaChi.isBlank()) {
-            throw new IllegalArgumentException("Ho ten va dia chi khong duoc de trong.");
-        }
-        if (sdt == null || !sdt.trim().matches("\\+?[0-9]{9,15}")) {
-            throw new IllegalArgumentException("So dien thoai phai co 9-15 chu so, co the bat dau bang +.");
-        }
-        // Validate every field before changing any state.
-        this.hoTen = ten.trim();
-        this.soDienThoai = sdt.trim();
-        this.diaChi = diaChi.trim();
+    public void setSoDienThoai(String soDienThoai) {
+        this.soDienThoai = KiemTra.dienThoai(soDienThoai);
+    }
+
+    public String getDiaChi() {
+        return diaChi;
+    }
+
+    public void setDiaChi(String diaChi) {
+        this.diaChi = KiemTra.batBuoc(diaChi, "diaChi");
+    }
+
+    public KhachHang saoChep() {
+        return new KhachHang(maKhachHang, hoTen, soDienThoai, diaChi);
     }
 
     public String hienThiThongTin() {
-        return "Ma khach hang: " + this.maKhachHang + "\nHo ten: " + this.hoTen + "\nSo dien thoai: " + this.soDienThoai + "\nDia chi: " + this.diaChi;
-    }
-
-    /** Adapter for callers using the old display API. */
-    @Deprecated
-    public String thongTinKhachHang() {
-        return hienThiThongTin();
+        return maKhachHang + " | " + hoTen + " | " + soDienThoai + " | " + diaChi;
     }
 }
-

@@ -1,214 +1,197 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package services;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
+import java.math.BigDecimal;
+import java.nio.file.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import models.DanhMuc;
-import models.DuLieu;
-import models.NhanVien;
-import models.SanPham;
-import services.DanhSachNhaCungCap;
-import services.DanhSachSanPham;
-import services.FileText;
+import models.*;
 
-public class LuuTruFileText {
-    private static final String TIEU_DE_DANH_MUC = "maDanhMuc\ttenDanhMuc\tmoTa";
-    private final String thuMucDuLieu;
+/** Một snapshot chứa cả chứng từ và tồn: không có tình trạng lưu lệch hai file. */
+public final class LuuTruFileText {
+    public static final String TEN_FILE = "sport-store.txt";
+    public static final String TIEU_DE = "SPORT_STORE_V2";
+    private final Path thuMuc;
 
-    public LuuTruFileText(String string) {
-        if (string == null || string.isBlank()) {
-            throw new IllegalArgumentException("Thu muc du lieu khong hop le.");
-        }
-        this.thuMucDuLieu = Path.of(string, new String[0]).toAbsolutePath().normalize().toString();
+    public LuuTruFileText() {
+        this("data");
     }
 
-    public void ghiDanhMuc(String string, List<DanhMuc> list) throws IOException {
-        if (list == null) {
-            throw new IllegalArgumentException("Danh sach danh muc khong hop le.");
+    public LuuTruFileText(String thuMuc) {
+        this.thuMuc = Path.of(KiemTra.batBuoc(thuMuc, "Thu muc")).toAbsolutePath().normalize();
+    }
+
+    public QuanLyCuaHang docDuLieu() throws IOException {
+        Path tep = thuMuc.resolve(TEN_FILE);
+        if (!Files.exists(tep)) {
+            return new NhapDuLieuCu(thuMuc).doc();
         }
-        ArrayList<String> arrayList = new ArrayList<String>();
-        HashSet<String> hashSet = new HashSet<String>();
-        arrayList.add(TIEU_DE_DANH_MUC);
-        for (DanhMuc danhMuc : list) {
-            if (danhMuc == null || !hashSet.add(danhMuc.getMaDanhMuc().toUpperCase(Locale.ROOT))) {
-                throw new IllegalArgumentException("Ma danh muc trung hoac khong hop le.");
+        String[][] dong = FileText.doc(tep, TIEU_DE);
+        QuanLyCuaHang moi = new QuanLyCuaHang();
+        docDanhMucVaDoiTac(moi, dong, tep);
+        docSanPham(moi, dong, tep);
+        docChungTu(moi, dong, tep);
+        return moi;
+    }
+
+    public void ghiDuLieu(QuanLyCuaHang cuaHang) throws IOException {
+        KiemTra.khacNull(cuaHang, "Cua hang");
+        List<String> dong = new ArrayList<>();
+        dong.add(TIEU_DE);
+        ghiDanhMucVaDoiTac(cuaHang, dong);
+        for (SanPham sp : cuaHang.getSanPham().getTatCa()) {
+            dong.add(BoMaSanPham.ghi(sp));
+        }
+        ghiChungTu(cuaHang, dong);
+        FileText.ghi(thuMuc.resolve(TEN_FILE), dong);
+    }
+
+    private void ghiDanhMucVaDoiTac(QuanLyCuaHang ql, List<String> dong) {
+        for (LoaiSP loai : ql.getLoaiSP().getTatCa()) {
+            dong.add(FileText.dong("LOAI", loai.getMaLoaiSP(), loai.getTenLoaiSP(), loai.getMoTa()));
+        }
+        for (KhachHang kh : ql.getKhachHang().getTatCa()) {
+            dong.add(FileText.dong("KH", kh.getMaKhachHang(), kh.getHoTen(), kh.getSoDienThoai(), kh.getDiaChi()));
+        }
+        for (NhanVien nv : ql.getNhanVien().getTatCa()) {
+            dong.add(FileText.dong("NV", nv.getMaNhanVien(), nv.getHoTen(), nv.getSoDienThoai(), nv.getCaLamViec()));
+        }
+        for (NhaCungCap ncc : ql.getNhaCungCap().getTatCa()) {
+            dong.add(FileText.dong("NCC", ncc.getMaNhaCungCap(), ncc.getTenNhaCungCap(), ncc.getSoDienThoai(), ncc.getDiaChi()));
+        }
+    }
+
+    private void ghiChungTu(QuanLyCuaHang ql, List<String> dong) {
+        for (HoaDon hd : ql.getHoaDon().getTatCa()) {
+            dong.add(FileText.dong("HD", hd.getMaHoaDon(), hd.getNgayLap().toString(),
+                    hd.getKhachHang().getMaKhachHang(), hd.getNhanVien().getMaNhanVien()));
+            for (ChiTietHoaDon ct : hd.getChiTiet()) {
+                dong.add(FileText.dong("CTHD", hd.getMaHoaDon(), ct.getSanPham().getMaSanPham(),
+                        Integer.toString(ct.getSoLuong()), ct.getDonGiaBan().toPlainString()));
             }
-            arrayList.add(FileText.dong(danhMuc.getMaDanhMuc(), danhMuc.getTenDanhMuc(), danhMuc.getMoTa()));
         }
-        FileText.ghi(this.duongDan(string).toString(), arrayList);
+        for (PhieuNhap pn : ql.getPhieuNhap().getTatCa()) {
+            dong.add(FileText.dong("PN", pn.getMaPhieuNhap(), pn.getNgayLap().toString(),
+                    pn.getNhaCungCap().getMaNhaCungCap(), pn.getNhanVien().getMaNhanVien()));
+            for (ChiTietPhieuNhap ct : pn.getChiTiet()) {
+                dong.add(FileText.dong("CTPN", pn.getMaPhieuNhap(), ct.getSanPham().getMaSanPham(),
+                        Integer.toString(ct.getSoLuong()), ct.getDonGiaNhap().toPlainString()));
+            }
+        }
     }
 
-    public List<DanhMuc> docDanhMuc(String string) throws IOException {
-        List<String[]> list = FileText.doc(this.duongDan(string).toString(), TIEU_DE_DANH_MUC);
-        ArrayList<DanhMuc> arrayList = new ArrayList<DanhMuc>();
-        HashSet<String> hashSet = new HashSet<String>();
-        for (int i = 0; i < list.size(); ++i) {
-            String[] stringArray = list.get(i);
+    private void docDanhMucVaDoiTac(QuanLyCuaHang ql, String[][] dong, Path tep) throws IOException {
+        for (int i = 0; i < dong.length; i++) {
+            String[] cot = dong[i];
             try {
-                if (stringArray.length != 3) {
-                    throw new IllegalArgumentException("Phai co 3 cot.");
-                }
-                DanhMuc danhMuc = new DanhMuc(stringArray[0], stringArray[1], stringArray[2]);
-                if (!hashSet.add(danhMuc.getMaDanhMuc().toUpperCase(Locale.ROOT))) {
-                    throw new IllegalArgumentException("Ma danh muc trung: " + danhMuc.getMaDanhMuc());
-                }
-                arrayList.add(danhMuc);
+                docDoiTuong(ql, cot);
+            } catch (RuntimeException e) {
+                throw FileText.loiDong(tep, i + 2, e);
+            }
+        }
+    }
+
+    private void docDoiTuong(QuanLyCuaHang ql, String[] cot) {
+        switch (cot[0]) {
+            case "LOAI":
+                FileText.soCot(cot, 4);
+                ql.themLoaiSP(new LoaiSP(cot[1], cot[2], cot[3]));
+                break;
+            case "KH":
+                FileText.soCot(cot, 5);
+                ql.themKhachHang(new KhachHang(cot[1], cot[2], cot[3], cot[4]));
+                break;
+            case "NV":
+                FileText.soCot(cot, 5);
+                ql.themNhanVien(new NhanVien(cot[1], cot[2], cot[3], cot[4]));
+                break;
+            case "NCC":
+                FileText.soCot(cot, 5);
+                ql.themNhaCungCap(new NhaCungCap(cot[1], cot[2], cot[3], cot[4]));
+                break;
+            case "SP", "HD", "PN", "CTHD", "CTPN":
+                break;
+            default:
+                throw new IllegalArgumentException("Loai dong khong hop le: " + cot[0]);
+        }
+    }
+
+    private void docSanPham(QuanLyCuaHang ql, String[][] dong, Path tep) throws IOException {
+        for (int i = 0; i < dong.length; i++) {
+            if (!dong[i][0].equals("SP")) {
                 continue;
             }
-            catch (IllegalArgumentException illegalArgumentException) {
-                throw new IOException("Dong " + (i + 2) + ": " + illegalArgumentException.getMessage(), illegalArgumentException);
+            try {
+                ql.khoiPhucSanPham(BoMaSanPham.doc(dong[i], ql));
+            } catch (RuntimeException e) {
+                throw FileText.loiDong(tep, i + 2, e);
             }
         }
-        return List.copyOf(arrayList);
     }
 
-    public void ghiSanPham(String string, DanhSachSanPham danhSachSanPham) throws IOException {
-        if (danhSachSanPham == null) {
-            throw new IllegalArgumentException("Danh sach san pham khong hop le.");
+    private void docChungTu(QuanLyCuaHang ql, String[][] dong, Path tep) throws IOException {
+        DanhSachHoaDon hoaDon = new DanhSachHoaDon();
+        DanhSachPhieuNhap phieuNhap = new DanhSachPhieuNhap();
+        docDauChungTu(ql, hoaDon, phieuNhap, dong, tep);
+        docChiTiet(ql, hoaDon, phieuNhap, dong, tep);
+        for (HoaDon hd : hoaDon.getTatCa()) {
+            ql.khoiPhucHoaDon(hd);
         }
-        Path path = this.duongDan(string);
-        if (Files.exists(path, new LinkOption[0])) {
-            new DanhSachSanPham(0).docFile(path.toString());
-            if (LuuTruFileText.laFileCu(path, "SAN_PHAM_V1", "kieu\t")) {
-                LuuTruFileText.saoLuuFileCu(path);
-            }
+        for (PhieuNhap pn : phieuNhap.getTatCa()) {
+            ql.khoiPhucPhieuNhap(pn);
         }
-        danhSachSanPham.ghiFile(path.toString());
     }
 
-    public DanhSachSanPham docSanPham(String string, List<DanhMuc> list) throws IOException {
-        if (list == null) {
-            throw new IllegalArgumentException("Danh muc khong hop le.");
-        }
-        for (DanhMuc object : list) {
-            if (object != null && DuLieu.timDanhMuc(object.getMaDanhMuc()) == object) continue;
-            throw new IllegalArgumentException("Danh muc phai tu nguon chuan.");
-        }
-        DanhSachSanPham danhSachSanPham = new DanhSachSanPham(0);
-        danhSachSanPham.docFile(this.duongDan(string).toString());
-        for (SanPham sanPham : danhSachSanPham.getDanhSach()) {
-            if (list.contains(sanPham.getDanhMuc())) continue;
-            throw new IOException("Danh muc chua co trong danh sach: " + sanPham.getDanhMuc().getMaDanhMuc());
-        }
-        return danhSachSanPham;
-    }
-
-    public void ghiNhaCungCap(String string, DanhSachNhaCungCap danhSachNhaCungCap) throws IOException {
-        if (danhSachNhaCungCap == null) {
-            throw new IllegalArgumentException("Danh sach nha cung cap khong hop le.");
-        }
-        Path path = this.duongDan(string);
-        if (Files.exists(path, new LinkOption[0])) {
-            new DanhSachNhaCungCap().docFile(path.toString());
-            if (LuuTruFileText.laFileCu(path, "NHA_CUNG_CAP_V1", null)) {
-                LuuTruFileText.saoLuuFileCu(path);
-            }
-        }
-        danhSachNhaCungCap.ghiFile(path.toString());
-    }
-
-    public DanhSachNhaCungCap docNhaCungCap(String string) throws IOException {
-        DanhSachNhaCungCap danhSachNhaCungCap = new DanhSachNhaCungCap();
-        danhSachNhaCungCap.docFile(this.duongDan(string).toString());
-        return danhSachNhaCungCap;
-    }
-
-    public void ghiKhachHang(String path, DanhSachKhachHang ds) throws IOException {
-        if (ds == null) {
-            throw new IllegalArgumentException("Danh sach khach hang khong duoc null.");
-        }
-        Path file = duongDan(path);
-        if (Files.exists(file)) {
-            new DanhSachKhachHang().docFile(file.toString());
-            if (laFileCu(file, "KHACH_HANG_V1", null)) {
-                saoLuuFileCu(file);
-            }
-        }
-        ds.ghiFile(file.toString());
-    }
-
-    public DanhSachKhachHang docKhachHang(String path) throws IOException {
-        DanhSachKhachHang ds = new DanhSachKhachHang();
-        ds.docFile(duongDan(path).toString());
-        return ds;
-    }
-
-    public void ghiNhanVien(String path, DanhSachNhanVien incoming) throws IOException {
-        if (incoming == null) throw new IllegalArgumentException("Danh sach nhan vien khong duoc null.");
-        Path file = duongDan(path);
-        if (Files.exists(file)) {
-            DanhSachNhanVien old = new DanhSachNhanVien();
-            old.docFile(file.toString());
-            for (NhanVien nv : incoming.getDanhSach()) {
-                String ma = nv.getMaNhanVien();
-                if (old.getDiaChiCu(ma) != null && incoming.getDiaChiCu(ma) == null) {
-                    throw new IOException("Thieu dia chi cu cua nhan vien " + ma);
+    private void docDauChungTu(QuanLyCuaHang ql, DanhSachHoaDon hd, DanhSachPhieuNhap pn,
+            String[][] dong, Path tep) throws IOException {
+        for (int i = 0; i < dong.length; i++) {
+            String[] cot = dong[i];
+            try {
+                if (cot[0].equals("HD")) {
+                    FileText.soCot(cot, 5);
+                    hd.them(new HoaDon(cot[1], LocalDate.parse(cot[2]),
+                            ql.getKhachHang().timTheoMa(cot[3]), ql.getNhanVien().timTheoMa(cot[4])));
+                } else if (cot[0].equals("PN")) {
+                    FileText.soCot(cot, 5);
+                    pn.them(new PhieuNhap(cot[1], LocalDate.parse(cot[2]),
+                            ql.getNhaCungCap().timTheoMa(cot[3]), ql.getNhanVien().timTheoMa(cot[4])));
                 }
+            } catch (RuntimeException e) {
+                throw FileText.loiDong(tep, i + 2, e);
             }
-            if (laFileCu(file, DanhSachNhanVien.TIEU_DE, null)
-                    || laFileCu(file, DanhSachNhanVien.TIEU_DE_UML, null)) {
-                saoLuuFileCu(file);
-            }
-        }
-        List<String> lines = new ArrayList<>();
-        lines.add(DanhSachNhanVien.TIEU_DE_MOI);
-        for (NhanVien nv : incoming.getDanhSach()) {
-            String address = incoming.getDiaChiCu(nv.getMaNhanVien());
-            lines.add(FileText.dong(nv.getMaNhanVien(), nv.getHoTen(), nv.getSoDienThoai(),
-                    nv.getCaLamViec(), address == null ? "" : address));
-        }
-        FileText.ghi(file.toString(), lines);
-    }
-
-    public DanhSachNhanVien docNhanVien(String path) throws IOException {
-        DanhSachNhanVien ds = new DanhSachNhanVien();
-        ds.docFile(duongDan(path).toString());
-        return ds;
-    }
-
-    private Path duongDan(String string) {
-        if (string == null || string.isBlank()) {
-            throw new IllegalArgumentException("Duong dan khong hop le.");
-        }
-        Path path = Path.of(string, new String[0]);
-        return (path.isAbsolute() ? path : Path.of(this.thuMucDuLieu, new String[0]).resolve(path)).normalize();
-    }
-
-    private static boolean laFileCu(Path path, String string, String string2) throws IOException {
-        if (!Files.exists(path, new LinkOption[0])) {
-            return false;
-        }
-        try (BufferedReader bufferedReader = Files.newBufferedReader(path, StandardCharsets.UTF_8);){
-            String string3 = bufferedReader.readLine();
-            if (string3 == null) {
-                throw new IOException("File rong: " + String.valueOf(path));
-            }
-            if (string3.startsWith("\uFEFF")) {
-                string3 = string3.substring(1);
-            }
-            boolean bl = string3.equals(string) || string2 != null && string3.startsWith(string2) && !string3.contains("mauSacChung");
-            return bl;
         }
     }
 
-    private static void saoLuuFileCu(Path path) throws IOException {
-        Path path2 = path.resolveSibling(String.valueOf(path.getFileName()) + ".bak");
-        if (!Files.exists(path2, new LinkOption[0])) {
-            Files.copy(path, path2, new CopyOption[0]);
+    private void docChiTiet(QuanLyCuaHang ql, DanhSachHoaDon hd, DanhSachPhieuNhap pn,
+            String[][] dong, Path tep) throws IOException {
+        for (int i = 0; i < dong.length; i++) {
+            String[] cot = dong[i];
+            try {
+                if (cot[0].equals("CTHD")) {
+                    docChiTietHoaDon(ql, hd, cot);
+                } else if (cot[0].equals("CTPN")) {
+                    docChiTietPhieuNhap(ql, pn, cot);
+                }
+            } catch (RuntimeException e) {
+                throw FileText.loiDong(tep, i + 2, e);
+            }
         }
-        if (Files.mismatch(path, path2) != -1L) {
-            throw new IOException("Ban sao luu khac file cu: " + String.valueOf(path2));
-        }
+    }
+
+    private void docChiTietHoaDon(QuanLyCuaHang ql, DanhSachHoaDon danhSach, String[] cot) {
+        FileText.soCot(cot, 5);
+        HoaDon hd = KiemTra.khacNull(danhSach.timTheoMa(cot[1]), "Hoa don cua chi tiet");
+        hd.themChiTiet(new ChiTietHoaDon(ql.getSanPham().timTheoMa(cot[2]),
+                Integer.parseInt(cot[3]), new BigDecimal(cot[4])));
+        danhSach.sua(cot[1], hd);
+    }
+
+    private void docChiTietPhieuNhap(QuanLyCuaHang ql, DanhSachPhieuNhap danhSach, String[] cot) {
+        FileText.soCot(cot, 5);
+        PhieuNhap pn = KiemTra.khacNull(danhSach.timTheoMa(cot[1]), "Phieu nhap cua chi tiet");
+        pn.themChiTiet(new ChiTietPhieuNhap(ql.getSanPham().timTheoMa(cot[2]),
+                Integer.parseInt(cot[3]), new BigDecimal(cot[4])));
+        danhSach.sua(cot[1], pn);
     }
 }

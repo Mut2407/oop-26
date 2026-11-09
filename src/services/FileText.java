@@ -1,125 +1,102 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package services;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.FileAttribute;
-import java.util.ArrayList;
+import java.nio.file.*;
+import java.util.Arrays;
 import java.util.List;
 
+/** Chi tiết định dạng text và thay file nguyên tử nằm tại một nơi. */
 final class FileText {
     private FileText() {
     }
 
-    /*
-     * WARNING - Removed try catching itself - possible behaviour change.
-     */
-    static void ghi(String string, List<String> list) throws IOException {
-        Path path = Path.of(string, new String[0]).toAbsolutePath();
-        Files.createDirectories(path.getParent(), new FileAttribute[0]);
-        Path path2 = Files.createTempFile(path.getParent(), "store-", ".tmp", new FileAttribute[0]);
+    static String[][] doc(Path tep, String... tieuDeHopLe) throws IOException {
+        List<String> dong = Files.readAllLines(tep, StandardCharsets.UTF_8);
+        if (dong.isEmpty()) {
+            throw new IOException("File rong: " + tep);
+        }
+        String tieuDe = dong.get(0).replaceFirst("^\\uFEFF", "");
+        if (!Arrays.asList(tieuDeHopLe).contains(tieuDe)) {
+            throw new IOException("Sai dinh dang: " + tep);
+        }
+        String[][] ketQua = new String[dong.size() - 1][];
+        for (int i = 1; i < dong.size(); i++) {
+            try {
+                ketQua[i - 1] = tach(dong.get(i));
+            } catch (IllegalArgumentException e) {
+                throw loiDong(tep, i + 1, e);
+            }
+        }
+        return ketQua;
+    }
+
+    static void ghi(Path tep, List<String> dong) throws IOException {
+        Files.createDirectories(tep.toAbsolutePath().getParent());
+        Path tam = Files.createTempFile(tep.toAbsolutePath().getParent(), "sport-store-", ".tmp");
         try {
-            Files.write(path2, list, StandardCharsets.UTF_8, new OpenOption[0]);
-            try {
-                Files.move(path2, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            Files.write(tam, dong, StandardCharsets.UTF_8);
+            if (Files.exists(tep)) {
+                Files.copy(tep, tep.resolveSibling(tep.getFileName() + ".bak"),
+                        StandardCopyOption.REPLACE_EXISTING);
             }
-            catch (AtomicMoveNotSupportedException atomicMoveNotSupportedException) {
-                Files.move(path2, path, StandardCopyOption.REPLACE_EXISTING);
-            }
-        }
-        finally {
-            Files.deleteIfExists(path2);
+            // Không hạ xuống phép ghi thường: nếu không hỗ trợ atomic move thì giữ file cũ.
+            Files.move(tam, tep, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } finally {
+            Files.deleteIfExists(tam);
         }
     }
 
-    static List<String[]> doc(String string, String ... stringArray) throws IOException {
-        return docBang(string, stringArray).dong();
+    static String dong(String... cot) {
+        String[] daMaHoa = new String[cot.length];
+        for (int i = 0; i < cot.length; i++) {
+            daMaHoa[i] = cot[i].replace("\\", "\\\\").replace("\t", "\\t")
+                    .replace("\n", "\\n").replace("\r", "\\r");
+        }
+        return String.join("\t", daMaHoa);
     }
 
-    record Bang(String tieuDe, List<String[]> dong) {
+    private static String[] tach(String dong) {
+        String[] cot = dong.split("\t", -1);
+        for (int i = 0; i < cot.length; i++) {
+            cot[i] = giaiMa(cot[i]);
+        }
+        return cot;
     }
 
-    static Bang docBang(String string, String ... stringArray) throws IOException {
-        List<String> list = Files.readAllLines(Path.of(string, new String[0]), StandardCharsets.UTF_8);
-        if (!list.isEmpty() && list.get(0).startsWith("\uFEFF")) {
-            list.set(0, list.get(0).substring(1));
-        }
-        boolean bl = false;
-        if (!list.isEmpty()) {
-            for (String string2 : stringArray) {
-                if (!string2.equals(list.get(0))) continue;
-                bl = true;
-            }
-        }
-        if (!bl) {
-            throw new IOException("File khong dung dinh dang: " + string);
-        }
-        List<String[]> arrayList = new ArrayList<>();
-        for (int i = 1; i < list.size(); ++i) {
-            try {
-                String[] stringArray2 = list.get(i).split("\t", -1);
-                for (int j = 0; j < stringArray2.length; ++j) {
-                    stringArray2[j] = FileText.giaiMa(stringArray2[j]);
-                }
-                arrayList.add(stringArray2);
+    private static String giaiMa(String giaTri) {
+        StringBuilder ketQua = new StringBuilder();
+        for (int i = 0; i < giaTri.length(); i++) {
+            char kyTu = giaTri.charAt(i);
+            if (kyTu != '\\') {
+                ketQua.append(kyTu);
                 continue;
             }
-            catch (IllegalArgumentException illegalArgumentException) {
-                throw new IOException("Dong " + (i + 1) + ": " + illegalArgumentException.getMessage(), illegalArgumentException);
+            if (++i == giaTri.length()) {
+                throw new IllegalArgumentException("Escape khong hop le.");
             }
+            ketQua.append(kyTuEscape(giaTri.charAt(i)));
         }
-        return new Bang(list.get(0), arrayList);
+        return ketQua.toString();
     }
 
-    static String dong(String ... stringArray) {
-        CharSequence[] charSequenceArray = new String[stringArray.length];
-        for (int i = 0; i < stringArray.length; ++i) {
-            charSequenceArray[i] = stringArray[i].replace("\\", "\\\\").replace("\t", "\\t").replace("\n", "\\n").replace("\r", "\\r");
-        }
-        return String.join((CharSequence)"\t", charSequenceArray);
+    private static char kyTuEscape(char kyTu) {
+        return switch (kyTu) {
+            case '\\' -> '\\';
+            case 't' -> '\t';
+            case 'n' -> '\n';
+            case 'r' -> '\r';
+            default -> throw new IllegalArgumentException("Escape khong hop le.");
+        };
     }
 
-    private static String giaiMa(String string) {
-        StringBuilder stringBuilder = new StringBuilder();
-        block6: for (int i = 0; i < string.length(); ++i) {
-            char c = string.charAt(i);
-            if (c != '\\') {
-                stringBuilder.append(c);
-                continue;
-            }
-            if (++i == string.length()) {
-                throw new IllegalArgumentException("Ky tu escape khong hop le.");
-            }
-            switch (string.charAt(i)) {
-                case '\\': {
-                    stringBuilder.append('\\');
-                    continue block6;
-                }
-                case 't': {
-                    stringBuilder.append('\t');
-                    continue block6;
-                }
-                case 'n': {
-                    stringBuilder.append('\n');
-                    continue block6;
-                }
-                case 'r': {
-                    stringBuilder.append('\r');
-                    continue block6;
-                }
-                default: {
-                    throw new IllegalArgumentException("Ky tu escape khong hop le.");
-                }
-            }
+    static void soCot(String[] cot, int soLuong) {
+        if (cot.length != soLuong) {
+            throw new IllegalArgumentException("Can " + soLuong + " cot, nhan " + cot.length + ".");
         }
-        return stringBuilder.toString();
+    }
+
+    static IOException loiDong(Path tep, int dong, RuntimeException loi) {
+        return new IOException(tep + " - dong " + dong + ": " + loi.getMessage(), loi);
     }
 }
-

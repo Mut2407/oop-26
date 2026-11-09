@@ -1,148 +1,122 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package services;
 
-import java.io.IOException;
-import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.Arrays;
 import models.NhaCungCap;
-import services.FileText;
-import services.IQuanLyDanhSach;
+import models.KiemTra;
 
-public class DanhSachNhaCungCap
-implements IQuanLyDanhSach<NhaCungCap> {
-    private static final String TIEU_DE_CU = "NHA_CUNG_CAP_V1";
-    private static final String TIEU_DE = "maNhaCungCap\ttenNhaCungCap\tsoDienThoai\tdiaChi";
-    private final List<NhaCungCap> ds = new ArrayList<NhaCungCap>();
+/** Mảng đối tượng có mở rộng, không lộ dữ liệu nội bộ cho bên gọi. */
+public final class DanhSachNhaCungCap implements IQuanLyDanhSach<NhaCungCap> {
+    private NhaCungCap[] ds;
+    private int soLuong;
 
     public DanhSachNhaCungCap() {
+        this(KiemTra.SUC_CHUA_MAC_DINH);
     }
 
-    public DanhSachNhaCungCap(NhaCungCap[] nhaCungCapArray) {
-        if (nhaCungCapArray == null) {
-            throw new IllegalArgumentException("Danh sach ban dau khong hop le.");
+    public DanhSachNhaCungCap(int sucChua) {
+        if (sucChua < 0) {
+            throw new IllegalArgumentException("Suc chua phai >= 0.");
         }
-        for (NhaCungCap nhaCungCap : nhaCungCapArray) {
-            this.them(nhaCungCap);
-        }
+        ds = new NhaCungCap[sucChua];
     }
 
-    public List<NhaCungCap> getTatCa() {
-        ArrayList<NhaCungCap> arrayList = new ArrayList<NhaCungCap>();
-        for (NhaCungCap nhaCungCap : this.ds) {
-            arrayList.add(DanhSachNhaCungCap.saoChep(nhaCungCap));
-        }
-        return List.copyOf(arrayList);
-    }
-
-    public List<NhaCungCap> getDanhSach() {
-        return this.getTatCa();
+    public DanhSachNhaCungCap(NhaCungCap[] banDau) {
+        this(KiemTra.khacNull(banDau, "Mang ban dau").length);
+        themNhieu(banDau);
     }
 
     @Override
-    public boolean them(NhaCungCap nhaCungCap) {
-        NhaCungCap nhaCungCap2 = DanhSachNhaCungCap.saoChep(nhaCungCap);
-        if (this.chiSo(nhaCungCap2.getMaNhaCungCap()) >= 0) {
-            throw new IllegalArgumentException("Ma nha cung cap da ton tai.");
+    public int getSoLuong() {
+        return soLuong;
+    }
+
+    @Override
+    public NhaCungCap[] getTatCa() {
+        NhaCungCap[] ketQua = new NhaCungCap[soLuong];
+        for (int i = 0; i < soLuong; i++) {
+            ketQua[i] = ds[i].saoChep();
         }
-        this.ds.add(nhaCungCap2);
+        return ketQua;
+    }
+
+    @Override
+    public boolean them(NhaCungCap doiTuong) {
+        NhaCungCap hopLe = KiemTra.khacNull(doiTuong, "Doi tuong").saoChep();
+        if (timViTri(hopLe.getMaNhaCungCap()) >= 0) {
+            throw new IllegalArgumentException("Ma da ton tai: " + hopLe.getMaNhaCungCap());
+        }
+        if (soLuong == ds.length) {
+            ds = Arrays.copyOf(ds, Math.max(1, ds.length * 2));
+        }
+        ds[soLuong++] = hopLe;
         return true;
     }
 
+    /** Kiểm tra toàn bộ trước khi thay đổi mảng, kể cả mã trùng trong lô. */
+    public void themNhieu(NhaCungCap[] doiTuong) {
+        KiemTra.khacNull(doiTuong, "Mang can them");
+        DanhSachNhaCungCap moi = new DanhSachNhaCungCap(soLuong + doiTuong.length);
+        for (NhaCungCap cu : getTatCa()) {
+            moi.them(cu);
+        }
+        for (NhaCungCap item : doiTuong) {
+            moi.them(item);
+        }
+        ds = moi.ds;
+        soLuong = moi.soLuong;
+    }
+
     @Override
-    public boolean suaTheoMa(String string, NhaCungCap nhaCungCap) {
-        int n = this.chiSo(string);
-        if (n < 0) {
+    public boolean sua(String ma, NhaCungCap doiTuongMoi) {
+        int viTri = timViTri(ma);
+        if (viTri < 0) {
             return false;
         }
-        NhaCungCap nhaCungCap2 = DanhSachNhaCungCap.saoChep(nhaCungCap);
-        if (!this.ds.get(n).getMaNhaCungCap().equalsIgnoreCase(nhaCungCap2.getMaNhaCungCap())) {
-            throw new IllegalArgumentException("Khong duoc doi ma nha cung cap.");
+        NhaCungCap hopLe = KiemTra.khacNull(doiTuongMoi, "Doi tuong").saoChep();
+        if (!ds[viTri].getMaNhaCungCap().equals(hopLe.getMaNhaCungCap())) {
+            throw new IllegalArgumentException("Khong duoc doi ma dinh danh.");
         }
-        this.ds.set(n, nhaCungCap2);
+        ds[viTri] = hopLe;
         return true;
     }
 
     @Override
-    public boolean xoaTheoMa(String string) {
-        int n = this.chiSo(string);
-        if (n < 0) {
+    public boolean xoa(String ma) {
+        int viTri = timViTri(ma);
+        if (viTri < 0) {
             return false;
         }
-        this.ds.remove(n);
+        System.arraycopy(ds, viTri + 1, ds, viTri, soLuong - viTri - 1);
+        ds[--soLuong] = null;
         return true;
     }
 
     @Override
-    public NhaCungCap CheckMaTrung(String string) {
-        int n = this.chiSo(string);
-        return n < 0 ? null : DanhSachNhaCungCap.saoChep(this.ds.get(n));
+    public NhaCungCap timTheoMa(String ma) {
+        int viTri = timViTri(ma);
+        return viTri < 0 ? null : ds[viTri].saoChep();
     }
 
-    @Override
-    public List<NhaCungCap> TimKiemTheoMaHoacTen(String string) {
-        if (string == null || string.isBlank()) {
-            throw new IllegalArgumentException("Tu khoa khong duoc rong.");
-        }
-        String string2 = DanhSachNhaCungCap.chuanHoa(string.trim());
-        ArrayList<NhaCungCap> arrayList = new ArrayList<NhaCungCap>();
-        for (NhaCungCap nhaCungCap : this.ds) {
-            if (!DanhSachNhaCungCap.chuanHoa(nhaCungCap.getMaNhaCungCap()).contains(string2) && !DanhSachNhaCungCap.chuanHoa(nhaCungCap.getTenNhaCungCap()).contains(string2)) continue;
-            arrayList.add(DanhSachNhaCungCap.saoChep(nhaCungCap));
-        }
-        return List.copyOf(arrayList);
-    }
-
-    public void ghiFile(String string) throws IOException {
-        ArrayList<String> arrayList = new ArrayList<String>();
-        arrayList.add(TIEU_DE);
-        for (NhaCungCap nhaCungCap : this.ds) {
-            arrayList.add(FileText.dong(nhaCungCap.getMaNhaCungCap(), nhaCungCap.getTenNhaCungCap(), nhaCungCap.getSoDienThoai(), nhaCungCap.getDiaChi()));
-        }
-        FileText.ghi(string, arrayList);
-    }
-
-    public void docFile(String string) throws IOException {
-        DanhSachNhaCungCap danhSachNhaCungCap = new DanhSachNhaCungCap();
-        List<String[]> list = FileText.doc(string, TIEU_DE, TIEU_DE_CU);
-        for (int i = 0; i < list.size(); ++i) {
-            String[] stringArray = list.get(i);
-            try {
-                if (stringArray.length != 4) {
-                    throw new IllegalArgumentException("Phai co 4 cot.");
-                }
-                danhSachNhaCungCap.them(new NhaCungCap(stringArray[0], stringArray[1], stringArray[2], stringArray[3]));
-                continue;
-            }
-            catch (IllegalArgumentException illegalArgumentException) {
-                throw new IOException("Dong " + (i + 2) + ": " + illegalArgumentException.getMessage(), illegalArgumentException);
-            }
-        }
-        this.ds.clear();
-        this.ds.addAll(danhSachNhaCungCap.ds);
-    }
-
-    private int chiSo(String string) {
-        if (string != null) {
-            for (int i = 0; i < this.ds.size(); ++i) {
-                if (!this.ds.get(i).getMaNhaCungCap().equalsIgnoreCase(string.trim())) continue;
+    private int timViTri(String ma) {
+        String maChuan = KiemTra.ma(ma);
+        for (int i = 0; i < soLuong; i++) {
+            if (ds[i].getMaNhaCungCap().equals(maChuan)) {
                 return i;
             }
         }
         return -1;
     }
 
-    private static NhaCungCap saoChep(NhaCungCap nhaCungCap) {
-        if (nhaCungCap == null) {
-            throw new IllegalArgumentException("Nha cung cap khong duoc null.");
+    @Override
+    public NhaCungCap[] timKiem(String tuKhoa) {
+        NhaCungCap[] ketQua = new NhaCungCap[soLuong];
+        int soKetQua = 0;
+        for (int i = 0; i < soLuong; i++) {
+            if (KiemTra.chua(ds[i].getMaNhaCungCap(), tuKhoa)
+                    || KiemTra.chua(ds[i].getTenNhaCungCap(), tuKhoa)) {
+                ketQua[soKetQua++] = ds[i].saoChep();
+            }
         }
-        return new NhaCungCap(nhaCungCap.getMaNhaCungCap(), nhaCungCap.getTenNhaCungCap(), nhaCungCap.getSoDienThoai(), nhaCungCap.getDiaChi());
-    }
-
-    private static String chuanHoa(String string) {
-        return Normalizer.normalize(string, Normalizer.Form.NFD).replaceAll("\\p{M}+", "").replace('\u0111', 'd').replace('\u0110', 'D').toLowerCase(Locale.ROOT);
+        return Arrays.copyOf(ketQua, soKetQua);
     }
 }

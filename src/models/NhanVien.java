@@ -1,63 +1,58 @@
 package models;
 
-public class NhanVien {
+public final class NhanVien {
     private final String maNhanVien;
-    private final String hoTen;
-    private String caLamViec;
+    private String hoTen;
     private String soDienThoai;
+    private String caLamViec;
 
-    /** UML order: code, name, phone, shift (unlike the old five-argument constructor). */
-    public NhanVien(String ma, String ten, String sdt, String ca) {
-        if (ma == null || !ma.trim().matches("[A-Za-z0-9_-]+")) {
-            throw new IllegalArgumentException("Ma nhan vien khong hop le.");
-        }
-        if (ten == null || ten.isBlank()) {
-            throw new IllegalArgumentException("Ho ten khong duoc de trong.");
-        }
-        this.maNhanVien = ma.trim();
-        this.hoTen = ten.trim();
-        capNhatLienHe(sdt);
-        doiCaLamViec(ca);
+    public NhanVien() {
+        this.maNhanVien = "";
+        this.hoTen = "";
+        this.soDienThoai = "";
+        this.caLamViec = "";
+    }
+
+    public NhanVien(String maNhanVien, String hoTen, String soDienThoai, String caLamViec) {
+        this.maNhanVien = KiemTra.ma(maNhanVien);
+        this.hoTen = KiemTra.batBuoc(hoTen, "hoTen");
+        this.soDienThoai = KiemTra.dienThoai(soDienThoai);
+        this.caLamViec = KiemTra.batBuoc(caLamViec, "caLamViec");
     }
 
     public String getMaNhanVien() {
-        return this.maNhanVien;
+        return maNhanVien;
     }
 
     public String getHoTen() {
-        return this.hoTen;
+        return hoTen;
     }
 
-    public String getCaLamViec() {
-        return this.caLamViec;
+    public void setHoTen(String hoTen) {
+        this.hoTen = KiemTra.batBuoc(hoTen, "hoTen");
     }
 
     public String getSoDienThoai() {
-        return this.soDienThoai;
+        return soDienThoai;
     }
 
-    public void doiCaLamViec(String caMoi) {
-        if (caMoi == null || caMoi.isBlank()) {
-            throw new IllegalArgumentException("Ca lam viec khong duoc de trong.");
-        }
-        this.caLamViec = caMoi.trim();
+    public void setSoDienThoai(String soDienThoai) {
+        this.soDienThoai = KiemTra.dienThoai(soDienThoai);
     }
 
-    public void capNhatLienHe(String soDienThoai) {
-        if (soDienThoai == null || !soDienThoai.trim().matches("\\+?[0-9]{9,15}")) {
-            throw new IllegalArgumentException("So dien thoai phai co 9-15 chu so, co the bat dau bang +.");
-        }
-        this.soDienThoai = soDienThoai.trim();
+    public String getCaLamViec() {
+        return caLamViec;
+    }
+
+    public void setCaLamViec(String caLamViec) {
+        this.caLamViec = KiemTra.batBuoc(caLamViec, "caLamViec");
+    }
+
+    public NhanVien saoChep() {
+        return new NhanVien(maNhanVien, hoTen, soDienThoai, caLamViec);
     }
 
     public String hienThiThongTin() {
-        return "Ma Nhan Vien: " + this.maNhanVien + "\nHo ten Nhan Vien: " + this.hoTen + "\nSo dien thoai: " + this.soDienThoai + "\nCa lam viec: " + this.caLamViec;
-    }
-
-    /** Adapter for the old display API; legacy addresses belong to list metadata. */
-    @Deprecated
-    public String thongTinNhanVien() {
-        return hienThiThongTin();
+        return maNhanVien + " | " + hoTen + " | " + soDienThoai + " | " + caLamViec;
     }
 }
-

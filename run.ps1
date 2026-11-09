@@ -15,12 +15,12 @@ try {
             $java += '.exe'
         }
         if (-not (Test-Path -LiteralPath $java -PathType Leaf)) {
-            throw 'JAVA_HOME/-JavaHome phai tro den thu muc JDK 21 tro len.'
+            throw 'JAVA_HOME/-JavaHome phai tro den thu muc JDK 17 tro len.'
         }
     } else {
         $command = Get-Command java -CommandType Application -ErrorAction SilentlyContinue
         if (-not $command) {
-            throw 'Khong tim thay Java. Hay cai JDK 21 tro len va dat JAVA_HOME, hoac truyen -JavaHome.'
+            throw 'Khong tim thay Java. Hay cai JDK 17 tro len va dat JAVA_HOME, hoac truyen -JavaHome.'
         }
         $java = $command.Source
     }
@@ -43,9 +43,9 @@ try {
     $sourcePaths = @($sources | ForEach-Object { '"' + $_.FullName.Replace('\', '/').Replace('"', '\"') + '"' })
     [System.IO.File]::WriteAllLines($sourceList, [string[]]$sourcePaths, (New-Object System.Text.UTF8Encoding($false)))
     # source/target also works in runtimes that include the compiler but omit ct.sym.
-    & $java '-Dfile.encoding=UTF-8' -m jdk.compiler/com.sun.tools.javac.Main -source 21 -target 21 -encoding UTF-8 -classpath $classes -d $classes "@$sourceList"
+    & $java '-Dfile.encoding=UTF-8' -m jdk.compiler/com.sun.tools.javac.Main -source 17 -target 17 -encoding UTF-8 -classpath $classes -d $classes "@$sourceList"
     if ($LASTEXITCODE -ne 0) {
-        throw 'Bien dich that bai; menu chua duoc khoi dong. Xem loi phia tren va dung JDK 21 tro len co module jdk.compiler.'
+        throw 'Bien dich that bai; menu chua duoc khoi dong. Xem loi phia tren va dung JDK 17 tro len co module jdk.compiler.'
     }
     Write-Host 'Build OK: out/console'
 

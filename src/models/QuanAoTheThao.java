@@ -1,40 +1,56 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package models;
 
 import java.math.BigDecimal;
-import models.DanhMuc;
-import models.SanPham;
 
-public class QuanAoTheThao
-extends SanPham {
+public final class QuanAoTheThao extends SanPham {
     private String kichCoQuanAo;
+    private String mauSac;
+    private String chatLieu;
 
-    public QuanAoTheThao(String string, String string2, String string3, BigDecimal bigDecimal, int n, String string4, String string5, DanhMuc danhMuc, String string6) {
-        super(string, string2, string3, bigDecimal, n, string4, string5, danhMuc);
-        this.capNhatKichCo(string6);
+    public QuanAoTheThao() {
+        super();
+    }
+
+    public QuanAoTheThao(String ma, String ten, String thuongHieu, BigDecimal giaBan,
+            LoaiSP loaiSP, String kichCoQuanAo, String mauSac, String chatLieu) {
+        super(ma, ten, thuongHieu, giaBan, loaiSP);
+        setKichCoQuanAo(kichCoQuanAo);
+        setMauSac(mauSac);
+        setChatLieu(chatLieu);
     }
 
     public String getKichCoQuanAo() {
-        return this.kichCoQuanAo;
+        return kichCoQuanAo;
     }
 
-    public void capNhatKichCo(String string) {
-        if (string == null || string.isBlank()) {
-            throw new IllegalArgumentException("Kich co quan ao khong duoc rong.");
-        }
-        this.kichCoQuanAo = string.trim();
+    public void setKichCoQuanAo(String kichCoQuanAo) {
+        this.kichCoQuanAo = KiemTra.batBuoc(kichCoQuanAo, "Kich co quan ao");
+    }
+
+    public String getMauSac() {
+        return mauSac;
+    }
+
+    public void setMauSac(String mauSac) {
+        this.mauSac = KiemTra.batBuoc(mauSac, "Mau sac");
+    }
+
+    public String getChatLieu() {
+        return chatLieu;
+    }
+
+    public void setChatLieu(String chatLieu) {
+        this.chatLieu = chatLieu == null ? "" : chatLieu.trim();
     }
 
     @Override
-    public String layLoaiSanPham() {
-        return "QUAN_AO";
+    public QuanAoTheThao saoChep() {
+        return giuTonKho(new QuanAoTheThao(getMaSanPham(), getTenSanPham(), getThuongHieu(),
+                getGiaBan(), getLoaiSP(), kichCoQuanAo, mauSac, chatLieu));
     }
 
     @Override
     public String hienThiThongTin() {
-        return super.toString() + "\nKich co quan ao: " + this.kichCoQuanAo;
+        return thongTinChung() + " | QuanAoTheThao | " + kichCoQuanAo + " | " + mauSac + " | " + chatLieu;
     }
 }
-

@@ -1,40 +1,56 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package models;
 
 import java.math.BigDecimal;
-import models.DanhMuc;
-import models.SanPham;
 
-public class DungCuTheThao
-extends SanPham {
+public final class DungCuTheThao extends SanPham {
+    private String monTheThao;
+    private String vatLieu;
     private double khoiLuongKg;
 
-    public DungCuTheThao(String string, String string2, String string3, BigDecimal bigDecimal, int n, String string4, String string5, DanhMuc danhMuc, double d) {
-        super(string, string2, string3, bigDecimal, n, string4, string5, danhMuc);
-        this.capNhatKhoiLuong(d);
+    public DungCuTheThao() {
+        super();
+    }
+
+    public DungCuTheThao(String ma, String ten, String thuongHieu, BigDecimal giaBan,
+            LoaiSP loaiSP, String monTheThao, String vatLieu, double khoiLuongKg) {
+        super(ma, ten, thuongHieu, giaBan, loaiSP);
+        setMonTheThao(monTheThao);
+        setVatLieu(vatLieu);
+        setKhoiLuongKg(khoiLuongKg);
+    }
+
+    public String getMonTheThao() {
+        return monTheThao;
+    }
+
+    public void setMonTheThao(String monTheThao) {
+        this.monTheThao = KiemTra.batBuoc(monTheThao, "Mon the thao");
+    }
+
+    public String getVatLieu() {
+        return vatLieu;
+    }
+
+    public void setVatLieu(String vatLieu) {
+        this.vatLieu = KiemTra.batBuoc(vatLieu, "Vat lieu");
     }
 
     public double getKhoiLuongKg() {
-        return this.khoiLuongKg;
+        return khoiLuongKg;
     }
 
-    public void capNhatKhoiLuong(double d) {
-        if (!Double.isFinite(d) || d < 0.0) {
-            throw new IllegalArgumentException("Khoi luong khong hop le.");
-        }
-        this.khoiLuongKg = d;
+    public void setKhoiLuongKg(double khoiLuongKg) {
+        this.khoiLuongKg = KiemTra.soDuong(khoiLuongKg);
     }
 
     @Override
-    public String layLoaiSanPham() {
-        return "DUNG_CU";
+    public DungCuTheThao saoChep() {
+        return giuTonKho(new DungCuTheThao(getMaSanPham(), getTenSanPham(), getThuongHieu(),
+                getGiaBan(), getLoaiSP(), monTheThao, vatLieu, khoiLuongKg));
     }
 
     @Override
     public String hienThiThongTin() {
-        return super.toString() + "\nKhoi luong: " + this.khoiLuongKg + " kg";
+        return thongTinChung() + " | DungCuTheThao | " + monTheThao + " | " + vatLieu + " | " + khoiLuongKg;
     }
 }
-
