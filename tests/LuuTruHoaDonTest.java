@@ -1,13 +1,13 @@
-import java.io.IOException;
+﻿import java.io.IOException;
 import java.nio.file.*;
 import java.math.BigDecimal;
 import models.*;
 import services.*;
-public class Task075LuuTruHoaDonTest {
+public class LuuTruHoaDonTest {
     public static void main(String[] args) throws Exception {
         Path dir = Files.createTempDirectory("hd-store-");
         try {
-            HoaDon h = Task072HoaDonTest.hd("HD900"); h.themChiTiet(Task072HoaDonTest.ct(2));
+            HoaDon h = HoaDonTest.hd("HD900"); h.themChiTiet(HoaDonTest.ct(2));
             DanhSachHoaDon hd = new DanhSachHoaDon(); hd.them(h);
             DanhSachSanPham sp = new DanhSachSanPham(DuLieu.taoDanhSachSanPham());
             DanhSachKhachHang kh = new DanhSachKhachHang(DuLieu.taoDanhSachKhachHang());
@@ -41,7 +41,7 @@ public class Task075LuuTruHoaDonTest {
             try { store.ghiHoaDon("bad.txt",hd); throw new AssertionError(); } catch(IOException expected) { }
             assert !Files.exists(dir.resolve("banhang.undo"));
             assert Integer.parseInt(HoaDon.taoMaTuDong().substring(2)) > 900;
-            System.out.println("Task075LuuTruHoaDonTest OK");
+            System.out.println("LuuTruHoaDonTest OK");
         } finally { ConsoleTestSupport.deleteTree(dir); }
     }
 }

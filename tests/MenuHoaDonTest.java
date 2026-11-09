@@ -1,7 +1,7 @@
-import java.nio.file.*;
+﻿import java.nio.file.*;
 import services.*;
 import models.*;
-public class Task076ConsoleHoaDonTest {
+public class MenuHoaDonTest {
     private static boolean money(String output, String label, String expected) {
         return output.lines().filter(line -> line.contains(label)).anyMatch(line -> {
             String number = line.substring(line.indexOf(label) + label.length()).trim();
@@ -37,7 +37,7 @@ public class Task076ConsoleHoaDonTest {
             assert output.contains("dang duoc hoa don tham chieu") : output;
             assert store.docKhachHang("khachhang.txt").timTheoMa("KH01")!=null;
             assert DanhSachNhanVien.tuDanhSach(store.docNhanVien("nhanvien.txt")).getDiaChiCu("NV01")!=null;
-            System.out.println("Task076ConsoleHoaDonTest OK");
+            System.out.println("MenuHoaDonTest OK");
         } finally { ConsoleTestSupport.deleteTree(dir); }
     }
 }

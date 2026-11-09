@@ -1,4 +1,4 @@
-import java.io.IOException;
+﻿import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -6,7 +6,7 @@ import models.KhachHang;
 import services.DanhSachKhachHang;
 import services.IQuanLyDanhSach;
 
-public class Task062KhachHangTest {
+public class DanhSachKhachHangTest {
     public static void main(String[] args) throws Exception {
         DanhSachKhachHang ds = new DanhSachKhachHang();
         IQuanLyDanhSach<KhachHang> api = ds;
@@ -87,7 +87,7 @@ public class Task062KhachHangTest {
         }
         ds.nhapDanhSach(new KhachHang[]{an});
         check(ds.getSoLuong() == 1 && ds.timTheoMa("Kh1").getHoTen().equals("Đã sửa"));
-        System.out.println("Task062KhachHangTest OK (7 groups: UML/empty, CRUD, batch, search/stats, copies, update/delete, files)");
+        System.out.println("DanhSachKhachHangTest OK (7 groups: UML/empty, CRUD, batch, search/stats, copies, update/delete, files)");
     }
 
     private static KhachHang kh(String ma, String ten, String sdt, String diaChi) {

@@ -1,9 +1,9 @@
-import java.math.BigDecimal;
+﻿import java.math.BigDecimal;
 import models.*;
 import services.*;
-public class Task084NhapKhoTest {
+public class DichVuKhoNhapHangTest {
     public static void main(String[] args) {
-        PhieuNhap h = Task082PhieuNhapTest.hd("KHO1");
+        PhieuNhap h = PhieuNhapTest.hd("KHO1");
         DanhSachSanPham sp = new DanhSachSanPham(DuLieu.taoDanhSachSanPham());
         SanPham a = sp.getDanhSach().get(0), b = sp.getDanhSach().get(1);
         h.themChiTiet(new ChiTietPhieuNhap(a, 1, BigDecimal.TEN));
@@ -28,6 +28,6 @@ public class Task084NhapKhoTest {
         try { ncc.xoaTheoMa(h.getMaNhaCungCap()); throw new AssertionError(); } catch (IllegalArgumentException expected) { }
         try { ncc.thayDuLieu(new DanhSachNhaCungCap()); throw new AssertionError(); } catch (IllegalArgumentException expected) { }
         assert ds.tongGiaTriNhap(h.getNgayNhap(),h.getNgayNhap()).compareTo(h.tinhTongTienNhap()) == 0;
-        System.out.println("Task084NhapKhoTest OK");
+        System.out.println("DichVuKhoNhapHangTest OK");
     }
 }

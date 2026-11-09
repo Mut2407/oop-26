@@ -1,4 +1,4 @@
-import java.io.File;
+﻿import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import services.DanhSachNhanVien;
 
-public class Task061ConsoleTest {
+public class VanBanConsoleNhanVienTest {
     public static void main(String[] args) throws Exception {
         Path dir = Files.createTempDirectory("task061-console-");
         try {
@@ -53,7 +53,7 @@ public class Task061ConsoleTest {
             String failed = chay(dir, "bad-file", "0\n", 1);
             check(failed.contains("Khong the khoi dong"));
             check(Files.readString(file).equals(bad));
-            System.out.println("Task061ConsoleTest OK (3 cases: edit, reopen/add, reject corrupt file)");
+            System.out.println("VanBanConsoleNhanVienTest OK (3 cases: edit, reopen/add, reject corrupt file)");
         } finally {
             try (var paths = Files.walk(dir)) {
                 for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {

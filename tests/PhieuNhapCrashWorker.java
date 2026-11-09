@@ -1,10 +1,10 @@
-import java.io.IOException;
+﻿import java.io.IOException;
 import java.nio.file.Path;
 import models.*;
 import services.*;
 
 /** Separate JVM: intentionally exits without finally/shutdown hooks. */
-public class Task077CrashWorker {
+public class PhieuNhapCrashWorker {
     public static void main(String[] args) throws Exception {
         Path dir = Path.of(args[0]);
         DuLieu.khoiTaoDanhMuc();
@@ -13,15 +13,15 @@ public class Task077CrashWorker {
                 super.ghiSanPham(path, ds);
                 if (args[1].equals("first")) Runtime.getRuntime().halt(77);
             }
-            @Override public void ghiHoaDon(String path, DanhSachHoaDon ds) throws IOException {
-                super.ghiHoaDon(path, ds);
+            @Override public void ghiPhieuNhap(String path, DanhSachPhieuNhap ds) throws IOException {
+                super.ghiPhieuNhap(path, ds);
                 Runtime.getRuntime().halt(78);
             }
         };
         DanhSachSanPham sp=store.docSanPham("sanpham.txt",DuLieu.getDanhMuc());
-        DanhSachKhachHang kh=store.docKhachHang("khachhang.txt");
+        DanhSachNhaCungCap kh=store.docNhaCungCap("nhacungcap.txt");
         DanhSachNhanVien nv=DanhSachNhanVien.tuDanhSach(store.docNhanVien("nhanvien.txt"));
-        DanhSachHoaDon hd=store.docHoaDon("hoadon.txt",sp,kh,nv.getTatCa());
-        new GiaoDichBanHang(dir,store).xacNhan("CRASH",hd,sp,kh,nv);
+        DanhSachPhieuNhap hd=store.docPhieuNhap("phieunhap.txt",sp,kh,nv.getTatCa());
+        new GiaoDichNhapHang(dir,store).xacNhan("CRASH",hd,sp,kh,nv);
     }
 }

@@ -1,11 +1,11 @@
-import java.nio.file.Files;
+﻿import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import services.DanhSachKhachHang;
 import services.DanhSachNhanVien;
 import services.LuuTruFileText;
 
-public class Task064ConsoleTest {
+public class LuuTruKhachHangNhanVienConsoleTest {
     public static void main(String[] args) throws Exception {
         Path dir = Files.createTempDirectory("task064-console-");
         try {
@@ -89,7 +89,7 @@ public class Task064ConsoleTest {
             check(output.contains("9-15 chu so") && output.contains("Thoat chuong trinh!"), output);
             check(store.docKhachHang("khachhang.txt").timTheoMa("KVALID") != null, "Corrected customer input");
             check(DanhSachNhanVien.tuDanhSach(store.docNhanVien("nhanvien.txt")).timTheoMa("NVGOOD") != null, "Corrected employee input");
-            System.out.println("Task064ConsoleTest OK (7 groups: CRUD/search, persistence/backup, restart, no unintended saves, cancelled batches, replace, invalid input)");
+            System.out.println("LuuTruKhachHangNhanVienConsoleTest OK (7 groups: CRUD/search, persistence/backup, restart, no unintended saves, cancelled batches, replace, invalid input)");
         } finally {
             ConsoleTestSupport.deleteTree(dir);
         }

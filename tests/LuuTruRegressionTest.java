@@ -1,11 +1,11 @@
-import java.nio.file.Files;
+﻿import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import services.DanhSachNhanVien;
 import services.LuuTruFileText;
 
-public class Task065RegressionTest {
+public class LuuTruRegressionTest {
     public static void main(String[] args) throws Exception {
         Path dir = Files.createTempDirectory("task065-regression-");
         try {
@@ -100,7 +100,7 @@ public class Task065RegressionTest {
                     "3", "1", "8", "11", "NONE", "0", "4", "1", "8", "11", "NONE", "0", "0"), 0);
             check(output.contains("Danh sach khach hang dang trong") && output.contains("Danh sach nhan vien dang trong"), output);
             check(!output.contains("Exception"), output);
-            System.out.println("Task065RegressionTest OK (6 groups: copied data/menus, live reload failures, startup failures, existing-module CRUD, stable IDs, empty data)");
+            System.out.println("LuuTruRegressionTest OK (6 groups: copied data/menus, live reload failures, startup failures, existing-module CRUD, stable IDs, empty data)");
         } finally {
             ConsoleTestSupport.deleteTree(dir);
         }

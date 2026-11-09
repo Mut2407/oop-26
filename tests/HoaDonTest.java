@@ -1,7 +1,7 @@
-import java.math.BigDecimal;
+﻿import java.math.BigDecimal;
 import java.time.LocalDate;
 import models.*;
-public class Task072HoaDonTest {
+public class HoaDonTest {
     static HoaDon hd(String ma) {
         DuLieu.khoiTaoDanhMuc();
         return new HoaDon(ma, LocalDate.of(2026, 11, 1), DuLieu.taoDanhSachKhachHang()[0], DuLieu.taoDanhSachNhanVien()[0]);
@@ -24,6 +24,6 @@ public class Task072HoaDonTest {
         assert Integer.parseInt(HoaDon.taoMaTuDong().substring(2)) > 100;
         assert !hd.xoaChiTiet("missing");
         assert hd.xoaChiTiet(ct(1).getSanPham().getMaSanPham());
-        System.out.println("Task072HoaDonTest OK");
+        System.out.println("HoaDonTest OK");
     }
 }

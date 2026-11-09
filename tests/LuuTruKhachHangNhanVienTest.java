@@ -1,4 +1,4 @@
-import java.io.IOException;
+﻿import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import services.DanhSachKhachHang;
 import services.DanhSachNhanVien;
 import services.LuuTruFileText;
 
-public class Task064LuuTruTest {
+public class LuuTruKhachHangNhanVienTest {
     private static final String CU = "maNhanVien\thoTen\tcaLamViec\tsoDienThoai\tdiaChi\n"
             + "Nv1\tNguyễn An\tSáng\t0901234567\t  Hà Nội\\tNgõ 1\\\\A  \n"
             + "NV2\tTrần Bình\tTối\t0912345678\tHuế\n";
@@ -97,7 +97,7 @@ public class Task064LuuTruTest {
             check(store.docNhanVien("empty.txt").isEmpty());
             store.ghiKhachHang("empty-kh.txt", new DanhSachKhachHang());
             check(store.docKhachHang("empty-kh.txt").getTatCa().isEmpty());
-            System.out.println("Task064LuuTruTest OK (8 groups: customer migration, employee migration, edits, export, metadata recovery, formats, backup/errors, empty)");
+            System.out.println("LuuTruKhachHangNhanVienTest OK (8 groups: customer migration, employee migration, edits, export, metadata recovery, formats, backup/errors, empty)");
         } finally {
             try (var paths = Files.walk(dir)) {
                 for (Path p : paths.sorted(Comparator.reverseOrder()).toList()) {

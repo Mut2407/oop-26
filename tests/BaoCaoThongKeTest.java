@@ -1,8 +1,8 @@
-import java.math.*;
+﻿import java.math.*;
 import java.time.LocalDate;
 import models.*;
 import services.*;
-public class Task091BaoCaoTest {
+public class BaoCaoThongKeTest {
     public static void main(String[] args) {
         DuLieu.khoiTaoDanhMuc();
         var sp=new DanhSachSanPham(DuLieu.taoDanhSachSanPham());
@@ -57,6 +57,6 @@ public class Task091BaoCaoTest {
         }
         assert new BaoCaoThongKe(bigSP,many,new DanhSachPhieuNhap()).soLuongDaBan().get(max.getMaSanPham()).equals(BigInteger.valueOf(4294967294L));
         assert new BaoCaoThongKe(bigSP,many,new DanhSachPhieuNhap()).canhBaoTonKho(0).stream().anyMatch(x->x.getMaSanPham().equals(max.getMaSanPham()));
-        System.out.println("Task091BaoCaoTest OK");
+        System.out.println("BaoCaoThongKeTest OK");
     }
 }

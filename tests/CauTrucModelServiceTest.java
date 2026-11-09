@@ -1,4 +1,4 @@
-import java.lang.reflect.Modifier;
+﻿import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import services.DanhSachNhanVien;
 import services.IQuanLyDanhSach;
 import services.LuuTruFileText;
 
-public class Task065UmlTest {
+public class CauTrucModelServiceTest {
     public static void main(String[] args) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -79,7 +79,7 @@ public class Task065UmlTest {
         int start = main.indexOf("public static void main(String[] args)");
         int end = main.indexOf("\n    }", start);
         check(start >= 0 && end > start && main.substring(start, end).lines().count() + 1 <= 10);
-        System.out.println("Task065UmlTest OK (5 groups: KhachHang, NhanVien, customer list/interface, storage signatures, array/main)");
+        System.out.println("CauTrucModelServiceTest OK (5 groups: KhachHang, NhanVien, customer list/interface, storage signatures, array/main)");
     }
 
     private static Set<String> nhom(Element page, String constructor) {

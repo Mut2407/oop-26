@@ -1,9 +1,9 @@
-import java.nio.file.*;
+﻿import java.nio.file.*;
 import java.math.BigDecimal;
 import java.util.*;
 import models.*;
 import services.*;
-public class Task093NhapBanBaoCaoTest {
+public class NhapBanBaoCaoTichHopTest {
     public static void main(String[] args) throws Exception {
         Path dir=Files.createTempDirectory("full-flow-");
         try {
@@ -52,7 +52,7 @@ public class Task093NhapBanBaoCaoTest {
             out=ConsoleTestSupport.run(dir,"0\n",1);
             assert out.contains("Khong the khoi dong"):out;
             assert Files.readString(data.resolve("phieunhap.txt")).equals("WRONG\n");
-            System.out.println("Task093NhapBanBaoCaoTest OK (10+5-3=12, reports 12/10, restart/read-only, snapshots, references, bad file)");
+            System.out.println("NhapBanBaoCaoTichHopTest OK (10+5-3=12, reports 12/10, restart/read-only, snapshots, references, bad file)");
         } finally { ConsoleTestSupport.deleteTree(dir); }
     }
 }

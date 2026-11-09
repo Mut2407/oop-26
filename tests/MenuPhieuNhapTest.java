@@ -1,7 +1,7 @@
-import java.nio.file.*;
+﻿import java.nio.file.*;
 import services.*;
 import models.*;
-public class Task086ConsoleNhapTest {
+public class MenuPhieuNhapTest {
     private static boolean money(String output, String label, String expected) {
         return output.lines().filter(line -> line.contains(label)).anyMatch(line -> {
             String number = line.substring(line.indexOf(label) + label.length()).trim();
@@ -33,7 +33,7 @@ public class Task086ConsoleNhapTest {
             output=ConsoleTestSupport.run(dir,"7\n3\nPNTEST\n0\n0\n",0);
             assert output.contains("DA_NHAP_KHO") : output;
             assert store.docSanPham("sanpham.txt",DuLieu.getDanhMuc()).timTheoMa("SP01").getSoLuongTon()==before+3;
-            System.out.println("Task086ConsoleNhapTest OK");
+            System.out.println("MenuPhieuNhapTest OK");
         } finally { ConsoleTestSupport.deleteTree(dir); }
     }
 }

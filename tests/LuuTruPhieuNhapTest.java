@@ -1,13 +1,13 @@
-import java.io.IOException;
+﻿import java.io.IOException;
 import java.nio.file.*;
 import java.math.BigDecimal;
 import models.*;
 import services.*;
-public class Task085LuuNhapTest {
+public class LuuTruPhieuNhapTest {
     public static void main(String[] args) throws Exception {
         Path dir = Files.createTempDirectory("hd-store-");
         try {
-            PhieuNhap h = Task082PhieuNhapTest.hd("PN900"); h.themChiTiet(Task082PhieuNhapTest.ct(2));
+            PhieuNhap h = PhieuNhapTest.hd("PN900"); h.themChiTiet(PhieuNhapTest.ct(2));
             DanhSachPhieuNhap hd = new DanhSachPhieuNhap(); hd.them(h);
             DanhSachSanPham sp = new DanhSachSanPham(DuLieu.taoDanhSachSanPham());
             DanhSachNhaCungCap kh = new DanhSachNhaCungCap(DuLieu.taoDanhSachNhaCungCap());
@@ -41,7 +41,7 @@ public class Task085LuuNhapTest {
             try { store.ghiPhieuNhap("bad.txt",hd); throw new AssertionError(); } catch(IOException expected) { }
             assert !Files.exists(dir.resolve("banhang.undo"));
             assert Integer.parseInt(PhieuNhap.taoMaTuDong().substring(2)) > 900;
-            System.out.println("Task085LuuNhapTest OK");
+            System.out.println("LuuTruPhieuNhapTest OK");
         } finally { ConsoleTestSupport.deleteTree(dir); }
     }
 }

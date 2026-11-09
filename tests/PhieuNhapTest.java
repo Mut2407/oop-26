@@ -1,7 +1,7 @@
-import java.math.BigDecimal;
+﻿import java.math.BigDecimal;
 import java.time.LocalDate;
 import models.*;
-public class Task082PhieuNhapTest {
+public class PhieuNhapTest {
     static PhieuNhap hd(String ma) {
         DuLieu.khoiTaoDanhMuc();
         return new PhieuNhap(ma, LocalDate.of(2026, 11, 1), DuLieu.taoDanhSachNhaCungCap()[0], DuLieu.taoDanhSachNhanVien()[0]);
@@ -24,6 +24,6 @@ public class Task082PhieuNhapTest {
         assert Integer.parseInt(PhieuNhap.taoMaTuDong().substring(2)) > 100;
         assert !hd.xoaChiTiet("missing");
         assert hd.xoaChiTiet(ct(1).getSanPham().getMaSanPham());
-        System.out.println("Task082PhieuNhapTest OK");
+        System.out.println("PhieuNhapTest OK");
     }
 }

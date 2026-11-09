@@ -1,7 +1,7 @@
-import models.NhanVien;
+﻿import models.NhanVien;
 import services.DanhSachNhanVien;
 
-public class Task063NhanVienTest {
+public class DanhSachNhanVienTest {
     public static void main(String[] args) throws Exception {
         DanhSachNhanVien ds = new DanhSachNhanVien();
         check(DanhSachNhanVien.class.getDeclaredField("danhSach").getType() == NhanVien[].class);
@@ -53,7 +53,7 @@ public class Task063NhanVienTest {
         check(ds.timTheoMa("NVNEW").getCaLamViec().equals("Sáng"));
         check(ds.getDiaChiCu("NVNEW") == null);
         check(ds.thongKe().contains("Metadata dia chi chua day du"));
-        System.out.println("Task063NhanVienTest OK (6 groups: empty, growth, batches, search/stats, copies, CRUD/metadata)");
+        System.out.println("DanhSachNhanVienTest OK (6 groups: empty, growth, batches, search/stats, copies, CRUD/metadata)");
     }
 
     private static void loi(Runnable action) {

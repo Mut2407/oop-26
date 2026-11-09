@@ -1,5 +1,5 @@
-import java.nio.file.*;
-public class Task092ConsoleBaoCaoTest {
+﻿import java.nio.file.*;
+public class MenuBaoCaoTest {
     public static void main(String[] args) throws Exception {
         Path dir=Files.createTempDirectory("report-console-");
         try {
@@ -16,7 +16,7 @@ public class Task092ConsoleBaoCaoTest {
                 // A read-only report preserves pre-existing document files as well as their absence.
                 assert Files.exists(dir.resolve("data").resolve(file)) == Files.exists(Path.of("data", file));
             }
-            System.out.println("Task092ConsoleBaoCaoTest OK");
+            System.out.println("MenuBaoCaoTest OK");
         } finally { ConsoleTestSupport.deleteTree(dir); }
     }
 }

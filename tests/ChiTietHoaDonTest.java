@@ -1,6 +1,6 @@
-import java.math.BigDecimal;
+﻿import java.math.BigDecimal;
 import models.*;
-public class Task071ChiTietTest {
+public class ChiTietHoaDonTest {
     public static void main(String[] args) {
         DuLieu.khoiTaoDanhMuc();
         SanPham sp = DuLieu.taoDanhSachSanPham()[0];
@@ -19,6 +19,6 @@ public class Task071ChiTietTest {
         try { new ChiTietHoaDon(sp, 1, new BigDecimal("-1")); throw new AssertionError(); }
         catch (IllegalArgumentException expected) { }
         assert new ChiTietHoaDon(sp, 1, BigDecimal.ZERO).thanhTien().signum() == 0;
-        System.out.println("Task071ChiTietTest OK");
+        System.out.println("ChiTietHoaDonTest OK");
     }
 }
