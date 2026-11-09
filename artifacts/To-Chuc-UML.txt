@@ -1,0 +1,55 @@
+UML hiện tại có **23 class và 1 interface**. Số lượng tăng vì mình tách **lớp thực thể, lớp danh sách và lớp quản lý/hỗ trợ** theo tài liệu tổ chức đồ án.
+
+**1. Nhóm thực thể: 12 class**
+
+| STT | Class | Vai trò |
+|---|---|---|
+| 1 | `SanPham` | Lớp trừu tượng chứa thông tin chung của sản phẩm |
+| 2 | `GiayTheThao` | Sản phẩm giày, kế thừa `SanPham` |
+| 3 | `QuanAoTheThao` | Sản phẩm quần áo, kế thừa `SanPham` |
+| 4 | `DungCuTheThao` | Dụng cụ thể thao, kế thừa `SanPham` |
+| 5 | `LoaiSP` | Loại sản phẩm, thay tên `DanhMuc` |
+| 6 | `KhachHang` | Thông tin khách hàng |
+| 7 | `NhanVien` | Thông tin nhân viên |
+| 8 | `NhaCungCap` | Thông tin nhà cung cấp |
+| 9 | `HoaDon` | Thông tin một hóa đơn bán hàng |
+| 10 | `ChiTietHoaDon` | Sản phẩm, số lượng, đơn giá trong hóa đơn |
+| 11 | `PhieuNhap` | Thông tin một phiếu nhập hàng |
+| 12 | `ChiTietPhieuNhap` | Sản phẩm, số lượng, đơn giá trong phiếu nhập |
+
+**2. Nhóm danh sách: 7 class**
+
+Các lớp này chứa **mảng đối tượng**, cung cấp **Thêm, Sửa, Xóa, Tìm kiếm**.
+
+| STT | Class | Quản lý |
+|---|---|---|
+| 13 | `DanhSachSanPham` | Các sản phẩm thuộc cả ba lớp con |
+| 14 | `DanhSachLoaiSP` | Các loại sản phẩm |
+| 15 | `DanhSachKhachHang` | Các khách hàng |
+| 16 | `DanhSachNhanVien` | Các nhân viên |
+| 17 | `DanhSachNhaCungCap` | Các nhà cung cấp |
+| 18 | `DanhSachHoaDon` | Các hóa đơn và thống kê tổng tiền bán |
+| 19 | `DanhSachPhieuNhap` | Các phiếu nhập và thống kê tổng tiền nhập |
+
+Không cần tạo danh sách riêng cho giày, quần áo và dụng cụ vì có thể lưu chung trong `SanPham[]` bằng **đa hình**.
+
+**3. Nhóm quản lý và hỗ trợ: 4 class**
+
+| STT | Class | Vai trò |
+|---|---|---|
+| 20 | `QuanLyCuaHang` | Điều phối menu, danh sách và nghiệp vụ |
+| 21 | `Kho` | Cập nhật tồn khi thêm/sửa/xóa hóa đơn, phiếu nhập |
+| 22 | `LuuTruFileText` | Đọc và ghi dữ liệu ra file text |
+| 23 | `Main` | Điểm khởi chạy chương trình |
+
+Ngoài ra, **`IQuanLyDanhSach<T>` là interface**, quy định các phương thức Thêm/Sửa/Xóa/Tìm kiếm chung, **không tính vào 23 class**.
+
+**Tại sao tới 23 class?**
+
+Ví dụ, ba lớp sau có trách nhiệm khác nhau:
+
+- `SanPham`: biểu diễn **một sản phẩm**.
+- `DanhSachSanPham`: lưu và thao tác với **nhiều sản phẩm**.
+- `QuanLyCuaHang`: tiếp nhận lựa chọn và **điều phối thao tác**.
+
+Yêu cầu đồ án chỉ bắt buộc **ít nhất 15 class**, không bắt buộc 23. **23 là số lớp của phương án mình đã thiết kế**, nhằm tách trách nhiệm và quản lý đầy đủ các đối tượng bạn yêu cầu. Clean Code không có nghĩa là ít class nhất; điều cần tránh là các class làm trùng nhiệm vụ.
