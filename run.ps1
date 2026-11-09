@@ -16,7 +16,7 @@ try {
     $paths = [string[]]@($sources | ForEach-Object { '"' + $_.FullName.Replace('\', '/') + '"' })
     $sourceList = Join-Path $PSScriptRoot 'out/sources.txt'
     [IO.File]::WriteAllLines($sourceList, $paths, (New-Object Text.UTF8Encoding($false)))
-    & $javac --release 8 -encoding UTF-8 -d $classes "@$sourceList"
+    & $javac --release 17 -encoding UTF-8 -d $classes "@$sourceList"
     if ($LASTEXITCODE -ne 0) { throw 'Bien dich that bai. Hay kiem tra JDK/JAVA_HOME.' }
     Write-Host 'Build OK: out/console'
     if (-not $BuildOnly) {
