@@ -1,0 +1,8 @@
+-Tổ chức đồ án:
++ class đơn
++ class danh sách
++ class quản lý danh sách
+- Phân biệt "Class (Thực thể / Model)" và "Class Danh Sách (Manager / Service). Trong các đồ án Lập trình hướng đối tượng (OOP), giảng viên luôn yêu cầu tách biệt rõ ràng 2 loại class này để đảm bảo tính đóng gói và phân chia trách nhiệm.
+-  void main không được viết quá 10 dòng. void main gọi đọc file, ghi file, menu chính.
+- 1 hàm trong khoảng 10 dòng code hoặc hơn. Đây là tiêu chí Clean Code (Nguyên lý Đơn Trách Nhiệm - Single Responsibility Principle). Giảng viên đưa ra yêu cầu này để tránh tình trạng viết "hàm khổng lồ" (God method)
+- Hàm kiểm tra duy nhất, hàm không tham số/có tham số 
