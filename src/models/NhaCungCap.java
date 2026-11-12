@@ -42,8 +42,6 @@ public class NhaCungCap {
 
     public void setSoDienThoai(String soDienThoai) {
         kiemTraChuoi(soDienThoai);
-        if (!soDienThoai.matches("[0-9]{9,11}"))
-            throw new IllegalArgumentException("SDT can 9 den 11 chu so.");
         this.soDienThoai = soDienThoai;
     }
 
