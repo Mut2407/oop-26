@@ -592,7 +592,7 @@ public class QuanLyCuaHang {
     private KhachHang nhapKhachHang(String ma) {
         return new KhachHang(ma, nhapChuoi("Ho ten: "),
                 nhapChuoi("SDT (9-11 chu so): "),
-                nhapChuoi("Dia chi: "));
+                nhapChuoi("Email: "));
     }
 
     private NhanVien nhapNhanVien(String ma) {
@@ -604,7 +604,7 @@ public class QuanLyCuaHang {
     private NhaCungCap nhapNhaCungCap(String ma) {
         return new NhaCungCap(ma, nhapChuoi("Ten NCC: "),
                 nhapChuoi("SDT (9-11 chu so): "),
-                nhapChuoi("Dia chi: "));
+                nhapChuoi("Email: "));
     }
 
     private SanPham nhapSanPham(String ma, SanPham cu) {
