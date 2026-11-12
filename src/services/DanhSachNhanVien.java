@@ -1,109 +1,68 @@
 package services;
 
 import models.*;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class DanhSachNhanVien implements IQuanLyDanhSach<NhanVien> {
-    private NhanVien[] ds;
-    private int soLuong;
-    private static final int SUC_CHUA_MAC_DINH = 10;
-
-    public DanhSachNhanVien() {
-        this(SUC_CHUA_MAC_DINH);
-    }
-
-    public DanhSachNhanVien(int sucChua) {
-        if (sucChua <= 0)
-            throw new IllegalArgumentException("Suc chua phai > 0.");
-        ds = new NhanVien[sucChua];
-    }
+    private ArrayList<NhanVien> ds = new ArrayList<>();
 
     public int getSoLuong() {
-        return soLuong;
+        return ds.size();
     }
 
     public NhanVien[] getTatCa() {
-        NhanVien[] kq = new NhanVien[soLuong];
-        for (int i = 0; i < soLuong; i++)
-            kq[i] = ds[i];
-        return kq;
-    }
-
-    private int timViTri(String ma) {
-        if (ma == null)
-            return -1;
-        for (int i = 0; i < soLuong; i++)
-            if (ds[i].getMaNhanVien().equalsIgnoreCase(ma.trim()))
-                return i;
-        return -1;
+        return ds.toArray(new NhanVien[0]);
     }
 
     public boolean kiemTraMaDuyNhat(String ma) {
-        return timViTri(ma) < 0;
+        return timTheoMa(ma) == null;
     }
 
     public NhanVien timTheoMa(String ma) {
-        int viTri = timViTri(ma);
-        if (viTri < 0)
-            return null;
-        return ds[viTri];
-    }
-
-    private void moRongMang() {
-        ds = Arrays.copyOf(ds, ds.length + SUC_CHUA_MAC_DINH);
+        if (ma == null) return null;
+        for (NhanVien nv : ds)
+            if (nv.getMaNhanVien().equalsIgnoreCase(ma.trim()))
+                return nv;
+        return null;
     }
 
     @Override
     public boolean them(NhanVien doiTuong) {
-        if (doiTuong == null || !doiTuong.kiemTraHopLe())
-            return false;
-        if (!kiemTraMaDuyNhat(doiTuong.getMaNhanVien()))
-            return false;
-        if (soLuong == ds.length)
-            moRongMang();
-        ds[soLuong++] = doiTuong;
-        return true;
+        if (doiTuong == null || !doiTuong.kiemTraHopLe()) return false;
+        if (!kiemTraMaDuyNhat(doiTuong.getMaNhanVien())) return false;
+        return ds.add(doiTuong);
     }
 
     public int themNhieu(NhanVien[] cacDoiTuong) {
         int daThem = 0;
-        for (int i = 0; i < cacDoiTuong.length; i++)
-            if (them(cacDoiTuong[i]))
-                daThem++;
+        for (NhanVien nv : cacDoiTuong)
+            if (them(nv)) daThem++;
         return daThem;
     }
 
     @Override
     public boolean sua(String ma, NhanVien moi) {
-        int viTri = timViTri(ma);
-        if (viTri < 0 || moi == null || !moi.kiemTraHopLe())
-            return false;
-        if (!ds[viTri].getMaNhanVien().equalsIgnoreCase(moi.getMaNhanVien()))
-            return false;
-        ds[viTri].capNhatTu(moi);
+        NhanVien cu = timTheoMa(ma);
+        if (cu == null || moi == null || !moi.kiemTraHopLe()) return false;
+        if (!cu.getMaNhanVien().equalsIgnoreCase(moi.getMaNhanVien())) return false;
+        cu.capNhatTu(moi);
         return true;
     }
 
     @Override
     public boolean xoa(String ma) {
-        int viTri = timViTri(ma);
-        if (viTri < 0)
-            return false;
-        for (int i = viTri; i < soLuong - 1; i++)
-            ds[i] = ds[i + 1];
-        ds[--soLuong] = null;
-        return true;
+        NhanVien nv = timTheoMa(ma);
+        if (nv == null) return false;
+        return ds.remove(nv);
     }
 
     @Override
     public NhanVien[] timKiem(String tuKhoa) {
         String key = tuKhoa == null ? "" : tuKhoa.trim().toLowerCase();
-        NhanVien[] kq = new NhanVien[soLuong];
-        int dem = 0;
-        for (int i = 0; i < soLuong; i++)
-            if (phuHop(ds[i], key))
-                kq[dem++] = ds[i];
-        return Arrays.copyOf(kq, dem);
+        ArrayList<NhanVien> kq = new ArrayList<>();
+        for (NhanVien nv : ds)
+            if (phuHop(nv, key)) kq.add(nv);
+        return kq.toArray(new NhanVien[0]);
     }
 
     private boolean phuHop(NhanVien x, String key) {
@@ -113,10 +72,9 @@ public class DanhSachNhanVien implements IQuanLyDanhSach<NhanVien> {
     }
 
     public void hienThiDanhSach() {
-        for (int i = 0; i < soLuong; i++)
-            System.out.println(ds[i].hienThiThongTin());
-        if (soLuong == 0)
-            System.out.println("Danh sach rong.");
+        if (ds.isEmpty()) { System.out.println("Danh sach rong."); return; }
+        for (NhanVien nv : ds)
+            System.out.println(nv.hienThiThongTin());
     }
 
 }
