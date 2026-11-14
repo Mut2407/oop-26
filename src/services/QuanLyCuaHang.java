@@ -80,143 +80,88 @@ public class QuanLyCuaHang {
     }
 
     public boolean themSanPham(SanPham sp) {
-        if (sp == null || sp.getSoLuongTon() != 0 || !dungLoai(sp))
+        if (sp == null)
             return false;
         return danhSachSanPham.them(sp);
     }
 
-    private boolean dungLoai(SanPham sp) {
-        return sp.getLoaiSP() != null && danhSachLoaiSP.timTheoMa(
-                sp.getLoaiSP().getMaLoaiSP()) == sp.getLoaiSP();
-    }
-
     public boolean suaSanPham(String ma, SanPham moi) {
-        if (moi == null || !dungLoai(moi))
+        if (moi == null)
             return false;
         return danhSachSanPham.sua(ma, moi);
     }
 
     public boolean xoaSanPham(String ma) {
-        ma = ma == null ? "" : ma.trim();
-        SanPham sp = danhSachSanPham.timTheoMa(ma);
-        if (sp == null || sp.getSoLuongTon() != 0 || sanPhamDuocDung(ma))
-            return false;
         return danhSachSanPham.xoa(ma);
     }
 
-    private boolean sanPhamDuocDung(String ma) {
-        for (HoaDon hd : danhSachHoaDon.getTatCa())
-            if (hd.timChiTiet(ma) != null)
-                return true;
-        for (PhieuNhap pn : danhSachPhieuNhap.getTatCa())
-            if (pn.timChiTiet(ma) != null)
-                return true;
-        return false;
-    }
-
     public boolean xoaLoaiSP(String ma) {
-        ma = ma == null ? "" : ma.trim();
-        if (danhSachSanPham.locTheoLoaiSP(ma).length > 0)
-            return false;
         return danhSachLoaiSP.xoa(ma);
     }
 
     public boolean xoaKhachHang(String ma) {
-        ma = ma == null ? "" : ma.trim();
-        for (HoaDon hd : danhSachHoaDon.getTatCa())
-            if (hd.getKhachHang().getMaKhachHang().equalsIgnoreCase(ma))
-                return false;
         return danhSachKhachHang.xoa(ma);
     }
 
     public boolean xoaNhanVien(String ma) {
-        ma = ma == null ? "" : ma.trim();
-        for (HoaDon hd : danhSachHoaDon.getTatCa())
-            if (hd.getNhanVien().getMaNhanVien().equalsIgnoreCase(ma))
-                return false;
-        for (PhieuNhap pn : danhSachPhieuNhap.getTatCa())
-            if (pn.getNhanVien().getMaNhanVien().equalsIgnoreCase(ma))
-                return false;
         return danhSachNhanVien.xoa(ma);
     }
 
     public boolean xoaNhaCungCap(String ma) {
-        ma = ma == null ? "" : ma.trim();
-        for (PhieuNhap pn : danhSachPhieuNhap.getTatCa())
-            if (pn.getNhaCungCap().getMaNhaCungCap().equalsIgnoreCase(ma))
-                return false;
         return danhSachNhaCungCap.xoa(ma);
     }
 
-    private boolean dungThamChieu(HoaDon phieu) {
+    public boolean themHoaDon(HoaDon phieu) {
         if (phieu == null || !phieu.kiemTraHopLe())
             return false;
-        return danhSachKhachHang.timTheoMa(phieu.getKhachHang().getMaKhachHang())
-                == phieu.getKhachHang() && danhSachNhanVien.timTheoMa(
-                phieu.getNhanVien().getMaNhanVien()) == phieu.getNhanVien();
-    }
-
-    public boolean themHoaDon(HoaDon phieu) {
-        if (!dungThamChieu(phieu) || !danhSachHoaDon.them(phieu))
+        if (!danhSachHoaDon.them(phieu))
             return false;
-        if (kho.capNhatTheoHoaDon(null, phieu))
-            return true;
-        danhSachHoaDon.xoa(phieu.getMaHoaDon());
-        return false;
+        kho.capNhatTheoHoaDon(null, phieu);
+        return true;
     }
 
     public boolean suaHoaDon(String ma, HoaDon moi) {
         HoaDon cu = danhSachHoaDon.timTheoMa(ma);
-        if (cu == null || !dungThamChieu(moi))
+        if (cu == null || moi == null || !moi.kiemTraHopLe())
             return false;
         if (!danhSachHoaDon.sua(ma, moi))
             return false;
-        if (kho.capNhatTheoHoaDon(cu, moi))
-            return true;
-        danhSachHoaDon.sua(ma, cu);
-        return false;
+        kho.capNhatTheoHoaDon(cu, moi);
+        return true;
     }
 
     public boolean xoaHoaDon(String ma) {
         HoaDon cu = danhSachHoaDon.timTheoMa(ma);
-        if (cu == null || !kho.capNhatTheoHoaDon(cu, null))
+        if (cu == null)
             return false;
+        kho.capNhatTheoHoaDon(cu, null);
         return danhSachHoaDon.xoa(ma);
     }
 
-    private boolean dungThamChieu(PhieuNhap phieu) {
+    public boolean themPhieuNhap(PhieuNhap phieu) {
         if (phieu == null || !phieu.kiemTraHopLe())
             return false;
-        return danhSachNhaCungCap.timTheoMa(phieu.getNhaCungCap().getMaNhaCungCap())
-                == phieu.getNhaCungCap() && danhSachNhanVien.timTheoMa(
-                phieu.getNhanVien().getMaNhanVien()) == phieu.getNhanVien();
-    }
-
-    public boolean themPhieuNhap(PhieuNhap phieu) {
-        if (!dungThamChieu(phieu) || !danhSachPhieuNhap.them(phieu))
+        if (!danhSachPhieuNhap.them(phieu))
             return false;
-        if (kho.capNhatTheoPhieuNhap(null, phieu))
-            return true;
-        danhSachPhieuNhap.xoa(phieu.getMaPhieuNhap());
-        return false;
+        kho.capNhatTheoPhieuNhap(null, phieu);
+        return true;
     }
 
     public boolean suaPhieuNhap(String ma, PhieuNhap moi) {
         PhieuNhap cu = danhSachPhieuNhap.timTheoMa(ma);
-        if (cu == null || !dungThamChieu(moi))
+        if (cu == null || moi == null || !moi.kiemTraHopLe())
             return false;
         if (!danhSachPhieuNhap.sua(ma, moi))
             return false;
-        if (kho.capNhatTheoPhieuNhap(cu, moi))
-            return true;
-        danhSachPhieuNhap.sua(ma, cu);
-        return false;
+        kho.capNhatTheoPhieuNhap(cu, moi);
+        return true;
     }
 
     public boolean xoaPhieuNhap(String ma) {
         PhieuNhap cu = danhSachPhieuNhap.timTheoMa(ma);
-        if (cu == null || !kho.capNhatTheoPhieuNhap(cu, null))
+        if (cu == null)
             return false;
+        kho.capNhatTheoPhieuNhap(cu, null);
         return danhSachPhieuNhap.xoa(ma);
     }
 
@@ -315,8 +260,8 @@ public class QuanLyCuaHang {
     }
 
     private void thongBao(boolean thanhCong) {
-        System.out.println(thanhCong ? "Thanh cong."
-                : "Khong thuc hien duoc: kiem tra ma trung/thieu, tham chieu, chi tiet va ton kho.");
+        System.out.println(thanhCong ? "Thao tac thanh cong!"
+                : "That bai: Vui long kiem tra lai ma hoac du lieu nhap vao.");
     }
 
     private String nhapChuoi(String loiNhac) {
