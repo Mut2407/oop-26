@@ -12,3 +12,12 @@ out/
 # OS
 Thumbs.db
 ~$*
+
+# Runtime snapshots (legacy fixtures remain tracked)
+data/sport-store.txt
+data/sport-store.txt.bak
+sport-store-*.tmp
+
+# File tam va sao luu do chuong trinh tao
+data/tam/
+data/sao_luu/

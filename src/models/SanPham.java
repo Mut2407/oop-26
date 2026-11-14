@@ -1,121 +1,110 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package models;
 
 import java.math.BigDecimal;
-import models.DanhMuc;
-import models.DuLieu;
 
 public abstract class SanPham {
-    private final String maSanPham;
+    private String maSanPham;
     private String tenSanPham;
     private String thuongHieu;
     private BigDecimal giaBan;
     private int soLuongTon;
-    private String mauSac;
-    private String chatLieu;
-    private final DanhMuc danhMuc;
+    private LoaiSP loaiSP;
 
-    public SanPham(String string, String string2, String string3, BigDecimal bigDecimal, int n, String string4, String string5, DanhMuc danhMuc) {
-        if (string == null || !string.trim().matches("[A-Za-z0-9_-]+")) {
-            throw new IllegalArgumentException("Ma san pham khong hop le.");
-        }
-        if (danhMuc == null || DuLieu.timDanhMuc(danhMuc.getMaDanhMuc()) != danhMuc) {
-            throw new IllegalArgumentException("Danh muc khong ton tai.");
-        }
-        if (n < 0) {
-            throw new IllegalArgumentException("Ton kho khong duoc am.");
-        }
-        this.maSanPham = string.trim();
-        this.danhMuc = danhMuc;
-        this.soLuongTon = n;
-        this.capNhatThongTin(string2, string3, string4, string5);
-        this.capNhatGiaBan(bigDecimal);
+    //không tham số
+    public SanPham() {
+        maSanPham = "";
+        tenSanPham = "";
+        thuongHieu = "";
+        giaBan = BigDecimal.ZERO;
+    }
+
+    //có tham số
+    public SanPham(String maSanPham, String tenSanPham, String thuongHieu, BigDecimal giaBan, LoaiSP loaiSP) {
+        kiemTraChuoi(maSanPham);
+        this.maSanPham = maSanPham.trim();
+        setTenSanPham(tenSanPham);
+        setThuongHieu(thuongHieu);
+        setGiaBan(giaBan);
+        setLoaiSP(loaiSP);
     }
 
     public String getMaSanPham() {
-        return this.maSanPham;
+        return maSanPham;
     }
 
     public String getTenSanPham() {
-        return this.tenSanPham;
+        return tenSanPham;
+    }
+
+    public void setTenSanPham(String tenSanPham) {
+        kiemTraChuoi(tenSanPham);
+        this.tenSanPham = tenSanPham;
     }
 
     public String getThuongHieu() {
-        return this.thuongHieu;
+        return thuongHieu;
+    }
+
+    public void setThuongHieu(String thuongHieu) {
+        kiemTraChuoi(thuongHieu);
+        this.thuongHieu = thuongHieu;
     }
 
     public BigDecimal getGiaBan() {
-        return this.giaBan;
+        return giaBan;
+    }
+
+    public void setGiaBan(BigDecimal giaBan) {
+        if (giaBan == null || giaBan.signum() < 0)
+            throw new IllegalArgumentException("Gia ban phai >= 0.");
+        this.giaBan = giaBan;
     }
 
     public int getSoLuongTon() {
-        return this.soLuongTon;
+        return soLuongTon;
     }
 
-    public String getMauSac() {
-        return this.mauSac;
+    public LoaiSP getLoaiSP() {
+        return loaiSP;
     }
 
-    public String getChatLieu() {
-        return this.chatLieu;
+    public void setLoaiSP(LoaiSP loaiSP) {
+        if (loaiSP == null || !loaiSP.kiemTraHopLe())
+            throw new IllegalArgumentException("Loai SP khong hop le.");
+        this.loaiSP = loaiSP;
     }
 
-    public DanhMuc getDanhMuc() {
-        return this.danhMuc;
+    public void capNhatTon(int chenhLech) {
+        long tonMoi = (long) soLuongTon + chenhLech;
+        if (tonMoi < 0 || tonMoi > Integer.MAX_VALUE)
+            throw new IllegalArgumentException("Ton kho ngoai gioi han.");
+        soLuongTon = (int) tonMoi;
     }
 
-    public void capNhatThongTin(String string, String string2, String string3, String string4) {
-        if (string == null || string.isBlank() || string2 == null || string2.isBlank()) {
-            throw new IllegalArgumentException("Ten va thuong hieu khong duoc rong.");
-        }
-        this.tenSanPham = string.trim();
-        this.thuongHieu = string2.trim();
-        this.mauSac = string3 == null || string3.isBlank() ? null : string3.trim();
-        this.chatLieu = string4 == null || string4.isBlank() ? null : string4.trim();
+    public boolean kiemTraHopLe() {
+        return !maSanPham.isEmpty() && !tenSanPham.isEmpty() && !thuongHieu.isEmpty() && loaiSP != null && loaiSP.kiemTraHopLe();
     }
 
-    public void capNhatGiaBan(BigDecimal bigDecimal) {
-        if (bigDecimal == null || bigDecimal.signum() < 0) {
-            throw new IllegalArgumentException("Gia ban khong hop le.");
-        }
-        this.giaBan = bigDecimal;
+    public void capNhatTu(SanPham moi) {
+        setTenSanPham(moi.getTenSanPham());
+        setThuongHieu(moi.getThuongHieu());
+        setGiaBan(moi.getGiaBan());
+        setLoaiSP(moi.getLoaiSP());
     }
 
-    public boolean conDuHang(int n) {
-        return n > 0 && this.soLuongTon >= n;
+    protected String thongTinChung() {
+        return maSanPham + " | " + tenSanPham + " | " + thuongHieu
+                + " | Gia: " + giaBan.toPlainString() + " | Ton: " + soLuongTon
+                + " | Loai: " + loaiSP.getMaLoaiSP();
     }
-
-    public void tangTon(int n) {
-        if (n <= 0) {
-            throw new IllegalArgumentException("So luong phai duong.");
-        }
-        try {
-            this.soLuongTon = Math.addExact(this.soLuongTon, n);
-        }
-        catch (ArithmeticException arithmeticException) {
-            throw new IllegalArgumentException("So luong ton vuot gioi han.", arithmeticException);
-        }
-    }
-
-    public void giamTon(int n) {
-        if (n <= 0 || n > this.soLuongTon) {
-            throw new IllegalArgumentException("So luong giam khong hop le.");
-        }
-        this.soLuongTon -= n;
-    }
-
-    public BigDecimal tinhGiaTriTonTheoGiaBan() {
-        return this.giaBan.multiply(BigDecimal.valueOf(this.soLuongTon));
-    }
-
-    public abstract String layLoaiSanPham();
 
     public abstract String hienThiThongTin();
 
-    public String toString() {
-        return "Ma san pham: " + this.maSanPham + "\nTen san pham: " + this.tenSanPham + "\nGia ban: " + String.valueOf(this.giaBan) + "\nThuong hieu: " + this.thuongHieu + "\nSo luong ton: " + this.soLuongTon + "\nDanh muc: " + this.danhMuc.getTenDanhMuc() + "\nMau sac: " + (this.mauSac == null ? "" : this.mauSac) + "\nChat lieu: " + (this.chatLieu == null ? "" : this.chatLieu);
+    private static void kiemTraChuoi(String giaTri) {
+        if (giaTri == null || giaTri.trim().isEmpty())
+            throw new IllegalArgumentException("Thong tin khong duoc rong.");
+        if (giaTri.contains("|") || giaTri.contains("\n") || giaTri.contains("\r"))
+            throw new IllegalArgumentException("Khong nhap dau | hoac xuong dong.");
     }
-}
 
+}

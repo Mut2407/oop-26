@@ -1,49 +1,78 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package models;
 
 public class NhaCungCap {
-    private final String maNhaCungCap;
+    private String maNhaCungCap;
     private String tenNhaCungCap;
     private String soDienThoai;
     private String diaChi;
 
-    public NhaCungCap(String string, String string2, String string3, String string4) {
-        if (string == null || !string.trim().matches("[A-Za-z0-9_-]+")) {
-            throw new IllegalArgumentException("Ma nha cung cap khong hop le.");
-        }
-        this.maNhaCungCap = string.trim();
-        this.capNhatThongTin(string2, string3, string4);
+    //không tham số
+    public NhaCungCap() {
+        maNhaCungCap = "";
+        tenNhaCungCap = "";
+        soDienThoai = "";
+        diaChi = "";
+    }
+
+    //có tham số
+    public NhaCungCap(String maNhaCungCap, String tenNhaCungCap, String soDienThoai, String diaChi) {
+        kiemTraChuoi(maNhaCungCap);
+        this.maNhaCungCap = maNhaCungCap.trim();
+        setTenNhaCungCap(tenNhaCungCap);
+        setSoDienThoai(soDienThoai);
+        setDiaChi(diaChi);
     }
 
     public String getMaNhaCungCap() {
-        return this.maNhaCungCap;
+        return maNhaCungCap;
     }
 
     public String getTenNhaCungCap() {
-        return this.tenNhaCungCap;
+        return tenNhaCungCap;
+    }
+
+    public void setTenNhaCungCap(String tenNhaCungCap) {
+        kiemTraChuoi(tenNhaCungCap);
+        this.tenNhaCungCap = tenNhaCungCap;
     }
 
     public String getSoDienThoai() {
-        return this.soDienThoai;
+        return soDienThoai;
+    }
+
+    public void setSoDienThoai(String soDienThoai) {
+        kiemTraChuoi(soDienThoai);
+        this.soDienThoai = soDienThoai;
     }
 
     public String getDiaChi() {
-        return this.diaChi;
+        return diaChi;
     }
 
-    public void capNhatThongTin(String string, String string2, String string3) {
-        if (string == null || string.isBlank() || string3 == null || string3.isBlank() || string2 == null || !string2.trim().matches("\\+?[0-9]{9,15}")) {
-            throw new IllegalArgumentException("Thong tin nha cung cap khong hop le.");
-        }
-        this.tenNhaCungCap = string.trim();
-        this.soDienThoai = string2.trim();
-        this.diaChi = string3.trim();
+    public void setDiaChi(String diaChi) {
+        kiemTraChuoi(diaChi);
+        this.diaChi = diaChi;
+    }
+
+    public boolean kiemTraHopLe() {
+        return !maNhaCungCap.isEmpty() && !tenNhaCungCap.isEmpty();
+    }
+
+    public void capNhatTu(NhaCungCap moi) {
+        setTenNhaCungCap(moi.getTenNhaCungCap());
+        setSoDienThoai(moi.getSoDienThoai());
+        setDiaChi(moi.getDiaChi());
     }
 
     public String hienThiThongTin() {
-        return "Ma nha cung cap: " + this.maNhaCungCap + "\nTen nha cung cap: " + this.tenNhaCungCap + "\nSo dien thoai: " + this.soDienThoai + "\nDia chi: " + this.diaChi;
+        return maNhaCungCap + " | " + tenNhaCungCap + " | " + soDienThoai + " | " + diaChi;
     }
-}
 
+    private static void kiemTraChuoi(String giaTri) {
+        if (giaTri == null || giaTri.trim().isEmpty())
+            throw new IllegalArgumentException("Thong tin khong duoc rong.");
+        if (giaTri.contains("|") || giaTri.contains("\n") || giaTri.contains("\r"))
+            throw new IllegalArgumentException("Khong nhap dau | hoac xuong dong.");
+    }
+
+}

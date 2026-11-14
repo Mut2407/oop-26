@@ -1,63 +1,79 @@
 package models;
 
 public class NhanVien {
-    private final String maNhanVien;
-    private final String hoTen;
-    private String caLamViec;
+    private String maNhanVien;
+    private String hoTen;
     private String soDienThoai;
+    private String caLamViec;
 
-    /** UML order: code, name, phone, shift (unlike the old five-argument constructor). */
-    public NhanVien(String ma, String ten, String sdt, String ca) {
-        if (ma == null || !ma.trim().matches("[A-Za-z0-9_-]+")) {
-            throw new IllegalArgumentException("Ma nhan vien khong hop le.");
-        }
-        if (ten == null || ten.isBlank()) {
-            throw new IllegalArgumentException("Ho ten khong duoc de trong.");
-        }
-        this.maNhanVien = ma.trim();
-        this.hoTen = ten.trim();
-        capNhatLienHe(sdt);
-        doiCaLamViec(ca);
+
+    //không tham số
+    public NhanVien() {
+        maNhanVien = "";
+        hoTen = "";
+        soDienThoai = "";
+        caLamViec = "";
+    }
+
+    //có tham số
+    public NhanVien(String maNhanVien, String hoTen, String soDienThoai, String caLamViec) {
+        kiemTraChuoi(maNhanVien);
+        this.maNhanVien = maNhanVien.trim();
+        setHoTen(hoTen);
+        setSoDienThoai(soDienThoai);
+        setCaLamViec(caLamViec);
     }
 
     public String getMaNhanVien() {
-        return this.maNhanVien;
+        return maNhanVien;
     }
 
     public String getHoTen() {
-        return this.hoTen;
+        return hoTen;
     }
 
-    public String getCaLamViec() {
-        return this.caLamViec;
+    public void setHoTen(String hoTen) {
+        kiemTraChuoi(hoTen);
+        this.hoTen = hoTen;
     }
 
     public String getSoDienThoai() {
-        return this.soDienThoai;
+        return soDienThoai;
     }
 
-    public void doiCaLamViec(String caMoi) {
-        if (caMoi == null || caMoi.isBlank()) {
-            throw new IllegalArgumentException("Ca lam viec khong duoc de trong.");
-        }
-        this.caLamViec = caMoi.trim();
+    public void setSoDienThoai(String soDienThoai) {
+        kiemTraChuoi(soDienThoai);
+        this.soDienThoai = soDienThoai;
     }
 
-    public void capNhatLienHe(String soDienThoai) {
-        if (soDienThoai == null || !soDienThoai.trim().matches("\\+?[0-9]{9,15}")) {
-            throw new IllegalArgumentException("So dien thoai phai co 9-15 chu so, co the bat dau bang +.");
-        }
-        this.soDienThoai = soDienThoai.trim();
+    public String getCaLamViec() {
+        return caLamViec;
+    }
+
+    public void setCaLamViec(String caLamViec) {
+        kiemTraChuoi(caLamViec);
+        this.caLamViec = caLamViec;
+    }
+
+    public boolean kiemTraHopLe() {
+        return !maNhanVien.isEmpty() && !hoTen.isEmpty();
+    }
+
+    public void capNhatTu(NhanVien moi) {
+        setHoTen(moi.getHoTen());
+        setSoDienThoai(moi.getSoDienThoai());
+        setCaLamViec(moi.getCaLamViec());
     }
 
     public String hienThiThongTin() {
-        return "Ma Nhan Vien: " + this.maNhanVien + "\nHo ten Nhan Vien: " + this.hoTen + "\nSo dien thoai: " + this.soDienThoai + "\nCa lam viec: " + this.caLamViec;
+        return maNhanVien + " | " + hoTen + " | " + soDienThoai + " | " + caLamViec;
     }
 
-    /** Adapter for the old display API; legacy addresses belong to list metadata. */
-    @Deprecated
-    public String thongTinNhanVien() {
-        return hienThiThongTin();
+    private static void kiemTraChuoi(String giaTri) {
+        if (giaTri == null || giaTri.trim().isEmpty())
+            throw new IllegalArgumentException("Thong tin khong duoc rong.");
+        if (giaTri.contains("|") || giaTri.contains("\n") || giaTri.contains("\r"))
+            throw new IllegalArgumentException("Khong nhap dau | hoac xuong dong.");
     }
+
 }
-
