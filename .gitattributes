@@ -1,0 +1,2 @@
+# Giu nguyen cot TSV rong cuoi dong trong cac ban du lieu goc.
+data/du_lieu_cu/*.txt whitespace=-blank-at-eol
