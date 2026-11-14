@@ -253,10 +253,9 @@ public class QuanLyCuaHang {
         System.out.println("2. Them");   
         System.out.println("3. Sua");   
         System.out.println("4. Xoa");   
-        System.out.println("5. Tim kiem");
-        System.out.println("6. Them nhieu (nhap n/k phan tu)");   
+        System.out.println("5. Tim kiem");   
         System.out.println("0. Quay lai");
-        return nhapSoNguyen("Chon: ", 0, 6);
+        return nhapSoNguyen("Chon: ", 0, 5);
     }
 
     private void thongBao(boolean thanhCong) {
@@ -346,12 +345,15 @@ public class QuanLyCuaHang {
         else if (chon == 3) suaSanPhamTuBanPhim();
         else if (chon == 4) thongBao(xoaSanPham(nhapChuoi("Ma can xoa: ")));
         else if (chon == 5) timSanPhamTuBanPhim();
-        else if (chon == 6) themNhieuSanPham();
     }
 
     private void themSanPhamTuBanPhim() {
-        String ma = nhapChuoi("Ma moi: ");
-        thongBao(themSanPham(nhapSanPham(ma, null)));
+        int n = nhapSoNguyen("Nhap so luong can them (1-100): ", 1, 100);
+        for (int i = 0; i < n; i++) {
+            if (n > 1) System.out.println("\n-- Nhap phan tu thu " + (i + 1) + " --");
+            String ma = nhapChuoi("Ma moi: ");
+            thongBao(themSanPham(nhapSanPham(ma, null)));
+        }
     }
 
     private void suaSanPhamTuBanPhim() {
@@ -360,12 +362,6 @@ public class QuanLyCuaHang {
         if (cu == null)
             throw new IllegalArgumentException("Khong tim thay SP.");
         thongBao(suaSanPham(ma, nhapSanPham(cu.getMaSanPham(), cu)));
-    }
-
-    private void themNhieuSanPham() {
-        int n = nhapSoNguyen("So phan tu can them: ", 1, 1000);
-        for (int i = 0; i < n; i++)
-            themSanPhamTuBanPhim();
     }
 
     private void menuLoaiSP() {
@@ -382,24 +378,20 @@ public class QuanLyCuaHang {
         else if (chon == 3) suaLoaiSPTuBanPhim();
         else if (chon == 4) thongBao(xoaLoaiSP(nhapChuoi("Ma can xoa: ")));
         else if (chon == 5) timLoaiSPTuBanPhim();
-        else if (chon == 6) themNhieuLoaiSP();
     }
 
     private void themLoaiSPTuBanPhim() {
-        String ma = nhapChuoi("Ma moi: ");
-        IQuanLyDanhSach<LoaiSP> quanLy = danhSachLoaiSP;
-        thongBao(quanLy.them(nhapLoaiSP(ma)));
+        int n = nhapSoNguyen("Nhap so luong can them (1-100): ", 1, 100);
+        for (int i = 0; i < n; i++) {
+            if (n > 1) System.out.println("\n-- Nhap phan tu thu " + (i + 1) + " --");
+            String ma = nhapChuoi("Ma moi: ");
+            thongBao(danhSachLoaiSP.them(nhapLoaiSP(ma)));
+        }
     }
 
     private void suaLoaiSPTuBanPhim() {
         String ma = nhapChuoi("Ma can sua: ");
         thongBao(danhSachLoaiSP.sua(ma, nhapLoaiSP(ma)));
-    }
-
-    private void themNhieuLoaiSP() {
-        int n = nhapSoNguyen("So phan tu can them: ", 1, 1000);
-        for (int i = 0; i < n; i++)
-            themLoaiSPTuBanPhim();
     }
 
     private void timLoaiSPTuBanPhim() {
@@ -423,23 +415,20 @@ public class QuanLyCuaHang {
         else if (chon == 3) suaKhachHangTuBanPhim();
         else if (chon == 4) thongBao(xoaKhachHang(nhapChuoi("Ma can xoa: ")));
         else if (chon == 5) timKhachHangTuBanPhim();
-        else if (chon == 6) themNhieuKhachHang();
     }
 
     private void themKhachHangTuBanPhim() {
-        String ma = nhapChuoi("Ma moi: ");
-        thongBao(danhSachKhachHang.them(nhapKhachHang(ma)));
+        int n = nhapSoNguyen("Nhap so luong can them (1-100): ", 1, 100);
+        for (int i = 0; i < n; i++) {
+            if (n > 1) System.out.println("\n-- Nhap phan tu thu " + (i + 1) + " --");
+            String ma = nhapChuoi("Ma moi: ");
+            thongBao(danhSachKhachHang.them(nhapKhachHang(ma)));
+        }
     }
 
     private void suaKhachHangTuBanPhim() {
         String ma = nhapChuoi("Ma can sua: ");
         thongBao(danhSachKhachHang.sua(ma, nhapKhachHang(ma)));
-    }
-
-    private void themNhieuKhachHang() {
-        int n = nhapSoNguyen("So phan tu can them: ", 1, 1000);
-        for (int i = 0; i < n; i++)
-            themKhachHangTuBanPhim();
     }
 
     private void timKhachHangTuBanPhim() {
@@ -463,23 +452,20 @@ public class QuanLyCuaHang {
         else if (chon == 3) suaNhanVienTuBanPhim();
         else if (chon == 4) thongBao(xoaNhanVien(nhapChuoi("Ma can xoa: ")));
         else if (chon == 5) timNhanVienTuBanPhim();
-        else if (chon == 6) themNhieuNhanVien();
     }
 
     private void themNhanVienTuBanPhim() {
-        String ma = nhapChuoi("Ma moi: ");
-        thongBao(danhSachNhanVien.them(nhapNhanVien(ma)));
+        int n = nhapSoNguyen("Nhap so luong can them (1-100): ", 1, 100);
+        for (int i = 0; i < n; i++) {
+            if (n > 1) System.out.println("\n-- Nhap phan tu thu " + (i + 1) + " --");
+            String ma = nhapChuoi("Ma moi: ");
+            thongBao(danhSachNhanVien.them(nhapNhanVien(ma)));
+        }
     }
 
     private void suaNhanVienTuBanPhim() {
         String ma = nhapChuoi("Ma can sua: ");
         thongBao(danhSachNhanVien.sua(ma, nhapNhanVien(ma)));
-    }
-
-    private void themNhieuNhanVien() {
-        int n = nhapSoNguyen("So phan tu can them: ", 1, 1000);
-        for (int i = 0; i < n; i++)
-            themNhanVienTuBanPhim();
     }
 
     private void timNhanVienTuBanPhim() {
@@ -503,23 +489,20 @@ public class QuanLyCuaHang {
         else if (chon == 3) suaNhaCungCapTuBanPhim();
         else if (chon == 4) thongBao(xoaNhaCungCap(nhapChuoi("Ma can xoa: ")));
         else if (chon == 5) timNhaCungCapTuBanPhim();
-        else if (chon == 6) themNhieuNhaCungCap();
     }
 
     private void themNhaCungCapTuBanPhim() {
-        String ma = nhapChuoi("Ma moi: ");
-        thongBao(danhSachNhaCungCap.them(nhapNhaCungCap(ma)));
+        int n = nhapSoNguyen("Nhap so luong can them (1-100): ", 1, 100);
+        for (int i = 0; i < n; i++) {
+            if (n > 1) System.out.println("\n-- Nhap phan tu thu " + (i + 1) + " --");
+            String ma = nhapChuoi("Ma moi: ");
+            thongBao(danhSachNhaCungCap.them(nhapNhaCungCap(ma)));
+        }
     }
 
     private void suaNhaCungCapTuBanPhim() {
         String ma = nhapChuoi("Ma can sua: ");
         thongBao(danhSachNhaCungCap.sua(ma, nhapNhaCungCap(ma)));
-    }
-
-    private void themNhieuNhaCungCap() {
-        int n = nhapSoNguyen("So phan tu can them: ", 1, 1000);
-        for (int i = 0; i < n; i++)
-            themNhaCungCapTuBanPhim();
     }
 
     private void timNhaCungCapTuBanPhim() {
