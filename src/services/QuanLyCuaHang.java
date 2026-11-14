@@ -170,7 +170,7 @@ public class QuanLyCuaHang {
         if (!napLucBatDau())
             return;
         while (chayMotLuot()) {
-            // Moi luot chi thuc hien mot lua chon menu.
+            // Mỗi lần chỉ chọn 1
         }
         luuVaThongBao();
     }
@@ -212,30 +212,22 @@ public class QuanLyCuaHang {
         System.out.println("0. Luu va thoat");
     }
 
+    //menu chính
     private boolean xuLyMenu(int chon) {
-        if (chon == 0)
-            return false;
-        if (chon <= 5)
-            moMenuDuLieu(chon);
-        else
-            moMenuNghiepVu(chon);
+        switch (chon) {
+            case 1: menuSanPham(); break;
+            case 2: menuLoaiSP(); break;
+            case 3: menuKhachHang(); break;
+            case 4: menuNhanVien(); break;
+            case 5: menuNhaCungCap(); break;
+            case 6: menuHoaDon(); break;
+            case 7: menuPhieuNhap(); break;
+            case 8: traCuuTon(); break;
+            case 9: menuThongKe(); break;
+            case 10: luuVaThongBao(); break;
+            case 0: return false;
+        }
         return true;
-    }
-
-    private void moMenuDuLieu(int chon) {
-        if (chon == 1) menuSanPham();
-        else if (chon == 2) menuLoaiSP();
-        else if (chon == 3) menuKhachHang();
-        else if (chon == 4) menuNhanVien();
-        else if (chon == 5) menuNhaCungCap();
-    }
-
-    private void moMenuNghiepVu(int chon) {
-        if (chon == 6) menuHoaDon();
-        else if (chon == 7) menuPhieuNhap();
-        else if (chon == 8) traCuuTon();
-        else if (chon == 9) menuThongKe();
-        else if (chon == 10) luuVaThongBao();
     }
 
     private void luuVaThongBao() {
@@ -331,20 +323,19 @@ public class QuanLyCuaHang {
         return x;
     }
 
+    //menu sản phẩm
     private void menuSanPham() {
-        int chon = chonTacVu("SanPham");
-        while (chon != 0) {
-            xuLySanPham(chon);
+        int chon;
+        do {
             chon = chonTacVu("SanPham");
-        }
-    }
-
-    private void xuLySanPham(int chon) {
-        if (chon == 1) danhSachSanPham.hienThiDanhSach();
-        else if (chon == 2) themSanPhamTuBanPhim();
-        else if (chon == 3) suaSanPhamTuBanPhim();
-        else if (chon == 4) thongBao(xoaSanPham(nhapChuoi("Ma can xoa: ")));
-        else if (chon == 5) timSanPhamTuBanPhim();
+            switch (chon) {
+                case 1: danhSachSanPham.hienThiDanhSach(); break;
+                case 2: themSanPhamTuBanPhim(); break;
+                case 3: suaSanPhamTuBanPhim(); break;
+                case 4: thongBao(xoaSanPham(nhapChuoi("Ma can xoa: "))); break;
+                case 5: timSanPhamTuBanPhim(); break;
+            }
+        } while (chon != 0);
     }
 
     private void themSanPhamTuBanPhim() {
@@ -364,20 +355,19 @@ public class QuanLyCuaHang {
         thongBao(suaSanPham(ma, nhapSanPham(cu.getMaSanPham(), cu)));
     }
 
+    //menu loại sp
     private void menuLoaiSP() {
-        int chon = chonTacVu("LoaiSP");
-        while (chon != 0) {
-            xuLyLoaiSP(chon);
+        int chon;
+        do {
             chon = chonTacVu("LoaiSP");
-        }
-    }
-
-    private void xuLyLoaiSP(int chon) {
-        if (chon == 1) danhSachLoaiSP.hienThiDanhSach();
-        else if (chon == 2) themLoaiSPTuBanPhim();
-        else if (chon == 3) suaLoaiSPTuBanPhim();
-        else if (chon == 4) thongBao(xoaLoaiSP(nhapChuoi("Ma can xoa: ")));
-        else if (chon == 5) timLoaiSPTuBanPhim();
+            switch (chon) {
+                case 1: danhSachLoaiSP.hienThiDanhSach(); break;
+                case 2: themLoaiSPTuBanPhim(); break;
+                case 3: suaLoaiSPTuBanPhim(); break;
+                case 4: thongBao(xoaLoaiSP(nhapChuoi("Ma can xoa: "))); break;
+                case 5: timLoaiSPTuBanPhim(); break;
+            }
+        } while (chon != 0);
     }
 
     private void themLoaiSPTuBanPhim() {
@@ -401,20 +391,19 @@ public class QuanLyCuaHang {
         System.out.println("Tim thay: " + kq.length);
     }
 
+    //menu khách hàng
     private void menuKhachHang() {
-        int chon = chonTacVu("KhachHang");
-        while (chon != 0) {
-            xuLyKhachHang(chon);
+        int chon;
+        do {
             chon = chonTacVu("KhachHang");
-        }
-    }
-
-    private void xuLyKhachHang(int chon) {
-        if (chon == 1) danhSachKhachHang.hienThiDanhSach();
-        else if (chon == 2) themKhachHangTuBanPhim();
-        else if (chon == 3) suaKhachHangTuBanPhim();
-        else if (chon == 4) thongBao(xoaKhachHang(nhapChuoi("Ma can xoa: ")));
-        else if (chon == 5) timKhachHangTuBanPhim();
+            switch (chon) {
+                case 1: danhSachKhachHang.hienThiDanhSach(); break;
+                case 2: themKhachHangTuBanPhim(); break;
+                case 3: suaKhachHangTuBanPhim(); break;
+                case 4: thongBao(xoaKhachHang(nhapChuoi("Ma can xoa: "))); break;
+                case 5: timKhachHangTuBanPhim(); break;
+            }
+        } while (chon != 0);
     }
 
     private void themKhachHangTuBanPhim() {
@@ -438,20 +427,19 @@ public class QuanLyCuaHang {
         System.out.println("Tim thay: " + kq.length);
     }
 
+    // menu nhân viên
     private void menuNhanVien() {
-        int chon = chonTacVu("NhanVien");
-        while (chon != 0) {
-            xuLyNhanVien(chon);
+        int chon;
+        do {
             chon = chonTacVu("NhanVien");
-        }
-    }
-
-    private void xuLyNhanVien(int chon) {
-        if (chon == 1) danhSachNhanVien.hienThiDanhSach();
-        else if (chon == 2) themNhanVienTuBanPhim();
-        else if (chon == 3) suaNhanVienTuBanPhim();
-        else if (chon == 4) thongBao(xoaNhanVien(nhapChuoi("Ma can xoa: ")));
-        else if (chon == 5) timNhanVienTuBanPhim();
+            switch (chon) {
+                case 1: danhSachNhanVien.hienThiDanhSach(); break;
+                case 2: themNhanVienTuBanPhim(); break;
+                case 3: suaNhanVienTuBanPhim(); break;
+                case 4: thongBao(xoaNhanVien(nhapChuoi("Ma can xoa: "))); break;
+                case 5: timNhanVienTuBanPhim(); break;
+            }
+        } while (chon != 0);
     }
 
     private void themNhanVienTuBanPhim() {
@@ -475,20 +463,19 @@ public class QuanLyCuaHang {
         System.out.println("Tim thay: " + kq.length);
     }
 
+    //menu nhà cung cấp
     private void menuNhaCungCap() {
-        int chon = chonTacVu("NhaCungCap");
-        while (chon != 0) {
-            xuLyNhaCungCap(chon);
+        int chon;
+        do {
             chon = chonTacVu("NhaCungCap");
-        }
-    }
-
-    private void xuLyNhaCungCap(int chon) {
-        if (chon == 1) danhSachNhaCungCap.hienThiDanhSach();
-        else if (chon == 2) themNhaCungCapTuBanPhim();
-        else if (chon == 3) suaNhaCungCapTuBanPhim();
-        else if (chon == 4) thongBao(xoaNhaCungCap(nhapChuoi("Ma can xoa: ")));
-        else if (chon == 5) timNhaCungCapTuBanPhim();
+            switch (chon) {
+                case 1: danhSachNhaCungCap.hienThiDanhSach(); break;
+                case 2: themNhaCungCapTuBanPhim(); break;
+                case 3: suaNhaCungCapTuBanPhim(); break;
+                case 4: thongBao(xoaNhaCungCap(nhapChuoi("Ma can xoa: "))); break;
+                case 5: timNhaCungCapTuBanPhim(); break;
+            }
+        } while (chon != 0);
     }
 
     private void themNhaCungCapTuBanPhim() {
@@ -580,21 +567,20 @@ public class QuanLyCuaHang {
         return danhSachSanPham.locTheoKhoangGia(nhapTien("Gia tu: "), nhapTien("Gia den: "));
     }
 
+    //menu hóa đơn
     private void menuHoaDon() {
-        int chon = chonTacVuChungTu("HoaDon");
-        while (chon != 0) {
-            xuLyHoaDon(chon);
+        int chon;
+        do {
             chon = chonTacVuChungTu("HoaDon");
-        }
-    }
-
-    private void xuLyHoaDon(int chon) {
-        if (chon == 1) danhSachHoaDon.hienThiDanhSach();
-        else if (chon == 2) themHoaDonTuBanPhim();
-        else if (chon == 3) suaHoaDonTuBanPhim();
-        else if (chon == 4) thongBao(xoaHoaDon(nhapChuoi("Ma can xoa: ")));
-        else if (chon == 5) timHoaDonTuBanPhim();
-        else if (chon == 6) xemChiTietHoaDon();
+            switch (chon) {
+                case 1: danhSachHoaDon.hienThiDanhSach(); break;
+                case 2: themHoaDonTuBanPhim(); break;
+                case 3: suaHoaDonTuBanPhim(); break;
+                case 4: thongBao(xoaHoaDon(nhapChuoi("Ma can xoa: "))); break;
+                case 5: timHoaDonTuBanPhim(); break;
+                case 6: xemChiTietHoaDon(); break;
+            }
+        } while (chon != 0);
     }
 
     private HoaDon nhapHoaDon(String ma) {
@@ -623,20 +609,18 @@ public class QuanLyCuaHang {
         thongBao(suaHoaDon(moi.getMaHoaDon(), moi));
     }
 
-    // Danh sach tra ban sao: huy/sua ban soan khong lam doi chung tu da luu.
+    // danh sách trả bản copy: hủy/sửa bản copy đã lưu mà ko làm thay đổi đã lưu
     private void soanHoaDon(HoaDon phieu) {
-        int chon = chonChiTiet();
-        while (chon != 0) {
-            xuLyChiTietHoaDon(phieu, chon);
+        int chon;
+        do {
             chon = chonChiTiet();
-        }
-    }
-
-    private void xuLyChiTietHoaDon(HoaDon phieu, int chon) {
-        if (chon == 1) hienThiChiTiet(phieu);
-        else if (chon == 2) thongBao(phieu.themChiTiet(nhapChiTietHoaDon(chonSanPham())));
-        else if (chon == 3) suaDongHoaDon(phieu);
-        else if (chon == 4) thongBao(phieu.xoaChiTiet(nhapChuoi("Ma SP can xoa: ")));
+            switch (chon) {
+                case 1: hienThiChiTiet(phieu); break;
+                case 2: thongBao(phieu.themChiTiet(nhapChiTietHoaDon(chonSanPham()))); break;
+                case 3: suaDongHoaDon(phieu); break;
+                case 4: thongBao(phieu.xoaChiTiet(nhapChuoi("Ma SP can xoa: "))); break;
+            }
+        } while (chon != 0);
     }
 
     private ChiTietHoaDon nhapChiTietHoaDon(SanPham sp) {
@@ -667,21 +651,20 @@ public class QuanLyCuaHang {
         System.out.println("Tim thay: " + kq.length);
     }
 
+    //menu phiếu nhập
     private void menuPhieuNhap() {
-        int chon = chonTacVuChungTu("PhieuNhap");
-        while (chon != 0) {
-            xuLyPhieuNhap(chon);
+        int chon;
+        do {
             chon = chonTacVuChungTu("PhieuNhap");
-        }
-    }
-
-    private void xuLyPhieuNhap(int chon) {
-        if (chon == 1) danhSachPhieuNhap.hienThiDanhSach();
-        else if (chon == 2) themPhieuNhapTuBanPhim();
-        else if (chon == 3) suaPhieuNhapTuBanPhim();
-        else if (chon == 4) thongBao(xoaPhieuNhap(nhapChuoi("Ma can xoa: ")));
-        else if (chon == 5) timPhieuNhapTuBanPhim();
-        else if (chon == 6) xemChiTietPhieuNhap();
+            switch (chon) {
+                case 1: danhSachPhieuNhap.hienThiDanhSach(); break;
+                case 2: themPhieuNhapTuBanPhim(); break;
+                case 3: suaPhieuNhapTuBanPhim(); break;
+                case 4: thongBao(xoaPhieuNhap(nhapChuoi("Ma can xoa: "))); break;
+                case 5: timPhieuNhapTuBanPhim(); break;
+                case 6: xemChiTietPhieuNhap(); break;
+            }
+        } while (chon != 0);
     }
 
     private PhieuNhap nhapPhieuNhap(String ma) {
@@ -710,20 +693,18 @@ public class QuanLyCuaHang {
         thongBao(suaPhieuNhap(moi.getMaPhieuNhap(), moi));
     }
 
-    // Chi cap nhat kho khi luu thanh cong toan bo phieu.
+    // cập nhật kho khi đã lưu phiếu nhập
     private void soanPhieuNhap(PhieuNhap phieu) {
-        int chon = chonChiTiet();
-        while (chon != 0) {
-            xuLyChiTietPhieuNhap(phieu, chon);
+        int chon;
+        do {
             chon = chonChiTiet();
-        }
-    }
-
-    private void xuLyChiTietPhieuNhap(PhieuNhap phieu, int chon) {
-        if (chon == 1) hienThiChiTiet(phieu);
-        else if (chon == 2) thongBao(phieu.themChiTiet(nhapChiTietPhieuNhap(chonSanPham())));
-        else if (chon == 3) suaDongPhieuNhap(phieu);
-        else if (chon == 4) thongBao(phieu.xoaChiTiet(nhapChuoi("Ma SP can xoa: ")));
+            switch (chon) {
+                case 1: hienThiChiTiet(phieu); break;
+                case 2: thongBao(phieu.themChiTiet(nhapChiTietPhieuNhap(chonSanPham()))); break;
+                case 3: suaDongPhieuNhap(phieu); break;
+                case 4: thongBao(phieu.xoaChiTiet(nhapChuoi("Ma SP can xoa: "))); break;
+            }
+        } while (chon != 0);
     }
 
     private ChiTietPhieuNhap nhapChiTietPhieuNhap(SanPham sp) {
