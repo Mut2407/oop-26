@@ -1,56 +1,79 @@
 package models;
 
 public class KhachHang {
-    private final String maKhachHang;
+    private String maKhachHang;
     private String hoTen;
-    private String diaChi;
     private String soDienThoai;
+    private String diaChi;
 
-    public KhachHang(String ma, String ten, String sdt, String diaChi) {
-        if (ma == null || !ma.trim().matches("[A-Za-z0-9_-]+")) {
-            throw new IllegalArgumentException("Ma khach hang khong hop le.");
+
+    //không tham số
+    public KhachHang() {
+        maKhachHang = "";
+        hoTen = "";
+        soDienThoai = "";
+        diaChi = "";
         }
-        this.maKhachHang = ma.trim();
-        capNhatThongTin(ten, sdt, diaChi);
+
+    //có tham số
+    public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String diaChi) {
+        kiemTraChuoi(maKhachHang);
+        this.maKhachHang = maKhachHang.trim();
+        setHoTen(hoTen);
+        setSoDienThoai(soDienThoai);
+        setDiaChi(diaChi);
     }
 
     public String getMaKhachHang() {
-        return this.maKhachHang;
+        return maKhachHang;
     }
 
     public String getHoTen() {
-        return this.hoTen;
+        return hoTen;
     }
 
-    public String getDiaChi() {
-        return this.diaChi;
+    public void setHoTen(String hoTen) {
+        kiemTraChuoi(hoTen);
+        this.hoTen = hoTen;
     }
 
     public String getSoDienThoai() {
-        return this.soDienThoai;
+        return soDienThoai;
     }
 
-    public void capNhatThongTin(String ten, String sdt, String diaChi) {
-        if (ten == null || ten.isBlank() || diaChi == null || diaChi.isBlank()) {
-            throw new IllegalArgumentException("Ho ten va dia chi khong duoc de trong.");
-        }
-        if (sdt == null || !sdt.trim().matches("\\+?[0-9]{9,15}")) {
-            throw new IllegalArgumentException("So dien thoai phai co 9-15 chu so, co the bat dau bang +.");
-        }
-        // Validate every field before changing any state.
-        this.hoTen = ten.trim();
-        this.soDienThoai = sdt.trim();
-        this.diaChi = diaChi.trim();
+    public void setSoDienThoai(String soDienThoai) {
+        kiemTraChuoi(soDienThoai);
+        this.soDienThoai = soDienThoai;
+    }
+
+    public String getDiaChi() {
+        return diaChi;
+    }
+
+    public void setDiaChi(String diaChi) {
+        kiemTraChuoi(diaChi);
+        this.diaChi = diaChi;
+    }
+
+    public boolean kiemTraHopLe() {
+        return !maKhachHang.isEmpty() && !hoTen.isEmpty();
+    }
+
+    public void capNhatTu(KhachHang moi) {
+        setHoTen(moi.getHoTen());
+        setSoDienThoai(moi.getSoDienThoai());
+        setDiaChi(moi.getDiaChi());
     }
 
     public String hienThiThongTin() {
-        return "Ma khach hang: " + this.maKhachHang + "\nHo ten: " + this.hoTen + "\nSo dien thoai: " + this.soDienThoai + "\nDia chi: " + this.diaChi;
+        return maKhachHang + " | " + hoTen + " | " + soDienThoai + " | " + diaChi;
     }
 
-    /** Adapter for callers using the old display API. */
-    @Deprecated
-    public String thongTinKhachHang() {
-        return hienThiThongTin();
+    private static void kiemTraChuoi(String giaTri) {
+        if (giaTri == null || giaTri.trim().isEmpty())
+            throw new IllegalArgumentException("Thong tin khong duoc rong.");
+        if (giaTri.contains("|") || giaTri.contains("\n") || giaTri.contains("\r"))
+            throw new IllegalArgumentException("Khong nhap dau | hoac xuong dong.");
     }
+
 }
-

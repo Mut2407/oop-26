@@ -2,16 +2,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Sport Store - Console",
       "type": "java",
+      "name": "Main",
       "request": "launch",
       "mainClass": "Main",
-      "classPaths": ["${workspaceFolder}/out/console"],
-      "sourcePaths": ["${workspaceFolder}/src"],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "vmArgs": "-Dfile.encoding=UTF-8",
-      "preLaunchTask": "Build Console (PowerShell)"
+      "projectName": "oop_26_f5470c12"
     }
   ]
 }
