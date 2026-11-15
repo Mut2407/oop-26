@@ -164,7 +164,7 @@ public class QuanLyCuaHang {
         kho.capNhatTheoPhieuNhap(cu, null);
         return danhSachPhieuNhap.xoa(ma);
     }
-
+    //chạy chương trình
     public void chay() {
         banPhim = new Scanner(System.in, "UTF-8");
         if (!napLucBatDau())
