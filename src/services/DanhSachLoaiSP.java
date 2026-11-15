@@ -1,40 +1,37 @@
 package services;
 
 import models.*;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class DanhSachLoaiSP implements IQuanLyDanhSach<LoaiSP> {
-    private LoaiSP[] ds;
-    private int soLuong;
-    private static final int SUC_CHUA_MAC_DINH = 10;
+    private ArrayList<LoaiSP> ds;
 
     public DanhSachLoaiSP() {
-        this(SUC_CHUA_MAC_DINH);
+        ds = new ArrayList<>();
     }
 
     public DanhSachLoaiSP(int sucChua) {
         if (sucChua <= 0)
             throw new IllegalArgumentException("Suc chua phai > 0.");
-        ds = new LoaiSP[sucChua];
+        ds = new ArrayList<>(sucChua);
     }
 
     public int getSoLuong() {
-        return soLuong;
+        return ds.size();
     }
 
     public LoaiSP[] getTatCa() {
-        LoaiSP[] kq = new LoaiSP[soLuong];
-        for (int i = 0; i < soLuong; i++)
-            kq[i] = ds[i];
-        return kq;
+        return ds.toArray(new LoaiSP[0]);
     }
 
     private int timViTri(String ma) {
         if (ma == null)
             return -1;
-        for (int i = 0; i < soLuong; i++)
-            if (ds[i].getMaLoaiSP().equalsIgnoreCase(ma.trim()))
+        String maCanTim = ma.trim();
+        for (int i = 0; i < ds.size(); i++) {
+            if (ds.get(i).getMaLoaiSP().equalsIgnoreCase(maCanTim))
                 return i;
+        }
         return -1;
     }
 
@@ -46,11 +43,7 @@ public class DanhSachLoaiSP implements IQuanLyDanhSach<LoaiSP> {
         int viTri = timViTri(ma);
         if (viTri < 0)
             return null;
-        return ds[viTri];
-    }
-
-    private void moRongMang() {
-        ds = Arrays.copyOf(ds, ds.length + SUC_CHUA_MAC_DINH);
+        return ds.get(viTri);
     }
 
     @Override
@@ -59,17 +52,17 @@ public class DanhSachLoaiSP implements IQuanLyDanhSach<LoaiSP> {
             return false;
         if (!kiemTraMaDuyNhat(doiTuong.getMaLoaiSP()))
             return false;
-        if (soLuong == ds.length)
-            moRongMang();
-        ds[soLuong++] = doiTuong;
-        return true;
+        return ds.add(doiTuong);
     }
 
     public int themNhieu(LoaiSP[] cacDoiTuong) {
+        if (cacDoiTuong == null)
+            return 0;
         int daThem = 0;
-        for (int i = 0; i < cacDoiTuong.length; i++)
-            if (them(cacDoiTuong[i]))
+        for (LoaiSP loaiSP : cacDoiTuong) {
+            if (them(loaiSP))
                 daThem++;
+        }
         return daThem;
     }
 
@@ -78,9 +71,9 @@ public class DanhSachLoaiSP implements IQuanLyDanhSach<LoaiSP> {
         int viTri = timViTri(ma);
         if (viTri < 0 || moi == null || !moi.kiemTraHopLe())
             return false;
-        if (!ds[viTri].getMaLoaiSP().equalsIgnoreCase(moi.getMaLoaiSP()))
+        if (!ds.get(viTri).getMaLoaiSP().equalsIgnoreCase(moi.getMaLoaiSP()))
             return false;
-        ds[viTri].capNhatTu(moi);
+        ds.get(viTri).capNhatTu(moi);
         return true;
     }
 
@@ -89,21 +82,19 @@ public class DanhSachLoaiSP implements IQuanLyDanhSach<LoaiSP> {
         int viTri = timViTri(ma);
         if (viTri < 0)
             return false;
-        for (int i = viTri; i < soLuong - 1; i++)
-            ds[i] = ds[i + 1];
-        ds[--soLuong] = null;
+        ds.remove(viTri);
         return true;
     }
 
     @Override
     public LoaiSP[] timKiem(String tuKhoa) {
         String key = tuKhoa == null ? "" : tuKhoa.trim().toLowerCase();
-        LoaiSP[] kq = new LoaiSP[soLuong];
-        int dem = 0;
-        for (int i = 0; i < soLuong; i++)
-            if (phuHop(ds[i], key))
-                kq[dem++] = ds[i];
-        return Arrays.copyOf(kq, dem);
+        ArrayList<LoaiSP> kq = new ArrayList<>();
+        for (LoaiSP x : ds) {
+            if (phuHop(x, key))
+                kq.add(x);
+        }
+        return kq.toArray(new LoaiSP[0]);
     }
 
     private boolean phuHop(LoaiSP x, String key) {
@@ -112,10 +103,12 @@ public class DanhSachLoaiSP implements IQuanLyDanhSach<LoaiSP> {
     }
 
     public void hienThiDanhSach() {
-        for (int i = 0; i < soLuong; i++)
-            System.out.println(ds[i].hienThiThongTin());
-        if (soLuong == 0)
+        if (ds.isEmpty()) {
             System.out.println("Danh sach rong.");
+            return;
+        }
+        for (LoaiSP x : ds) {
+            System.out.println(x.hienThiThongTin());
+        }
     }
-
 }
