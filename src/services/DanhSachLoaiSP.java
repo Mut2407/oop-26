@@ -4,17 +4,7 @@ import models.*;
 import java.util.ArrayList;
 
 public class DanhSachLoaiSP implements IQuanLyDanhSach<LoaiSP> {
-    private ArrayList<LoaiSP> ds;
-
-    public DanhSachLoaiSP() {
-        ds = new ArrayList<>();
-    }
-
-    public DanhSachLoaiSP(int sucChua) {
-        if (sucChua <= 0)
-            throw new IllegalArgumentException("Suc chua phai > 0.");
-        ds = new ArrayList<>(sucChua);
-    }
+    private ArrayList<LoaiSP> ds = new ArrayList<>();
 
     public int getSoLuong() {
         return ds.size();
