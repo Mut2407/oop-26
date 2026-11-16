@@ -64,7 +64,6 @@ public class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang> {
             if (phuHop(kh, key)) kq.add(kh);
         return kq.toArray(new KhachHang[0]);
     }
-
     private boolean phuHop(KhachHang x, String key) {
         return x.getMaKhachHang().toLowerCase().contains(key)
                 || x.getHoTen().toLowerCase().contains(key)
