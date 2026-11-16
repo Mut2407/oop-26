@@ -352,7 +352,11 @@ public class QuanLyCuaHang {
         SanPham cu = danhSachSanPham.timTheoMa(ma);
         if (cu == null)
             throw new IllegalArgumentException("Khong tim thay SP.");
-        thongBao(suaSanPham(ma, nhapSanPham(cu.getMaSanPham(), cu)));
+        SanPham moi = nhapSanPham(cu.getMaSanPham(), cu);
+        boolean thanhCong = suaSanPham(ma, moi);
+        if (thanhCong)
+            cu.capNhatTon(moi.getSoLuongTon() - cu.getSoLuongTon());
+        thongBao(thanhCong);
     }
 
     //menu loại sp
@@ -524,9 +528,9 @@ public class QuanLyCuaHang {
 
     private SanPham nhapSanPham(String ma, SanPham cu) {
         int loai = cu == null ? nhapSoNguyen("1. Giay  2. Dung cu: ", 1, 2) : loaiLop(cu);
-        if (loai == 1)
-            return nhapGiay(ma);
-        return nhapDungCu(ma);
+        SanPham sp = loai == 1 ? nhapGiay(ma) : nhapDungCu(ma);
+        sp.capNhatTon(nhapSoNguyen("So luong ton kho: ", 0, Integer.MAX_VALUE));
+        return sp;
     }
 
     private int loaiLop(SanPham sp) {
