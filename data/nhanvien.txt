@@ -5,3 +5,7 @@ NV03|Le Minh Chau|0901000003|Toi
 NV04|Pham Ngoc Dung|0901000004|Sang
 NV05|Vo Thanh Hai|0901000005|Chieu
 NV06|Dang Tri Dung|0901000006|Toi
+NV07|Hoang Minh Khoa|0901000007|Sang
+NV08|Bui Thi Lan|0901000008|Chieu
+NV09|Ngo Quoc Nam|0901000009|Toi
+NV10|Ly Thu Thao|0901000010|Sang

@@ -17,8 +17,7 @@ public class KhachHang {
 
     //có tham số
     public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String diaChi) {
-        kiemTraChuoi(maKhachHang);
-        this.maKhachHang = maKhachHang.trim();
+        setMaKhachHang(maKhachHang);
         setHoTen(hoTen);
         setSoDienThoai(soDienThoai);
         setDiaChi(diaChi);
@@ -26,6 +25,10 @@ public class KhachHang {
 
     public String getMaKhachHang() {
         return maKhachHang;
+    }
+    public void setMaKhachHang(String maKhachHang){
+        kiemTraChuoi(maKhachHang);
+        this.maKhachHang=maKhachHang.trim();
     }
 
     public String getHoTen() {

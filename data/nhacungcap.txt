@@ -4,3 +4,8 @@ NCC02|Dung Cu Binh Minh|0902000002|Quan 3, TP.HCM
 NCC03|Giay The Thao Minh Tam|0902000003|Quan 10, TP.HCM
 NCC04|The Thao Thanh Cong|0902000004|Tan Binh, TP.HCM
 NCC05|Dung Cu Viet Sport|0902000005|Thu Duc, TP.HCM
+NCC06|The Thao Hoang Gia|0902000006|Binh Thanh, TP.HCM
+NCC07|Dung Cu Dai Viet|0902000007|Go Vap, TP.HCM
+NCC08|Giay Chinh Hang SG|0902000008|Quan 7, TP.HCM
+NCC09|The Thao Dong Luc MN|0902000009|Quan 5, TP.HCM
+NCC10|Thiet Bi Gym Pro|0902000010|Phu Nhuan, TP.HCM

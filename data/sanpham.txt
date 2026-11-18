@@ -5,3 +5,10 @@ DUNG_CU|SP01|Vot cau long|Yonex|350000.0|10|DC|cau long|Carbon|0.085
 DUNG_CU|SP02|Bong da|Dong Luc|250000.0|20|DC|Bong da|Da tong hop|0.45
 DUNG_CU|SP07|Vot tennis|Wilson|1500000|6|DC|Tennis|Graphite|0.3
 GIAY|SP08|Giay cau long|Yonex|850000|9|GIAY|40.0|Xanh|Vai luoi|Cao su
+DUNG_CU|SP05|Bong ro|Spalding|450000|15|DC|Bong ro|Da PU|0.6
+DUNG_CU|SP06|Bong chuyen|Mikasa|400000|18|DC|Bong chuyen|Da tong hop|0.27
+GIAY|SP09|Giay bong ro|Nike|1800000|10|GIAY|43.0|Do|Da tong hop|Cao su
+GIAY|SP10|Giay tennis|Asics|1600000|11|GIAY|41.5|Trang|Vai luoi|Cao su
+DUNG_CU|SP11|Vot bong ban|Butterfly|650000|14|DC|Bong ban|Go 5 lop|0.18
+DUNG_CU|SP12|Ta tay 5kg|Brosman|300000|25|DC|Gym|Gang boc cao su|5.0
+DUNG_CU|010|Vot cau long|Vot|100000|0|DC|Cau Long|Nhua|0.1
