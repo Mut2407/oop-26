@@ -1,9 +1,8 @@
-import services.QuanLyCuaHang;
+import quanly.HeThong;
 
 public class Main {
     public static void main(String[] args) {
-        String thuMuc = args.length == 0 ? "data" : args[0];
-        QuanLyCuaHang quanLy = new QuanLyCuaHang(thuMuc);
-        quanLy.chay();
+        HeThong ht = new HeThong();
+        ht.menuChinh();
     }
 }
