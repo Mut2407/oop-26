@@ -1,12 +1,12 @@
 package quanly;
 
-import models.*;
-import danhsach.*;
+import models.DungCuTheThao;
+import models.GiayTheThao;
+import models.LoaiSP;
+import models.SanPham;
 import java.math.BigDecimal;
-import java.util.Scanner;
 
 public class QuanLySanPham extends QuanLyCuaHang {
-    private Scanner sc = new Scanner(System.in, "UTF-8");
 
     @Override
     public void menuChinh() {

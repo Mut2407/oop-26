@@ -1,11 +1,8 @@
 package quanly;
 
-import models.*;
-import danhsach.*;
-import java.util.Scanner;
+import models.NhanVien;
 
 public class QuanLyNhanVien extends QuanLyCuaHang {
-    private Scanner sc = new Scanner(System.in, "UTF-8");
 
     @Override
     public void menuChinh() {

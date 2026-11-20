@@ -1,13 +1,10 @@
 package quanly;
 
 import models.*;
-import danhsach.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Scanner;
 
 public class QuanLyPhieuNhap extends QuanLyCuaHang {
-    private Scanner sc = new Scanner(System.in, "UTF-8");
 
     @Override
     public void menuChinh() {

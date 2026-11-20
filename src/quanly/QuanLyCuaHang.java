@@ -1,10 +1,11 @@
 package quanly;
 
-import models.*;
+import models.Kho;
 import danhsach.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Scanner;
 
 public class QuanLyCuaHang {
     // Thuộc tính static: DUY NHẤT một bộ dữ liệu cho toàn bộ hệ thống
@@ -18,13 +19,17 @@ public class QuanLyCuaHang {
     protected static Kho kho = new Kho(dsSanPham);
     protected static LuuTruFileText luuTru = new LuuTruFileText("data");
 
+    // Scanner tĩnh duy nhất dùng chung cho toàn bộ các lớp con và hệ thống
+    @SuppressWarnings("resource")
+    public static final Scanner sc = new Scanner(System.in, "UTF-8");
+
     public QuanLyCuaHang() {
     }
 
     // ======= Nạp dữ liệu từ file =======
-    public void docDuLieu() {
+    public static void docDuLieu() {
         try {
-            luuTru.docDuLieu(this);
+            luuTru.docDuLieu(new QuanLyCuaHang());
             System.out.println("Nap du lieu tu file thanh cong.");
         } catch (IOException e) {
             System.out.println("Loi khi nap du lieu: " + e.getMessage());
@@ -32,9 +37,9 @@ public class QuanLyCuaHang {
     }
 
     // ======= Ghi tất cả dữ liệu ra file =======
-    public void ghiDuLieu() {
+    public static void ghiDuLieu() {
         try {
-            luuTru.ghiDuLieu(this);
+            luuTru.ghiDuLieu(new QuanLyCuaHang());
             System.out.println("Da ghi toan bo du lieu ra file.");
         } catch (IOException e) {
             System.out.println("Loi khi ghi du lieu: " + e.getMessage());

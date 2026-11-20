@@ -1,13 +1,10 @@
 package quanly;
 
 import models.*;
-import danhsach.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Scanner;
 
 public class QuanLyHoaDon extends QuanLyCuaHang {
-    private Scanner sc = new Scanner(System.in, "UTF-8");
 
     @Override
     public void menuChinh() {
@@ -135,7 +132,8 @@ public class QuanLyHoaDon extends QuanLyCuaHang {
                 case 1 -> hienThiChiTiet(hd);
                 case 2 -> {
                     SanPham sp = chonSanPham();
-                    int sl = nhapSoNguyen("So luong ban (Ton hien tai: " + sp.getSoLuongTon() + "): ", 1, Integer.MAX_VALUE);
+                    int sl = nhapSoNguyen("So luong ban (Ton hien tai: " + sp.getSoLuongTon() + "): ", 1,
+                            Integer.MAX_VALUE);
                     BigDecimal donGia = nhapTien("Don gia ban: ");
                     boolean ok = hd.themChiTiet(new ChiTietHoaDon(sp, sl, donGia));
                     System.out.println(ok ? "Them chi tiet thanh cong!" : "Them that bai (SP da co trong hoa don).");
@@ -169,21 +167,24 @@ public class QuanLyHoaDon extends QuanLyCuaHang {
     private KhachHang chonKhachHang() {
         String ma = nhapChuoi("Ma KhachHang: ");
         KhachHang x = dsKhachHang.timTheoMa(ma);
-        if (x == null) throw new IllegalArgumentException("Khong tim thay KhachHang co ma: " + ma);
+        if (x == null)
+            throw new IllegalArgumentException("Khong tim thay KhachHang co ma: " + ma);
         return x;
     }
 
     private NhanVien chonNhanVien() {
         String ma = nhapChuoi("Ma NhanVien: ");
         NhanVien x = dsNhanVien.timTheoMa(ma);
-        if (x == null) throw new IllegalArgumentException("Khong tim thay NhanVien co ma: " + ma);
+        if (x == null)
+            throw new IllegalArgumentException("Khong tim thay NhanVien co ma: " + ma);
         return x;
     }
 
     private SanPham chonSanPham() {
         String ma = nhapChuoi("Ma SanPham: ");
         SanPham x = dsSanPham.timTheoMa(ma);
-        if (x == null) throw new IllegalArgumentException("Khong tim thay SanPham co ma: " + ma);
+        if (x == null)
+            throw new IllegalArgumentException("Khong tim thay SanPham co ma: " + ma);
         return x;
     }
 

@@ -1,19 +1,14 @@
 package quanly;
 
-import models.*;
-import danhsach.*;
 import java.time.LocalDate;
-import java.util.Scanner;
 
 public class HeThong {
     // Biến đa hình: Khai báo kiểu lớp cha QuanLyCuaHang
     private QuanLyCuaHang quanLy;
-    private Scanner sc = new Scanner(System.in, "UTF-8");
 
     public void menuChinh() {
         // Khi khởi động hệ thống, nạp dữ liệu thật
-        QuanLyCuaHang core = new QuanLyCuaHang();
-        core.docDuLieu();
+        QuanLyCuaHang.docDuLieu();
 
         int chon;
         do {
@@ -31,7 +26,7 @@ public class HeThong {
             System.out.println("0. Thoat chuong trinh");
             System.out.print("Chon: ");
             try {
-                chon = Integer.parseInt(sc.nextLine().trim());
+                chon = Integer.parseInt(QuanLyCuaHang.sc.nextLine().trim());
             } catch (Exception e) {
                 System.out.println("Vui long nhap so nguyen hop le!");
                 chon = -1;
@@ -49,14 +44,10 @@ public class HeThong {
                 case 7 -> { quanLy = new QuanLyPhieuNhap(); quanLy.menuChinh(); }
                 case 8 -> menuTraCuuTon();
                 case 9 -> menuThongKe();
-                case 10 -> {
-                    QuanLyCuaHang coreWrite = new QuanLyCuaHang();
-                    coreWrite.ghiDuLieu();
-                }
+                case 10 -> QuanLyCuaHang.ghiDuLieu();
                 case 0 -> {
                     // Trước khi thoát, tự động ghi dữ liệu
-                    QuanLyCuaHang coreWrite = new QuanLyCuaHang();
-                    coreWrite.ghiDuLieu();
+                    QuanLyCuaHang.ghiDuLieu();
                     System.out.println("Thoat chuong trinh. Tam biet!");
                 }
                 default -> System.out.println("Lua chon khong hop le.");
@@ -66,7 +57,7 @@ public class HeThong {
 
     private void menuTraCuuTon() {
         System.out.print("Nhap ma san pham can tra cuu ton: ");
-        String ma = sc.nextLine().trim();
+        String ma = QuanLyCuaHang.sc.nextLine().trim();
         QuanLyCuaHang.traCuuTonKho(ma);
     }
 
@@ -76,14 +67,14 @@ public class HeThong {
         System.out.println("2. Thong ke tong tien theo khoang ngay");
         System.out.print("Chon: ");
         try {
-            int opt = Integer.parseInt(sc.nextLine().trim());
+            int opt = Integer.parseInt(QuanLyCuaHang.sc.nextLine().trim());
             if (opt == 1) {
                 QuanLyCuaHang.thongKeTongTien();
             } else if (opt == 2) {
                 System.out.print("Nhap ngay bat dau (yyyy-MM-dd): ");
-                LocalDate tu = LocalDate.parse(sc.nextLine().trim());
+                LocalDate tu = LocalDate.parse(QuanLyCuaHang.sc.nextLine().trim());
                 System.out.print("Nhap ngay ket thuc (yyyy-MM-dd): ");
-                LocalDate den = LocalDate.parse(sc.nextLine().trim());
+                LocalDate den = LocalDate.parse(QuanLyCuaHang.sc.nextLine().trim());
                 QuanLyCuaHang.thongKeTheoKhoang(tu, den);
             } else {
                 System.out.println("Lua chon khong dung!");
