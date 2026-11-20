@@ -76,5 +76,4 @@ public class DanhSachNhanVien implements IQuanLyDanhSach<NhanVien> {
         for (NhanVien nv : ds)
             System.out.println(nv.hienThiThongTin());
     }
-
 }
