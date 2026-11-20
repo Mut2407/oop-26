@@ -20,15 +20,6 @@ public class QuanLyCuaHang {
     private LuuTruFileText luuTru;
     private Scanner banPhim;
 
-    // Các class quản lý menu cho từng danh sách
-    private QuanLySanPham quanLySanPham;
-    private QuanLyLoaiSP quanLyLoaiSP;
-    private QuanLyKhachHang quanLyKhachHang;
-    private QuanLyNhanVien quanLyNhanVien;
-    private QuanLyNhaCungCap quanLyNhaCungCap;
-    private QuanLyHoaDon quanLyHoaDon;
-    private QuanLyPhieuNhap quanLyPhieuNhap;
-
     public QuanLyCuaHang() {
         this("data");
     }
@@ -89,25 +80,11 @@ public class QuanLyCuaHang {
         luuTru.ghiDuLieu(this);
     }
 
-    // --- Khởi tạo các QuanLy* sau khi có Scanner ---
-    private void khoiTaoQuanLy() {
-        quanLySanPham = new QuanLySanPham(danhSachSanPham, danhSachLoaiSP, banPhim);
-        quanLyLoaiSP = new QuanLyLoaiSP(danhSachLoaiSP, banPhim);
-        quanLyKhachHang = new QuanLyKhachHang(danhSachKhachHang, banPhim);
-        quanLyNhanVien = new QuanLyNhanVien(danhSachNhanVien, banPhim);
-        quanLyNhaCungCap = new QuanLyNhaCungCap(danhSachNhaCungCap, banPhim);
-        quanLyHoaDon = new QuanLyHoaDon(danhSachHoaDon, danhSachSanPham,
-                danhSachKhachHang, danhSachNhanVien, kho, banPhim);
-        quanLyPhieuNhap = new QuanLyPhieuNhap(danhSachPhieuNhap, danhSachSanPham,
-                danhSachNhaCungCap, danhSachNhanVien, kho, banPhim);
-    }
-
     // --- Chạy chương trình ---
     public void chay() {
         banPhim = new Scanner(System.in, "UTF-8");
         if (!napLucBatDau())
             return;
-        khoiTaoQuanLy();
         while (chayMotLuot()) {
             // Mỗi lần chỉ chọn 1
         }
@@ -151,16 +128,16 @@ public class QuanLyCuaHang {
         System.out.println("0. Luu va thoat");
     }
 
-    // Ủy thác menu cho từng QuanLy* tương ứng
+    // Gọi trực tiếp menu của từng danh sách
     private boolean xuLyMenu(int chon) {
         switch (chon) {
-            case 1: quanLySanPham.hienThiMenu(); break;
-            case 2: quanLyLoaiSP.hienThiMenu(); break;
-            case 3: quanLyKhachHang.hienThiMenu(); break;
-            case 4: quanLyNhanVien.hienThiMenu(); break;
-            case 5: quanLyNhaCungCap.hienThiMenu(); break;
-            case 6: quanLyHoaDon.hienThiMenu(); break;
-            case 7: quanLyPhieuNhap.hienThiMenu(); break;
+            case 1: danhSachSanPham.menu(banPhim, danhSachLoaiSP); break;
+            case 2: danhSachLoaiSP.menu(banPhim); break;
+            case 3: danhSachKhachHang.menu(banPhim); break;
+            case 4: danhSachNhanVien.menu(banPhim); break;
+            case 5: danhSachNhaCungCap.menu(banPhim); break;
+            case 6: danhSachHoaDon.menu(banPhim, danhSachSanPham, danhSachKhachHang, danhSachNhanVien, kho); break;
+            case 7: danhSachPhieuNhap.menu(banPhim, danhSachSanPham, danhSachNhaCungCap, danhSachNhanVien, kho); break;
             case 8: traCuuTon(); break;
             case 9: menuThongKe(); break;
             case 10: luuVaThongBao(); break;
@@ -187,13 +164,13 @@ public class QuanLyCuaHang {
     private void menuThongKe() {
         int chon = nhapSoNguyen("1. Tat ca\n2. Theo khoang ngay: ", 1, 2);
         if (chon == 1) {
-            inTongTien(quanLyHoaDon.thongKeTongTien(), quanLyPhieuNhap.thongKeTongTien());
+            inTongTien(danhSachHoaDon.thongKeTongTien(), danhSachPhieuNhap.thongKeTongTien());
             return;
         }
         LocalDate tu = nhapNgay("Tu ngay");
         LocalDate den = nhapNgay("Den ngay");
-        inTongTien(quanLyHoaDon.thongKeTongTien(tu, den),
-                quanLyPhieuNhap.thongKeTongTien(tu, den));
+        inTongTien(danhSachHoaDon.thongKeTongTien(tu, den),
+                danhSachPhieuNhap.thongKeTongTien(tu, den));
     }
 
     private void inTongTien(BigDecimal tienBan, BigDecimal tienNhap) {
