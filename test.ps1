@@ -12,13 +12,14 @@ try {
     $paths = [string[]]@($sources | ForEach-Object { '"' + $_.FullName.Replace('\', '/') + '"' })
     [IO.File]::WriteAllLines($sourceList, $paths, (New-Object Text.UTF8Encoding($false)))
     $classes = Join-Path $testBuild 'classes'
-    & $javac --release 8 -Xlint:all -encoding UTF-8 -d $classes "@$sourceList"
+    & $javac -encoding UTF-8 -d $classes "@$sourceList"
     if ($LASTEXITCODE -ne 0) { throw 'Bien dich tests that bai.' }
-    foreach ($test in Get-ChildItem tests -Filter '*Test.java' | Sort-Object Name) {
+    $testFiles = Get-ChildItem tests -Filter '*Test.java' | Sort-Object Name
+    foreach ($test in $testFiles) {
         & $java '-Dfile.encoding=UTF-8' -ea -cp $classes $test.BaseName
         if ($LASTEXITCODE -ne 0) { throw ('Test that bai: ' + $test.BaseName) }
     }
-    Write-Host 'PASS: 4 test programs'
+    Write-Host "PASS: $($testFiles.Count) test programs"
 } finally {
     if (Test-Path -LiteralPath $testBuild) { Remove-Item -LiteralPath $testBuild -Recurse -Force }
     Pop-Location
