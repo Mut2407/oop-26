@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.Scanner;
 
 public class QuanLyCuaHang {
-    // Thuộc tính static: DUY NHẤT một bộ dữ liệu cho toàn bộ hệ thống
+    //static
     protected static DanhSachSanPham dsSanPham = new DanhSachSanPham();
     protected static DanhSachLoaiSP dsLoaiSP = new DanhSachLoaiSP();
     protected static DanhSachKhachHang dsKhachHang = new DanhSachKhachHang();
@@ -19,14 +19,14 @@ public class QuanLyCuaHang {
     protected static Kho kho = new Kho(dsSanPham);
     protected static LuuTruFileText luuTru = new LuuTruFileText("data");
 
-    // Scanner tĩnh duy nhất dùng chung cho toàn bộ các lớp con và hệ thống
+    // Scanner chung cho toàn bộ
     @SuppressWarnings("resource")
     public static final Scanner sc = new Scanner(System.in, "UTF-8");
 
     public QuanLyCuaHang() {
     }
 
-    // ======= Nạp dữ liệu từ file =======
+    //Nạp dữ liệu từ file 
     public static void docDuLieu() {
         try {
             luuTru.docDuLieu(new QuanLyCuaHang());
@@ -36,7 +36,7 @@ public class QuanLyCuaHang {
         }
     }
 
-    // ======= Ghi tất cả dữ liệu ra file =======
+    // Ghi tất cả dữ liệu ra file
     public static void ghiDuLieu() {
         try {
             luuTru.ghiDuLieu(new QuanLyCuaHang());
@@ -46,11 +46,11 @@ public class QuanLyCuaHang {
         }
     }
 
-    // Phương thức khung để các lớp con @Override (ĐA HÌNH - Polymorphism)
+    // Phương thức chung
     public void menuChinh() {
     }
 
-    // Getter cho lưu trữ
+    // Getter
     public DanhSachSanPham getDanhSachSanPham() { return dsSanPham; }
     public DanhSachLoaiSP getDanhSachLoaiSP() { return dsLoaiSP; }
     public DanhSachKhachHang getDanhSachKhachHang() { return dsKhachHang; }

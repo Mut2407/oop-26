@@ -3,11 +3,9 @@ package quanly;
 import java.time.LocalDate;
 
 public class HeThong {
-    // Biến đa hình: Khai báo kiểu lớp cha QuanLyCuaHang
     private QuanLyCuaHang quanLy;
 
     public void menuChinh() {
-        // Khi khởi động hệ thống, nạp dữ liệu thật
         QuanLyCuaHang.docDuLieu();
 
         int chon;
@@ -33,7 +31,6 @@ public class HeThong {
                 continue;
             }
 
-            // ĐA HÌNH LÚC CHẠY (Run-time Polymorphism)
             switch (chon) {
                 case 1 -> { quanLy = new QuanLySanPham(); quanLy.menuChinh(); }
                 case 2 -> { quanLy = new QuanLyLoaiSP(); quanLy.menuChinh(); }
