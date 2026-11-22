@@ -1,0 +1,162 @@
+================================================================================
+          BÁO CÁO CHI TIẾT CÁC ĐẶC TRƯNG HƯỚNG ĐỐI TƯỢNG (OOP) TRONG ĐỒ ÁN
+                (KẾ THỪA - ĐA HÌNH - INTERFACE & STATIC TRONG DỰ ÁN)
+================================================================================
+
+I. TỔNG QUAN KIẾN TRÚC 3 TẦNG CỦA ĐỒ ÁN
+Dự án được cấu trúc thành 3 package tách biệt theo yêu cầu của Giảng viên:
+1. Package `models`: Chứa các Class đơn (Entity), biểu diễn dữ liệu và nghiệp vụ thực thể.
+2. Package `danhsach`: Chứa các Class quản lý mảng/danh sách (Data Storage) và Interface chung.
+3. Package `quanly`: Chứa các Class quản lý điều khiển giao diện Console (UI Controller) và Hệ thống chính.
+
+
+--------------------------------------------------------------------------------
+II. ĐẶC TÍNH: KẾ THỪA (INHERITANCE)
+--------------------------------------------------------------------------------
+Kế thừa cho phép lớp con tái sử dụng các thuộc tính và phương thức từ lớp cha, đồng thời mở rộng thêm các thuộc tính chuyên biệt.
+
+1. Kế thừa trong tầng `models` (Thực thể sản phẩm):
+   - Lớp cha: `src/models/SanPham.java` (Lớp trừu tượng `abstract class`)
+     + Chứa các thuộc tính chung của mọi sản phẩm: `maSanPham`, `tenSanPham`, `thuongHieu`, `giaBan`, `soLuongTon`, `loaiSP`.
+     + Cung cấp constructor chung và phương thức trừu tượng `public abstract String hienThiThongTin();`.
+   - Lớp con 1: `src/models/GiayTheThao.java`
+     + Kế thừa bằng cú pháp: `public class GiayTheThao extends SanPham`
+     + Tái sử dụng thuộc tính lớp cha qua `super(...)`.
+     + Mở rộng các đặc trưng riêng của giày: `kichCoGiay`, `mauSac`, `chatLieu`, `loaiDeGiay`.
+   - Lớp con 2: `src/models/DungCuTheThao.java`
+     + Kế thừa bằng cú pháp: `public class DungCuTheThao extends SanPham`
+     + Tái sử dụng thuộc tính lớp cha qua `super(...)`.
+     + Mở rộng các đặc trưng riêng của dụng cụ: `monTheThao`, `vatLieu`, `khoiLuongKg`.
+
+2. Kế thừa trong tầng `quanly` (Bộ điều khiển giao diện Menu):
+   - Lớp cha: `src/quanly/QuanLyCuaHang.java`
+     + Đóng vai trò là lớp khung (Base Controller), lưu trữ tập trung dữ liệu tĩnh (`static DanhSach...`) và các phương thức tiện ích nhập liệu: `nhapChuoi()`, `nhapSoNguyen()`, `nhapNgay()`.
+     + Khai báo phương thức khung: `public void menuChinh()`.
+   - Các lớp con kế thừa `QuanLyCuaHang`:
+     + `src/quanly/QuanLySanPham.java extends QuanLyCuaHang`: Quản lý menu chuyên biệt cho sản phẩm.
+     + `src/quanly/QuanLyLoaiSP.java extends QuanLyCuaHang`: Quản lý menu chuyên biệt cho loại hàng.
+     + `src/quanly/QuanLyKhachHang.java extends QuanLyCuaHang`: Quản lý menu khách hàng.
+     + `src/quanly/QuanLyNhanVien.java extends QuanLyCuaHang`: Quản lý menu nhân viên.
+     + `src/quanly/QuanLyNhaCungCap.java extends QuanLyCuaHang`: Quản lý menu nhà cung cấp.
+     + `src/quanly/QuanLyHoaDon.java extends QuanLyCuaHang`: Quản lý quy trình lập và duyệt hóa đơn bán hàng.
+     + `src/quanly/QuanLyPhieuNhap.java extends QuanLyCuaHang`: Quản lý quy trình lập và duyệt phiếu nhập kho.
+
+
+--------------------------------------------------------------------------------
+III. ĐẶC TÍNH: GIAO DIỆN (INTERFACE)
+--------------------------------------------------------------------------------
+Interface định nghĩa một chuẩn hành vi (Contract) bắt buộc các lớp danh sách phải cài đặt, giúp trừu tượng hóa và tách biệt giữa định nghĩa và thực thi.
+
+1. File định nghĩa Interface:
+   - File: `src/danhsach/IQuanLyDanhSach.java`
+   - Khai báo Generic: `public interface IQuanLyDanhSach<T>`
+   - Các phương thức chuẩn (CRUD):
+     + `boolean them(T doiTuong);`
+     + `boolean sua(String ma, T moi);`
+     + `boolean xoa(String ma);`
+     + `T[] timKiem(String tuKhoa);`
+
+2. Các File cài đặt (implements) Interface:
+   - `src/danhsach/DanhSachSanPham.java implements IQuanLyDanhSach<SanPham>`
+   - `src/danhsach/DanhSachLoaiSP.java implements IQuanLyDanhSach<LoaiSP>`
+   - `src/danhsach/DanhSachKhachHang.java implements IQuanLyDanhSach<KhachHang>`
+   - `src/danhsach/DanhSachNhanVien.java implements IQuanLyDanhSach<NhanVien>`
+   - `src/danhsach/DanhSachNhaCungCap.java implements IQuanLyDanhSach<NhaCungCap>`
+   - `src/danhsach/DanhSachHoaDon.java implements IQuanLyDanhSach<HoaDon>`
+   - `src/danhsach/DanhSachPhieuNhap.java implements IQuanLyDanhSach<PhieuNhap>`
+
+Tác dụng: Đảm bảo tính nhất quán trong toàn bộ hệ thống; bất kỳ danh sách nào cũng có đầy đủ các chức năng thêm, sửa, xóa, tìm kiếm theo cùng một chuẩn gọi hàm.
+
+
+--------------------------------------------------------------------------------
+IV. ĐẶC TÍNH: ĐA HÌNH (POLYMORPHISM)
+--------------------------------------------------------------------------------
+Đa hình trong đồ án được thể hiện trọn vẹn ở cả 4 dạng:
+
+1. Đa hình lúc chạy qua Ghi đè phương thức (Runtime Polymorphism - Overriding):
+   a. Trong thực thể SanPham:
+      - File cha: `src/models/SanPham.java` khai báo `public abstract String hienThiThongTin();`
+      - File con `src/models/GiayTheThao.java` ghi đè: hiển thị thông tin kèm kích cỡ giày, màu sắc, chất liệu, loại đế.
+      - File con `src/models/DungCuTheThao.java` ghi đè: hiển thị thông tin kèm môn thể thao, vật liệu, khối lượng.
+      - Cơ chế: Khi duyệt mảng `SanPham[]`, gọi `sp.hienThiThongTin()`, máy ảo Java (JVM) sẽ tự động dựa vào đối tượng thực tế lúc chạy (`GiayTheThao` hay `DungCuTheThao`) để thực thi đúng phương thức tương ứng mà không cần ép kiểu thủ công.
+
+   b. Trong các bộ điều khiển Menu:
+      - File cha `src/quanly/QuanLyCuaHang.java` khai báo `public void menuChinh()`
+      - Mỗi lớp con (`QuanLySanPham`, `QuanLyHoaDon`, v.v.) ghi đè `@Override public void menuChinh()` để dựng menu và tương tác riêng cho chức năng đó.
+
+2. Đa hình lúc chạy qua Biến tham chiếu lớp cha (Upcasting & Dynamic Binding):
+   - File: `src/quanly/HeThong.java`
+   - Khai báo một biến tham chiếu duy nhất kiểu lớp cha:
+     `private QuanLyCuaHang quanLy;`
+   - Lúc chạy, tùy theo lựa chọn menu của người dùng (1, 2, 3, ...), biến `quanLy` được trỏ tới các thực thể lớp con khác nhau:
+     + Chọn 1: `quanLy = new QuanLySanPham();` -> `quanLy.menuChinh();`
+     + Chọn 2: `quanLy = new QuanLyLoaiSP();`   -> `quanLy.menuChinh();`
+     + Chọn 3: `quanLy = new QuanLyKhachHang();`-> `quanLy.menuChinh();`
+     + Chọn 6: `quanLy = new QuanLyHoaDon();`   -> `quanLy.menuChinh();`
+   - Tác dụng: `HeThong` không cần viết nhiều biến quản lý rời rạc mà điều phối toàn bộ chương trình chỉ qua 1 biến tham chiếu duy nhất.
+
+3. Đa hình qua Interface:
+   - File kiểm thử: `tests/KiemThu.java` và các lớp nghiệp vụ.
+   - Sử dụng biến Interface:
+     `IQuanLyDanhSach<LoaiSP> iLoai = new DanhSachLoaiSP();`
+     `iLoai.them(...);`
+     `iLoai.sua(...);`
+     `iLoai.xoa(...);`
+   - Tác dụng: Cho phép tương tác với danh sách mà không cần phụ thuộc vào lớp triển khai cụ thể.
+
+4. Đa hình lúc biên dịch qua Nạp chồng phương thức (Compile-time Polymorphism - Overloading):
+   a. Nạp chồng hàm `timKiem` trong `src/danhsach/DanhSachSanPham.java`:
+      - Tìm theo từ khóa chuỗi: `public SanPham[] timKiem(String tuKhoa)` (tìm kiếm gần đúng theo mã hoặc tên).
+      - Tìm theo khoảng giá bán: `public SanPham[] timKiem(BigDecimal tuGia, BigDecimal denGia)` (lọc sản phẩm trong khoảng ngân sách).
+   b. Nạp chồng hàm `thongKeTongTien` trong `src/danhsach/DanhSachHoaDon.java` và `src/danhsach/DanhSachPhieuNhap.java`:
+      - Thống kê toàn bộ: `public BigDecimal thongKeTongTien()`
+      - Thống kê theo khoảng thời gian: `public BigDecimal thongKeTongTien(LocalDate tuNgay, LocalDate denNgay)`
+
+
+--------------------------------------------------------------------------------
+V. ĐẶC TÍNH: STATIC (TÍNH DUY NHẤT & CHIA SẺ DỮ LIỆU TOÀN CỤC)
+--------------------------------------------------------------------------------
+Theo yêu cầu của Giảng viên, từ khóa `static` được sử dụng để thể hiện tính DUY NHẤT (Singleton dataset):
+
+1. File cài đặt: `src/quanly/QuanLyCuaHang.java`
+   - Các thuộc tính static:
+     + `protected static DanhSachSanPham dsSanPham = new DanhSachSanPham();`
+     + `protected static DanhSachLoaiSP dsLoaiSP = new DanhSachLoaiSP();`
+     + `protected static DanhSachKhachHang dsKhachHang = new DanhSachKhachHang();`
+     + `protected static DanhSachNhanVien dsNhanVien = new DanhSachNhanVien();`
+     + `protected static DanhSachNhaCungCap dsNhaCungCap = new DanhSachNhaCungCap();`
+     + `protected static DanhSachHoaDon dsHoaDon = new DanhSachHoaDon();`
+     + `protected static DanhSachPhieuNhap dsPhieuNhap = new DanhSachPhieuNhap();`
+     + `protected static Kho kho = new Kho(dsSanPham);`
+     + `public static final Scanner sc = new Scanner(System.in, "UTF-8");`
+   - Ý nghĩa:
+     + Toàn bộ hệ thống chỉ tồn tại một bộ cơ sở dữ liệu duy nhất trong bộ nhớ RAM suốt vòng đời chạy ứng dụng.
+     + Tất cả các lớp con (`QuanLySanPham`, `QuanLyHoaDon`, `QuanLyPhieuNhap`, v.v.) kế thừa từ `QuanLyCuaHang` đều cùng truy cập và thao tác trên chung một bộ dữ liệu này. Khi `QuanLySanPham` thêm sản phẩm mới thì `QuanLyHoaDon` và `QuanLyPhieuNhap` lập tức nhìn thấy ngay sản phẩm đó mà không cần truyền tham chiếu qua lại.
+     + `Scanner sc` là duy nhất dùng chung, ngăn chặn lỗi tranh chấp hoặc rò rỉ luồng nhập bàn phím `System.in`.
+
+
+================================================================================
+BẢNG TỔNG KẾT TRA CỨU NHANH
+================================================================================
+STT | Đặc tính               | Vị trí File                             | Hàm / Đoạn code tiêu biểu
+----+------------------------+-----------------------------------------+----------------------------------------------
+1   | Kế thừa (Inheritance)  | src/models/GiayTheThao.java             | `public class GiayTheThao extends SanPham`
+    |                        | src/models/DungCuTheThao.java           | `public class DungCuTheThao extends SanPham`
+    |                        | src/quanly/QuanLySanPham.java           | `public class QuanLySanPham extends QuanLyCuaHang`
+----+------------------------+-----------------------------------------+----------------------------------------------
+2   | Interface              | src/danhsach/IQuanLyDanhSach.java       | `public interface IQuanLyDanhSach<T>`
+    |                        | src/danhsach/DanhSachSanPham.java       | `implements IQuanLyDanhSach<SanPham>`
+----+------------------------+-----------------------------------------+----------------------------------------------
+3   | Đa hình Overriding     | src/models/GiayTheThao.java             | `@Override public String hienThiThongTin()`
+    |                        | src/models/DungCuTheThao.java           | `@Override public String hienThiThongTin()`
+    |                        | src/quanly/QuanLySanPham.java           | `@Override public void menuChinh()`
+----+------------------------+-----------------------------------------+----------------------------------------------
+4   | Đa hình Upcasting      | src/quanly/HeThong.java                 | `private QuanLyCuaHang quanLy;`
+    |                        |                                         | `quanLy = new QuanLySanPham(); quanLy.menuChinh();`
+----+------------------------+-----------------------------------------+----------------------------------------------
+5   | Đa hình Overloading    | src/danhsach/DanhSachSanPham.java       | `timKiem(String)` & `timKiem(BigDecimal, BigDecimal)`
+    |                        | src/danhsach/DanhSachHoaDon.java        | `thongKeTongTien()` & `thongKeTongTien(tuNgay, denNgay)`
+----+------------------------+-----------------------------------------+----------------------------------------------
+6   | Dữ liệu tĩnh (Static)  | src/quanly/QuanLyCuaHang.java           | `protected static DanhSachSanPham dsSanPham;`
+    |                        |                                         | `public static final Scanner sc;`
+================================================================================
