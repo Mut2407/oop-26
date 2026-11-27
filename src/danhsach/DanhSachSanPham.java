@@ -1,4 +1,4 @@
-package services;
+package danhsach;
 
 import models.*;
 import java.util.ArrayList;
@@ -58,6 +58,8 @@ public class DanhSachSanPham implements IQuanLyDanhSach<SanPham> {
         return ds.remove(sp);
     }
 
+    // --- ĐA HÌNH NẠP CHỒNG (OVERLOADING) TRONG TÌM KIẾM ---
+    // 1. Tìm theo từ khóa (mã hoặc tên)
     @Override
     public SanPham[] timKiem(String tuKhoa) {
         String key = tuKhoa == null ? "" : tuKhoa.trim().toLowerCase();
@@ -67,17 +69,18 @@ public class DanhSachSanPham implements IQuanLyDanhSach<SanPham> {
         return kq.toArray(new SanPham[0]);
     }
 
-    private boolean phuHop(SanPham x, String key) {
-        return x.getMaSanPham().toLowerCase().contains(key)
-                || x.getTenSanPham().toLowerCase().contains(key);
-    }
-
-    public void hienThiDanhSach() {
-        if (ds.isEmpty()) { System.out.println("Danh sach rong."); return; }
+    // 2. Tìm theo khoảng giá
+    public SanPham[] timKiem(BigDecimal tu, BigDecimal den) {
+        if (tu == null || den == null || tu.signum() < 0 || tu.compareTo(den) > 0)
+            throw new IllegalArgumentException("Khoang gia khong hop le.");
+        ArrayList<SanPham> kq = new ArrayList<>();
         for (SanPham sp : ds)
-            System.out.println(sp.hienThiThongTin());
+            if (sp.getGiaBan().compareTo(tu) >= 0 && sp.getGiaBan().compareTo(den) <= 0)
+                kq.add(sp);
+        return kq.toArray(new SanPham[0]);
     }
 
+    // 3. Tìm theo loại sản phẩm
     public SanPham[] locTheoLoaiSP(String maLoai) {
         maLoai = maLoai == null ? "" : maLoai.trim();
         ArrayList<SanPham> kq = new ArrayList<>();
@@ -88,13 +91,25 @@ public class DanhSachSanPham implements IQuanLyDanhSach<SanPham> {
     }
 
     public SanPham[] locTheoKhoangGia(BigDecimal tu, BigDecimal den) {
-        if (tu == null || den == null || tu.signum() < 0 || tu.compareTo(den) > 0)
-            throw new IllegalArgumentException("Khoang gia khong hop le.");
-        ArrayList<SanPham> kq = new ArrayList<>();
-        for (SanPham sp : ds)
-            if (sp.getGiaBan().compareTo(tu) >= 0 && sp.getGiaBan().compareTo(den) <= 0)
-                kq.add(sp);
-        return kq.toArray(new SanPham[0]);
+        return timKiem(tu, den);
     }
 
+    private boolean phuHop(SanPham x, String key) {
+        return x.getMaSanPham().toLowerCase().contains(key)
+                || x.getTenSanPham().toLowerCase().contains(key);
+    }
+
+    public void xuat() {
+        if (ds.isEmpty()) {
+            System.out.println("Danh sach san pham rong.");
+            return;
+        }
+        System.out.println("\n--- DANH SACH SAN PHAM ---");
+        for (SanPham sp : ds)
+            System.out.println(sp.hienThiThongTin()); // Đa hình động (Dynamic Binding)
+    }
+
+    public void hienThiDanhSach() {
+        xuat();
+    }
 }

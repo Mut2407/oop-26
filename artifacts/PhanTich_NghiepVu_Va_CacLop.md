@@ -8,8 +8,6 @@
 
 Sơ đồ hiện tại có **11 class**: `SanPham`, `GiayTheThao`, `DungCuTheThao`, `LoaiSanPham`, `KhachHang`, `NhanVien`, `NhaCungCap`, `HoaDon`, `ChiTietHoaDon`, `PhieuNhap`, `ChiTietPhieuNhap`.
 
-Tài liệu Word trước đó mô tả mô hình đề xuất 20 class, 1 interface và 2 enum; **không dùng các thành phần này để mô tả sơ đồ mới**. Sơ đồ mới không định nghĩa interface, enum, lớp danh sách, lớp quản lý kho hoặc lớp lưu file.
-
 ## 2. Tổng quan nghiệp vụ
 
 - **Quản lý loại và sản phẩm:** tạo loại hàng; lưu mã, tên, thương hiệu, giá bán, số lượng tồn và mã loại. Hai loại sản phẩm chuyên biệt được vẽ là giày thể thao và dụng cụ thể thao.

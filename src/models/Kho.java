@@ -1,6 +1,6 @@
 package models;
 
-import services.DanhSachSanPham;
+import danhsach.DanhSachSanPham;
 
 // Kho dung chung danh sach san pham; khong luu mot mang ton rieng.
 public class Kho {

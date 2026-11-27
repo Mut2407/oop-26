@@ -1,4 +1,4 @@
-package services;
+package danhsach;
 
 import models.*;
 import java.util.ArrayList;
@@ -79,15 +79,34 @@ public class DanhSachHoaDon implements IQuanLyDanhSach<HoaDon> {
         return kq.toArray(new HoaDon[0]);
     }
 
+    // Đa hình nạp chồng: Tìm kiếm hóa đơn theo khoảng thời gian
+    public HoaDon[] timKiem(LocalDate tuNgay, LocalDate denNgay) {
+        if (tuNgay == null || denNgay == null || tuNgay.isAfter(denNgay))
+            throw new IllegalArgumentException("Khoang ngay khong hop le.");
+        ArrayList<HoaDon> kq = new ArrayList<>();
+        for (HoaDon hd : ds)
+            if (!hd.getNgayLap().isBefore(tuNgay) && !hd.getNgayLap().isAfter(denNgay))
+                kq.add(new HoaDon(hd));
+        return kq.toArray(new HoaDon[0]);
+    }
+
     private boolean phuHop(HoaDon x, String key) {
         return x.getMaHoaDon().toLowerCase().contains(key)
                 || x.getKhachHang().getMaKhachHang().toLowerCase().contains(key);
     }
 
-    public void hienThiDanhSach() {
-        if (ds.isEmpty()) { System.out.println("Danh sach rong."); return; }
+    public void xuat() {
+        if (ds.isEmpty()) {
+            System.out.println("Danh sach hoa don rong.");
+            return;
+        }
+        System.out.println("\n--- DANH SACH HOA DON ---");
         for (HoaDon hd : ds)
             System.out.println(hd.hienThiThongTin());
+    }
+
+    public void hienThiDanhSach() {
+        xuat();
     }
 
     public BigDecimal thongKeTongTien() {
@@ -106,5 +125,4 @@ public class DanhSachHoaDon implements IQuanLyDanhSach<HoaDon> {
                 tong = tong.add(hd.tinhTongTien());
         return tong;
     }
-
 }

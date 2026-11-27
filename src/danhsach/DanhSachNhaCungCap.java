@@ -1,4 +1,4 @@
-package services;
+package danhsach;
 
 import models.*;
 import java.util.ArrayList;
@@ -71,10 +71,17 @@ public class DanhSachNhaCungCap implements IQuanLyDanhSach<NhaCungCap> {
                 || x.getSoDienThoai().contains(key);
     }
 
-    public void hienThiDanhSach() {
-        if (ds.isEmpty()) { System.out.println("Danh sach rong."); return; }
+    public void xuat() {
+        if (ds.isEmpty()) {
+            System.out.println("Danh sach nha cung cap rong.");
+            return;
+        }
+        System.out.println("\n--- DANH SACH NHA CUNG CAP ---");
         for (NhaCungCap ncc : ds)
             System.out.println(ncc.hienThiThongTin());
     }
 
+    public void hienThiDanhSach() {
+        xuat();
+    }
 }

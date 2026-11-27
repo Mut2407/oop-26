@@ -1,4 +1,4 @@
-package services;
+package danhsach;
 
 public interface IQuanLyDanhSach<T> {
     boolean them(T doiTuong);

@@ -1,4 +1,4 @@
-package services;
+package danhsach;
 
 import models.*;
 import java.util.ArrayList;
@@ -64,15 +64,24 @@ public class DanhSachKhachHang implements IQuanLyDanhSach<KhachHang> {
             if (phuHop(kh, key)) kq.add(kh);
         return kq.toArray(new KhachHang[0]);
     }
+
     private boolean phuHop(KhachHang x, String key) {
         return x.getMaKhachHang().toLowerCase().contains(key)
                 || x.getHoTen().toLowerCase().contains(key)
                 || x.getSoDienThoai().contains(key);
     }
 
-    public void hienThiDanhSach() {
-        if (ds.isEmpty()) { System.out.println("Danh sach rong."); return; }
+    public void xuat() {
+        if (ds.isEmpty()) {
+            System.out.println("Danh sach khach hang rong.");
+            return;
+        }
+        System.out.println("\n--- DANH SACH KHACH HANG ---");
         for (KhachHang kh : ds)
             System.out.println(kh.hienThiThongTin());
+    }
+
+    public void hienThiDanhSach() {
+        xuat();
     }
 }

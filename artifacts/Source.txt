@@ -1,0 +1,38 @@
+src/
+├── Main.java                          # File chạy chính
+│
+├── models/                            # 1. CLASS ĐƠN (Entity / Đối tượng riêng lẻ)
+│   ├── SanPham.java
+│   ├── GiayTheThao.java
+│   ├── DungCuTheThao.java
+│   ├── LoaiSP.java
+│   ├── KhachHang.java
+│   ├── NhanVien.java
+│   ├── NhaCungCap.java
+│   ├── HoaDon.java
+│   ├── ChiTietHoaDon.java
+│   ├── PhieuNhap.java
+│   ├── ChiTietPhieuNhap.java
+│   └── Kho.java
+│
+├── danhsach/                          # 2. CLASS DANH SÁCH (Lưu trữ mảng & thao tác mảng)
+│   ├── DanhSachSanPham.java
+│   ├── DanhSachLoaiSP.java
+│   ├── DanhSachKhachHang.java
+│   ├── DanhSachNhanVien.java
+│   ├── DanhSachNhaCungCap.java
+│   ├── DanhSachHoaDon.java
+│   ├── DanhSachPhieuNhap.java
+│   ├── IQuanLyDanhSach.java
+│   └── LuuTruFileText.java
+│
+└── quanly/                            # 3. CLASS QUẢN LÝ DANH SÁCH (Menu, Nhập xuất Scanner, Đa hình)
+    ├── QuanLyCuaHang.java             # Lớp cha: chứa các DanhSach static, docDuLieu(), ghiDuLieu()
+    ├── QuanLySanPham.java             # Menu & thêm/sửa/xóa sản phẩm
+    ├── QuanLyLoaiSP.java              # Menu & thêm/sửa/xóa loại sản phẩm
+    ├── QuanLyKhachHang.java           # Menu & thêm/sửa/xóa khách hàng
+    ├── QuanLyNhanVien.java            # Menu & thêm/sửa/xóa nhân viên
+    ├── QuanLyNhaCungCap.java          # Menu & thêm/sửa/xóa nhà cung cấp
+    ├── QuanLyHoaDon.java              # Menu & lập hóa đơn, chi tiết hóa đơn
+    ├── QuanLyPhieuNhap.java           # Menu & lập phiếu nhập, chi tiết phiếu nhập
+    └── HeThong.java                   # Menu chính điều phối với biến đa hình QuanLyCuaHang

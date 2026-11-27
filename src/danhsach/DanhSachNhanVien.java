@@ -1,4 +1,4 @@
-package services;
+package danhsach;
 
 import models.*;
 import java.util.ArrayList;
@@ -71,9 +71,17 @@ public class DanhSachNhanVien implements IQuanLyDanhSach<NhanVien> {
                 || x.getSoDienThoai().contains(key);
     }
 
-    public void hienThiDanhSach() {
-        if (ds.isEmpty()) { System.out.println("Danh sach rong."); return; }
+    public void xuat() {
+        if (ds.isEmpty()) {
+            System.out.println("Danh sach nhan vien rong.");
+            return;
+        }
+        System.out.println("\n--- DANH SACH NHAN VIEN ---");
         for (NhanVien nv : ds)
             System.out.println(nv.hienThiThongTin());
+    }
+
+    public void hienThiDanhSach() {
+        xuat();
     }
 }
